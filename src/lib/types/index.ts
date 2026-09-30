@@ -24,11 +24,6 @@ export type {
 export type { PaymentType, Payment, CreatePaymentInput } from './payment.js';
 export type { LedgerEntryType, LedgerEntry, CreateLedgerEntryInput } from './ledger.js';
 export type {
-	AdjustmentType,
-	StockAdjustment,
-	CreateStockAdjustmentInput
-} from './stock-adjustment.js';
-export type {
 	ReturnType,
 	ReturnItem,
 	Return,
@@ -37,7 +32,6 @@ export type {
 } from './return.js';
 export type { GSTSummaryRow, GSTReportResponse, SalesReportRow, StockReportRow } from './report.js';
 export type { UserRole, User } from './user.js';
-export type { NotificationType, NotificationPriority, Notification } from './notification.js';
 export type { SyncStatus, AppState, BusinessInfo, Theme } from './app.js';
 export type {
 	SubscriptionStatus,
