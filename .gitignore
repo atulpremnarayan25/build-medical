@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# SvelteKit & Build Output
+.svelte-kit/
+build/
+dist/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+!.env.test
+
+# SQLite & Database Dumps
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Logs & PID files
+*.log
+*.pid
+dev.log
+server.log
+dev.pid
+
+# OS & Editor
+.DS_Store
+*.DS_Store
+.!*
+Thumbs.db
+.vscode/
+.idea/
+
+# Local Tooling, Agent Caches & Vector Storage
+.claude/
+.reticle/
+.reticle.json
+.impeccable/
+.opencode/
+/palace/
+/roster-backups/
+/files/
+/hive/
+hallways.json
+roster.json
+*.tmp
+.hallways*
+
+# Scratch & Temporary Testing Files
+cookies.txt
+cj*.txt
+out.html
+output.html
+output.md
+sim.js
+sim_sale.js
+test.js
+test_*.js
+test-*.ts
+_patch_*.cjs
+patch_*.cjs
+patch_*.sh
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

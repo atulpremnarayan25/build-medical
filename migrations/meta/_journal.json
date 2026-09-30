@@ -1,0 +1,27 @@
+{
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1787424762965,
+			"tag": "0000_serious_sprite",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1787483827553,
+			"tag": "0001_petite_dreaming_celestial",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1787483952635,
+			"tag": "0002_minor_marauders",
+			"breakpoints": true
+		}
+	]
+}

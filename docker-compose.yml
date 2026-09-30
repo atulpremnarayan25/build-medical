@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: mederp
+      POSTGRES_PASSWORD: mederp_password
+      POSTGRES_DB: mederp_db
+    ports:
+      - '5433:5432' # using 5433 so it doesn't conflict with local postgres if present
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
