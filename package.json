@@ -46,6 +46,7 @@
 		"vitest": "^4.1.8"
 	},
 	"dependencies": {
+		"@electric-sql/pglite": "^0.5.8",
 		"@lucide/svelte": "^1.33.0",
 		"bcryptjs": "^3.0.3",
 		"better-sqlite3": "^13.0.3",

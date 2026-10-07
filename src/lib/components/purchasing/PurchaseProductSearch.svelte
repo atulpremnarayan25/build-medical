@@ -79,8 +79,8 @@
 		onfocus={() => (isFocused = true)}
 		onblur={() => setTimeout(() => (isFocused = false), 200)}
 		onkeydown={handleKeyDown}
-		placeholder="Search product by brand, generic, or scan barcode (Press F2)..."
-		class="block w-full rounded-lg border-2 border-accent/40 bg-surface py-2.5 pr-10 pl-9.5 text-xs font-semibold text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+		placeholder="Search product by name, generic, or scan barcode (F2)"
+		class="block w-full rounded-lg border border-border bg-surface py-2.5 pr-10 pl-9.5 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 	/>
 	<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
 		<kbd class="rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted">F2</kbd>

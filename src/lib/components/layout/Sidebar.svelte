@@ -13,6 +13,7 @@
 		Warehouse,
 		Users,
 		Truck,
+		CreditCard,
 		Undo2,
 		BarChart3,
 		Settings,
@@ -33,10 +34,11 @@
 	let navItems = $derived<NavItem[]>([
 		{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
 		{ label: 'Sales', href: '/sales', icon: ShoppingCart },
-		{ label: 'Inventory', href: '/inventory', icon: Warehouse },
 		{ label: 'Purchases', href: '/purchases', icon: Package },
+		{ label: 'Inventory', href: '/inventory', icon: Warehouse },
 		{ label: 'Customers', href: '/customers', icon: Users },
 		{ label: 'Suppliers', href: '/suppliers', icon: Truck },
+		{ label: 'Payments', href: '/payments', icon: CreditCard },
 		{ label: 'Returns', href: '/returns', icon: Undo2 },
 		{ label: 'Reports', href: '/reports', icon: BarChart3 },
 		{ label: 'Settings', href: '/settings', icon: Settings },
@@ -112,9 +114,9 @@
 					<a
 						href={item.href}
 						onclick={handleNavClick}
-						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors
+						class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all
 							{active
-							? 'bg-sidebar-accent text-sidebar-text-active'
+							? 'bg-blue-600 text-white font-semibold shadow-xs'
 							: 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-text-active'}
 							{isSidebarCollapsed() ? 'justify-center px-0' : ''}"
 						aria-current={active ? 'page' : undefined}

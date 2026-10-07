@@ -17,17 +17,17 @@
 		{#if backHref}
 			<a
 				href={backHref}
-				class="rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
+				class="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary shadow-2xs"
 				aria-label="Go back"
 			>
-				<ArrowLeft size={18} />
+				<ArrowLeft size={16} />
 			</a>
 		{/if}
 
 		<div>
-			<h1 class="text-lg font-semibold text-text-primary">{title}</h1>
+			<h1 class="text-xl font-bold tracking-tight text-text-primary">{title}</h1>
 			{#if subtitle}
-				<p class="mt-0.5 text-sm text-text-muted">{subtitle}</p>
+				<p class="mt-0.5 text-xs text-text-muted">{subtitle}</p>
 			{/if}
 		</div>
 	</div>

@@ -105,16 +105,19 @@
 	async function handleSavePurchase() {
 		if (!selectedSupplier) {
 			addToast('error', 'Please select a supplier (F3)');
+			supplierInputRef?.focus();
 			return;
 		}
 
 		if (!invoiceNumber.trim()) {
 			addToast('error', 'Supplier Invoice No is required');
+			document.getElementById('sup-inv-input')?.focus();
 			return;
 		}
 
 		if (items.length === 0) {
 			addToast('error', 'Add at least one item to save the purchase');
+			searchInputRef?.focus();
 			return;
 		}
 
@@ -123,14 +126,22 @@
 			const item = items[i];
 			if (!item.batchNumber.trim()) {
 				addToast('error', `Row ${i + 1}: Batch number is required`);
+				const batchEl = document.querySelectorAll('.batch-input')[i] as HTMLInputElement;
+				batchEl?.focus();
+				batchEl?.select();
 				return;
 			}
 			if (!item.expiryDate) {
-				addToast('error', `Row ${i + 1}: Expiry date is required`);
+				addToast('error', `Row ${i + 1}: Expiry date is required (please select date)`);
+				const expiryEl = document.querySelectorAll('.expiry-input')[i] as HTMLInputElement;
+				expiryEl?.focus();
 				return;
 			}
 			if (item.quantity <= 0) {
 				addToast('error', `Row ${i + 1}: Quantity must be greater than 0`);
+				const qtyEl = document.querySelectorAll('.qty-input')[i] as HTMLInputElement;
+				qtyEl?.focus();
+				qtyEl?.select();
 				return;
 			}
 		}
@@ -214,47 +225,38 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
-<div class="flex h-[calc(100vh-80px)] flex-col space-y-2">
-	<PageHeader title="Goods Inward (GRN)" subtitle="{internalPurchaseNo} • Stock Inflow Voucher">
-		{#snippet actions()}
-			<Button variant="secondary" onclick={() => window.history.back()}>Cancel</Button>
-			<Button variant="primary" disabled={isSaving} onclick={handleSavePurchase}>
-				{isSaving ? 'Saving...' : 'Save Inward (F10 / Ctrl+S)'}
-			</Button>
-		{/snippet}
-	</PageHeader>
-
-	<!-- Keyboard Shortcuts Bar -->
-	<div
-		class="flex flex-wrap items-center gap-3 rounded-t-xl border border-b-0 border-border bg-sidebar px-4 py-2 text-xs font-medium text-sidebar-text shadow-2xs"
-	>
-		<span class="flex items-center gap-1.5 text-accent-hover">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F2</kbd>
-			<span>Product Search</span>
-		</span>
-		<span class="flex items-center gap-1.5 text-info">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F3</kbd>
-			<span>Supplier / Distributor</span>
-		</span>
-		<span class="flex items-center gap-1.5 text-schedule-h1">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F4</kbd>
-			<span>Payment Terms</span>
-		</span>
-		<span class="flex items-center gap-1.5 text-warning">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Enter</kbd>
-			<span>Grid Traversal</span>
-		</span>
-		<span class="ml-auto flex items-center gap-1.5 text-accent">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Ctrl+S / F10</kbd>
-			<span>Save Purchase</span>
-		</span>
+<div class="flex h-[calc(100vh-80px)] flex-col space-y-3">
+	<!-- Top Bar matching purchase-failure.png -->
+	<div class="flex items-center justify-between py-1">
+		<div>
+			<h1 class="text-sm font-semibold text-text-primary">
+				{internalPurchaseNo} | Receive inventory (Ctrl+S to save)
+			</h1>
+		</div>
+		<div class="flex items-center gap-2">
+			<button
+				type="button"
+				onclick={() => window.history.back()}
+				class="rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text-primary shadow-xs hover:bg-surface-hover transition-colors"
+			>
+				Cancel
+			</button>
+			<button
+				type="button"
+				disabled={isSaving}
+				onclick={handleSavePurchase}
+				class="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition-colors disabled:opacity-50"
+			>
+				{isSaving ? 'Saving...' : 'Save Purchase'}
+			</button>
+		</div>
 	</div>
 
 	<!-- Header fields -->
-	<div class="space-y-3 border-x border-border bg-surface p-3.5 shadow-2xs">
+	<div class="space-y-3 rounded-xl border border-border bg-surface p-4 shadow-2xs">
 		<div class="grid grid-cols-1 gap-3 md:grid-cols-4">
 			<div>
-				<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Supplier / Distributor (F3) *</span>
+				<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Supplier *</span>
 				<SupplierSearch
 					onSelect={handleSupplierSelect}
 					bind:selectedSupplier
@@ -306,15 +308,18 @@
 		<PurchaseProductSearch onSelect={handleProductSelect} bind:inputRef={searchInputRef} />
 	</div>
 
-	<PurchaseItemsTable bind:items onRemoveItem={handleRemoveItem} />
+	<!-- Unified items table & summary container -->
+	<div class="flex flex-1 flex-col rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
+		<PurchaseItemsTable bind:items onRemoveItem={handleRemoveItem} />
 
-	<PurchaseSummary
-		itemCount={items.length}
-		{subtotal}
-		{discountTotal}
-		{taxableTotal}
-		{gstTotal}
-		{roundOff}
-		{grandTotal}
-	/>
+		<PurchaseSummary
+			itemCount={items.length}
+			{subtotal}
+			{discountTotal}
+			{taxableTotal}
+			{gstTotal}
+			{roundOff}
+			{grandTotal}
+		/>
+	</div>
 </div>

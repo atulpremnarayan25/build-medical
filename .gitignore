@@ -22,6 +22,7 @@ dist/
 !.env.test
 
 # SQLite & Database Dumps
+data/
 *.db
 *.db-wal
 *.db-shm

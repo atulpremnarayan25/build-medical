@@ -36,45 +36,54 @@
 	<title>Settings - MedStock ERP</title>
 </svelte:head>
 
-<PageHeader title="Settings" subtitle="Manage store profile, team access, and invoice preferences" />
+<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-2">
+	<div>
+		<div class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-0.5 text-[11px] font-bold text-teal-700 border border-teal-200/80 mb-1.5">
+			<Building2 size={12} class="text-teal-600" />
+			<span>Axiscare Portal Configuration</span>
+		</div>
+		<h1 class="text-2xl font-extrabold tracking-tight text-slate-900">System & Store Settings</h1>
+		<p class="text-xs text-slate-500">Manage store credentials, GSTIN, team access, and invoice presets</p>
+	</div>
+</div>
 
-<div class="mt-6 flex flex-col gap-6 lg:flex-row">
+<div class="mt-4 flex flex-col gap-6 lg:flex-row">
 	<!-- Sidebar Tabs -->
-	<div class="w-full shrink-0 space-y-1 lg:w-64">
+	<div class="w-full shrink-0 space-y-1.5 lg:w-64">
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all {activeTab ===
 			'profile'
-				? 'bg-accent-light text-accent'
-				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				? 'bg-teal-50 text-teal-700 font-bold border border-teal-200/80 shadow-2xs'
+				: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
 			onclick={() => (activeTab = 'profile')}
 		>
 			<Building2 size={16} />
-			Store Profile
+			<span>Store Profile</span>
 		</button>
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all {activeTab ===
 			'users'
-				? 'bg-accent-light text-accent'
-				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				? 'bg-teal-50 text-teal-700 font-bold border border-teal-200/80 shadow-2xs'
+				: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
 			onclick={() => (activeTab = 'users')}
 		>
 			<Users size={16} />
-			User Management
+			<span>User Management</span>
 		</button>
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all {activeTab ===
 			'invoice'
-				? 'bg-accent-light text-accent'
-				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				? 'bg-teal-50 text-teal-700 font-bold border border-teal-200/80 shadow-2xs'
+				: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
 			onclick={() => (activeTab = 'invoice')}
 		>
 			<FileText size={16} />
-			Invoice Settings
+			<span>Invoice Settings</span>
 		</button>
 	</div>
 
 	<!-- Content -->
-	<div class="flex-1 rounded-xl border border-border bg-surface p-6 shadow-2xs">
+	<div class="flex-1 rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs">
 		{#if activeTab === 'profile'}
 			<div>
 				<h2 class="text-base font-bold text-text-primary">Store Profile</h2>

@@ -74,68 +74,68 @@
 
 <form onsubmit={handleSubmit} class="space-y-4">
 	<!-- Basic Information -->
-	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-text-muted">Basic & Clinical Information</h3>
-		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+	<div class="rounded-xl border border-border bg-surface p-5 shadow-2xs">
+		<h3 class="mb-4 text-sm font-semibold text-text-primary">Basic Information</h3>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 			<div>
-				<label for="p-name" class="mb-1 block text-xs font-medium text-text-secondary"
-					>Trade / Product Name *</label
+				<label for="p-name" class="mb-1.5 block text-xs font-medium text-text-secondary"
+					>Name *</label
 				>
 				<input
 					id="p-name"
 					type="text"
 					bind:value={formData.name}
 					required
-					placeholder="e.g. Augmentin 625mg Duo Tab"
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					placeholder="e.g. Augmentin 625 Duo"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 				{#if errors.name}<p class="mt-1 text-[11px] text-danger">{errors.name}</p>{/if}
 			</div>
 
 			<div>
-				<label for="p-generic" class="mb-1 block text-xs font-medium text-text-secondary"
-					>Generic Composition</label
+				<label for="p-generic" class="mb-1.5 block text-xs font-medium text-text-secondary"
+					>Generic Name</label
 				>
 				<input
 					id="p-generic"
 					type="text"
 					bind:value={formData.genericName}
-					placeholder="e.g. Amoxycillin (500mg) + Clavulanic Acid (125mg)"
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					placeholder="e.g. Amoxycillin + Clavulanic Acid"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 
 			<div>
-				<label for="p-mfg" class="mb-1 block text-xs font-medium text-text-secondary"
-					>Manufacturer / Marketer</label
+				<label for="p-mfg" class="mb-1.5 block text-xs font-medium text-text-secondary"
+					>Manufacturer</label
 				>
 				<input
 					id="p-mfg"
 					type="text"
 					bind:value={formData.manufacturer}
-					placeholder="e.g. GlaxoSmithKline Pharmaceuticals"
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					placeholder="e.g. GSK"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 
 			<div>
-				<label for="p-cat" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-cat" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>Category</label
 				>
 				<input
 					id="p-cat"
 					type="text"
 					bind:value={formData.category}
-					placeholder="e.g. Antibiotics / Tablets"
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					placeholder="e.g. Antibiotics"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 		</div>
 
-		<!-- Schedule & Pack Size -->
-		<div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+		<!-- Schedule & Pack Size (Statutory & ERP compliance) -->
+		<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 pt-3 border-t border-border/40">
 			<div>
-				<label for="p-pack" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-pack" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>Pack Size (Units/Strip per Box)</label
 				>
 				<input
@@ -143,18 +143,18 @@
 					type="number"
 					min="1"
 					bind:value={formData.packSize}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 
 			<div>
-				<label for="p-sched" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-sched" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>Drug Schedule (Statutory Classification)</label
 				>
 				<select
 					id="p-sched"
 					bind:value={formData.drugSchedule}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none {formData.drugSchedule === 'H1' || formData.drugSchedule === 'X' ? 'border-schedule-h1/50 bg-schedule-h1-light/30 font-semibold text-schedule-h1' : ''}"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors {formData.drugSchedule === 'H1' || formData.drugSchedule === 'X' ? 'border-schedule-h1/50 bg-schedule-h1-light/30 font-semibold text-schedule-h1' : ''}"
 				>
 					<option value="none">None (General OTC / Non-Regulated)</option>
 					<option value="H">Schedule H (Prescription Required)</option>
@@ -166,11 +166,11 @@
 	</div>
 
 	<!-- Pricing & Tax -->
-	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-text-muted">Pricing, GST & Accounting</h3>
-		<div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+	<div class="rounded-xl border border-border bg-surface p-5 shadow-2xs">
+		<h3 class="mb-4 text-sm font-semibold text-text-primary">Pricing & Tax</h3>
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			<div>
-				<label for="p-mrp" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-mrp" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>MRP (₹) *</label
 				>
 				<input
@@ -179,12 +179,12 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.mrp}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 				{#if errors.mrp}<p class="mt-1 text-[11px] text-danger">{errors.mrp}</p>{/if}
 			</div>
 			<div>
-				<label for="p-srate" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-srate" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>Selling Rate (₹)</label
 				>
 				<input
@@ -193,11 +193,11 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.sellingRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 			<div>
-				<label for="p-prate" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-prate" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>Purchase Rate (₹)</label
 				>
 				<input
@@ -206,12 +206,12 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.purchaseRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 
 			<div>
-				<label for="p-gst" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-gst" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>GST Rate (%)</label
 				>
 				<input
@@ -220,11 +220,11 @@
 					step="0.1"
 					min="0"
 					bind:value={formData.gstRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 			<div>
-				<label for="p-hsn" class="mb-1 block text-xs font-medium text-text-secondary"
+				<label for="p-hsn" class="mb-1.5 block text-xs font-medium text-text-secondary"
 					>HSN Code</label
 				>
 				<input
@@ -232,19 +232,19 @@
 					type="text"
 					bind:value={formData.hsn}
 					placeholder="3004"
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors"
 				/>
 			</div>
 
-			<div class="flex items-center pt-5">
-				<label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-text-primary">
+			<div class="flex items-center pt-6">
+				<label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-text-primary select-none">
 					<input
 						id="p-active"
 						type="checkbox"
 						bind:checked={formData.active}
-						class="h-4 w-4 rounded border-border text-accent focus:ring-accent focus:ring-offset-0"
+						class="h-4 w-4 rounded border-border text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
 					/>
-					<span>Active Product</span>
+					<span>Active</span>
 				</label>
 			</div>
 		</div>

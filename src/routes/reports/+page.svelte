@@ -82,30 +82,43 @@
 	<!-- Page Header -->
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-xl font-bold text-text-primary">Executive Reports & Analytics</h1>
-			<p class="text-xs text-text-muted">GST tax statements, party ledgers, valuation summaries, and compliance audit logs</p>
+			<div class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-0.5 text-[11px] font-bold text-teal-700 border border-teal-200/80 mb-1.5">
+				<BarChart size={12} class="text-teal-600" />
+				<span>Axiscare Financial & Regulatory Hub</span>
+			</div>
+			<h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Executive Reports & Analytics</h1>
+			<p class="text-xs text-slate-500">GST tax statements, party ledgers, valuation summaries, and compliance audit logs</p>
 		</div>
 	</div>
 
 	<!-- Report Sections -->
-	<div class="space-y-6">
+	<div class="space-y-8">
 		{#each reportCategories as category}
-			<section class="space-y-3">
-				<h2 class="text-xs font-bold uppercase tracking-wider text-text-muted">{category.title}</h2>
-				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+			<section class="space-y-3.5">
+				<div class="flex items-center gap-2">
+					<span class="h-2 w-2 rounded-full bg-teal-600"></span>
+					<h2 class="text-xs font-bold uppercase tracking-wider text-slate-600">{category.title}</h2>
+				</div>
+				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{#each category.items as item}
 						<a
 							href={item.href}
-							class="group flex items-start gap-3.5 rounded-xl border border-border bg-surface p-4 shadow-2xs transition-all hover:border-accent hover:shadow-xs"
+							class="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-teal-300 hover:shadow-md hover:-translate-y-0.5"
 						>
-							<div
-								class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-light/60 text-accent transition-colors group-hover:bg-accent group-hover:text-white"
-							>
-								<item.icon size={18} />
-							</div>
 							<div>
-								<h3 class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">{item.name}</h3>
-								<p class="mt-1 text-xs text-text-muted leading-relaxed">{item.desc}</p>
+								<div class="flex items-center justify-between mb-3">
+									<div
+										class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600 border border-teal-100 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all"
+									>
+										<item.icon size={18} />
+									</div>
+									<span class="text-xs font-semibold text-teal-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+										<span>Open</span>
+										<span>&rarr;</span>
+									</span>
+								</div>
+								<h3 class="text-sm font-bold text-slate-900 group-hover:text-teal-700 transition-colors">{item.name}</h3>
+								<p class="mt-1.5 text-xs text-slate-500 leading-relaxed">{item.desc}</p>
 							</div>
 						</a>
 					{/each}

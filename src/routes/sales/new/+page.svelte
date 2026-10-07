@@ -439,45 +439,45 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
-<div class="flex flex-col gap-3 min-h-[calc(100vh-85px)]">
+<div class="flex flex-col gap-4 min-h-[calc(100vh-85px)]">
 	<!-- Top Bar / Action Header -->
-	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
 		<div class="flex items-center gap-3">
 			<a
 				href="/sales"
-				class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
+				class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 shadow-2xs"
 				title="Back to Sales Hub"
 			>
 				<ArrowLeft size={16} />
 			</a>
 			<div>
 				<div class="flex items-center gap-2">
-					<h1 class="text-base font-bold text-text-primary">High-Speed Billing Terminal</h1>
-					<span class="rounded-md border border-accent/20 bg-accent-light/50 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
+					<h1 class="text-base sm:text-lg font-bold text-slate-900">High-Speed Billing Terminal</h1>
+					<span class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 font-mono text-[11px] font-bold text-teal-700">
 						{invoiceNumber}
 					</span>
 				</div>
-				<p class="text-xs text-text-muted">Zero-latency keyboard POS for retail and wholesale billing</p>
+				<p class="text-xs text-slate-500">Zero-latency keyboard POS for retail and wholesale billing</p>
 			</div>
 		</div>
 
-		<div class="flex items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2">
 			<button
 				type="button"
 				onclick={() => (shortcutsOpen = true)}
-				class="flex items-center gap-1.5 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+				class="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors min-h-[36px]"
 				title="View keyboard shortcuts (?)"
 			>
-				<Keyboard size={14} class="text-accent" />
+				<Keyboard size={14} class="text-teal-600" />
 				<span class="hidden sm:inline">Shortcuts</span>
-				<kbd class="font-mono text-[11px] text-text-muted border border-border rounded px-1">?</kbd>
+				<kbd class="font-mono text-[10px] text-slate-500 border border-slate-300 bg-white rounded px-1">?</kbd>
 			</button>
 
 			<Button variant="outline" size="sm" onclick={handleHoldSale}>
 				<Clock size={13} class="mr-1" />
 				<span>Hold (F6)</span>
 				{#if heldBills.length > 0}
-					<span class="ml-1.5 rounded-full bg-warning-light border border-warning/20 px-1.5 py-0.2 font-mono text-[11px] font-bold text-warning">
+					<span class="ml-1.5 rounded-full bg-amber-100 border border-amber-300 px-1.5 py-0.2 font-mono text-[10px] font-bold text-amber-800">
 						{heldBills.length}
 					</span>
 				{/if}
@@ -489,7 +489,7 @@
 				</Button>
 			{/if}
 
-			<Button variant="primary" size="sm" disabled={isSaving || items.length === 0} onclick={handleSaveSale}>
+			<Button variant="royal" size="sm" disabled={isSaving || items.length === 0} onclick={handleSaveSale}>
 				<CheckCircle2 size={14} class="mr-1.5" />
 				<span>{isSaving ? 'Processing...' : 'Save & Print (Ctrl+S)'}</span>
 			</Button>
@@ -497,27 +497,27 @@
 	</div>
 
 	<!-- High-Visibility Keyboard Function Bar -->
-	<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/80 px-3 py-1.5 text-xs">
+	<div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-slate-50/90 px-4 py-2 text-xs">
 		<div class="flex flex-wrap items-center gap-3">
-			<button type="button" onclick={() => searchInputRef?.focus()} class="flex items-center gap-1 text-accent font-medium hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-accent shadow-2xs">F2</kbd>
+			<button type="button" onclick={() => searchInputRef?.focus()} class="flex items-center gap-1.5 text-teal-700 font-semibold hover:underline cursor-pointer">
+				<kbd class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-teal-700 shadow-2xs">F2</kbd>
 				<span>Search Medicine</span>
 			</button>
-			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1 text-text-primary font-medium hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-primary shadow-2xs">F3</kbd>
+			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1.5 text-slate-800 font-semibold hover:underline cursor-pointer">
+				<kbd class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-800 shadow-2xs">F3</kbd>
 				<span>Customer</span>
 			</button>
-			<button type="button" onclick={cyclePaymentType} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F4</kbd>
-				<span>Mode: <strong class="uppercase text-accent">{paymentType}</strong></span>
+			<button type="button" onclick={cyclePaymentType} class="flex items-center gap-1.5 text-slate-700 font-semibold hover:underline cursor-pointer">
+				<kbd class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-700 shadow-2xs">F4</kbd>
+				<span>Mode: <strong class="uppercase text-teal-700">{paymentType}</strong></span>
 			</button>
-			<button type="button" onclick={handleHoldSale} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F6</kbd>
-				<span>Hold / Recall {#if heldBills.length > 0}<strong class="text-warning">({heldBills.length})</strong>{/if}</span>
+			<button type="button" onclick={handleHoldSale} class="flex items-center gap-1.5 text-slate-700 font-semibold hover:underline cursor-pointer">
+				<kbd class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-700 shadow-2xs">F6</kbd>
+				<span>Hold / Recall {#if heldBills.length > 0}<strong class="text-amber-700">({heldBills.length})</strong>{/if}</span>
 			</button>
-			<button type="button" onclick={toggleSaleType} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F8</kbd>
-				<span>Type: <strong class="uppercase text-accent">{customerType}</strong></span>
+			<button type="button" onclick={toggleSaleType} class="flex items-center gap-1.5 text-slate-700 font-semibold hover:underline cursor-pointer">
+				<kbd class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[11px] font-bold text-slate-700 shadow-2xs">F8</kbd>
+				<span>Type: <strong class="uppercase text-teal-700">{customerType}</strong></span>
 			</button>
 		</div>
 
@@ -534,18 +534,18 @@
 		</div>
 	</div>
 
-	<!-- Billing Controls Box (STABLE: Search & Customer Fixed Here, No Layout Shift) -->
-	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-4">
+	<!-- Billing Controls Box (Axiscare Card Style) -->
+	<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-4">
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
 			<!-- Sale Type -->
 			<div>
-				<label for="sale-type-select" class="mb-1 block text-xs font-semibold text-text-secondary">
+				<label for="sale-type-select" class="mb-1 block text-xs font-semibold text-slate-600">
 					Sale Type (F8)
 				</label>
 				<select
 					id="sale-type-select"
 					bind:value={customerType}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-semibold text-slate-800 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all cursor-pointer"
 				>
 					<option value="retail">Retail (B2C Standard)</option>
 					<option value="wholesale">Wholesale (B2B Bulk)</option>
@@ -554,7 +554,7 @@
 
 			<!-- Customer Search -->
 			<div class="lg:col-span-2">
-				<label for="customer-search-box" class="mb-1 block text-xs font-semibold text-text-secondary">
+				<label for="customer-search-box" class="mb-1 block text-xs font-semibold text-slate-600">
 					Customer / Patient (F3)
 				</label>
 				<CustomerSearch
@@ -566,26 +566,26 @@
 
 			<!-- Invoice Date -->
 			<div>
-				<label for="date-input" class="mb-1 block text-xs font-semibold text-text-secondary">
+				<label for="date-input" class="mb-1 block text-xs font-semibold text-slate-600">
 					Invoice Date
 				</label>
 				<input
 					id="date-input"
 					type="date"
 					bind:value={date}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
 				/>
 			</div>
 
 			<!-- Payment Method -->
 			<div>
-				<label for="payment-method-select" class="mb-1 block text-xs font-semibold text-text-secondary">
+				<label for="payment-method-select" class="mb-1 block text-xs font-semibold text-slate-600">
 					Payment Mode (F4)
 				</label>
 				<select
 					id="payment-method-select"
 					bind:value={paymentType}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-bold text-accent focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-teal-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all cursor-pointer shadow-2xs"
 				>
 					<option value="cash">💵 Cash Payment</option>
 					<option value="bank">📱 UPI / Bank Transfer</option>
@@ -599,7 +599,7 @@
 	</div>
 
 	<!-- Line Items Data Grid -->
-	<div class="flex flex-1 flex-col rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
+	<div class="flex flex-1 flex-col rounded-2xl border border-slate-200/80 bg-white overflow-hidden shadow-xs">
 		<InvoiceItemsTable bind:items onRemoveItem={handleRemoveItem} />
 
 		{#if quoteError}
@@ -619,27 +619,27 @@
 		/>
 	</div>
 
-	<!-- Statutory Schedule H1 & Controlled Drugs Mandatory Register Box (Placed below items grid to eliminate CLS) -->
+	<!-- Statutory Schedule H1 & Controlled Drugs Mandatory Register Box (Axiscare Style) -->
 	{#if hasH1Item}
-		<div class="rounded-xl border border-warning/30 bg-warning-light/20 p-4 shadow-2xs">
+		<div class="rounded-2xl border border-purple-200/80 bg-purple-50/50 p-5 shadow-xs">
 			<div class="flex items-center justify-between gap-2 mb-3">
 				<div class="flex items-center gap-2">
-					<div class="flex h-6 w-6 items-center justify-center rounded bg-warning-light text-warning border border-warning/20">
-						<ShieldAlert size={14} />
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-100 text-purple-700 border border-purple-200">
+						<ShieldAlert size={15} />
 					</div>
-					<span class="text-xs font-bold text-text-primary">
+					<span class="text-xs font-bold text-purple-950">
 						Schedule H1 / Regulated Drug Register (Mandatory Statutory Compliance)
 					</span>
 				</div>
-				<span class="text-[11px] font-semibold text-warning">
+				<span class="text-[11px] font-semibold text-purple-700">
 					Required by Drugs & Cosmetics Rules, 1945
 				</span>
 			</div>
 
-			<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+			<div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
 				<div>
-					<label for="h1-patient" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Patient Name & Address <span class="text-danger">*</span>
+					<label for="h1-patient" class="mb-1 block text-[11px] font-semibold text-slate-700">
+						Patient Name & Address <span class="text-rose-600">*</span>
 					</label>
 					<input
 						id="h1-patient"
@@ -647,16 +647,16 @@
 						bind:value={patientName}
 						oninput={() => (h1Errors.patient = false)}
 						placeholder="Patient Full Name & Address"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
+						class="w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all
 							{h1Errors.patient
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
+								? 'border-rose-500 ring-2 ring-rose-500/20'
+								: 'border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'}"
 					/>
 				</div>
 
 				<div>
-					<label for="h1-prescriber" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Prescribing Doctor <span class="text-danger">*</span>
+					<label for="h1-prescriber" class="mb-1 block text-[11px] font-semibold text-slate-700">
+						Prescribing Doctor <span class="text-rose-600">*</span>
 					</label>
 					<input
 						id="h1-prescriber"
@@ -664,16 +664,16 @@
 						bind:value={prescriberName}
 						oninput={() => (h1Errors.prescriber = false)}
 						placeholder="Dr. Full Name"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
+						class="w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all
 							{h1Errors.prescriber
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
+								? 'border-rose-500 ring-2 ring-rose-500/20'
+								: 'border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'}"
 					/>
 				</div>
 
 				<div>
-					<label for="h1-regno" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Doctor Reg Number <span class="text-danger">*</span>
+					<label for="h1-regno" class="mb-1 block text-[11px] font-semibold text-slate-700">
+						Doctor Reg Number <span class="text-rose-600">*</span>
 					</label>
 					<input
 						id="h1-regno"
@@ -681,10 +681,10 @@
 						bind:value={prescriberRegNo}
 						oninput={() => (h1Errors.regNo = false)}
 						placeholder="MCI / State Medical Council Reg No"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
+						class="w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all
 							{h1Errors.regNo
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
+								? 'border-rose-500 ring-2 ring-rose-500/20'
+								: 'border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'}"
 					/>
 				</div>
 			</div>

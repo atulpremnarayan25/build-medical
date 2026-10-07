@@ -8,7 +8,6 @@
 	} from '$lib/stores/appStore.svelte.js';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import GlobalSearch from '../common/GlobalSearch.svelte';
-	import ThemeToggle from '../common/ThemeToggle.svelte';
 	import {
 		Menu,
 		PanelLeftClose,
@@ -103,9 +102,6 @@
 			<span>New Bill</span>
 		</a>
 
-		<!-- Theme Toggle -->
-		<ThemeToggle compact={true} />
-
 		<!-- Subscription status link -->
 		<a
 			href="/subscription"
@@ -195,16 +191,16 @@
 			>
 				<!-- Avatar placeholder -->
 				<div
-					class="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white"
+					class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white shadow-2xs"
 				>
-					{user ? user.name.charAt(0).toUpperCase() : '?'}
+					{user?.name && user.name !== 'Guest' ? user.name.charAt(0).toUpperCase() : 'S'}
 				</div>
 				<div class="hidden text-left sm:block">
-					<p class="text-sm leading-tight font-medium text-text-primary">
-						{user?.name ?? 'Guest'}
+					<p class="text-xs leading-tight font-semibold text-text-primary">
+						{user && user.name !== 'Guest' ? user.name : 'System Admin'}
 					</p>
-					<p class="text-xs leading-tight text-text-muted capitalize">
-						{user?.role?.replace(/[-_]/g, ' ') ?? 'Not logged in'}
+					<p class="text-[11px] leading-tight text-text-muted capitalize">
+						{user?.role && user.role !== 'Not Logged In' ? user.role.replace(/[-_]/g, ' ') : 'Admin'}
 					</p>
 				</div>
 				<ChevronDown size={14} class="hidden text-text-muted sm:block" />

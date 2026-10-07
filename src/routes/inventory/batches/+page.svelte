@@ -145,12 +145,16 @@
 	<title>Batch Inventory & FEFO Expiry Tracking - MedStock ERP</title>
 </svelte:head>
 
-<div class="space-y-4">
+<div class="space-y-5">
 	<!-- Page Header -->
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-xl font-bold text-text-primary">Batch Inventory & Expiry Tracking</h1>
-			<p class="text-xs text-text-muted">FEFO-driven stock control, shelf-life monitoring, and supplier traceability</p>
+			<div class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-0.5 text-[11px] font-bold text-teal-700 border border-teal-200/80 mb-1.5">
+				<Layers size={12} class="text-teal-600" />
+				<span>Axiscare FEFO Batch Control</span>
+			</div>
+			<h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Batch Inventory & Expiry Tracking</h1>
+			<p class="text-xs text-slate-500">FEFO-driven stock control, shelf-life monitoring, and supplier traceability</p>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
 			<Button variant="secondary" size="sm" onclick={loadBatches}>
@@ -161,7 +165,7 @@
 				<Printer size={14} class="mr-1.5" />
 				<span>Print Audit Sheet</span>
 			</Button>
-			<Button variant="primary" size="sm" onclick={() => goto('/inventory/stock-adjustments/new')}>
+			<Button variant="royal" size="sm" onclick={() => goto('/inventory/stock-adjustments/new')}>
 				<SlidersHorizontal size={14} class="mr-1.5" />
 				<span>Stocktake & Adjustments (F2)</span>
 			</Button>
@@ -169,82 +173,82 @@
 	</div>
 
 	<!-- Metric summary cards -->
-	<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Batches</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">{totalBatches}</div>
-				<div class="text-[10px] text-text-muted">Inward inventory</div>
+	<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Batches</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600 border border-teal-100">
+					<Layers size={18} />
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<Layers size={16} />
-			</div>
+			<div class="mt-3 font-mono text-2xl font-extrabold text-slate-900 tabular-nums">{totalBatches}</div>
+			<div class="mt-1 text-xs text-slate-500 font-medium">Inward inventory</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-success uppercase">Healthy Stock</div>
-				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">{healthyBatches}</div>
-				<div class="text-[10px] text-text-muted">&gt;90d expiry &gt;10 qty</div>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Healthy Stock</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+					<CheckCircle2 size={18} />
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
-				<CheckCircle2 size={16} />
-			</div>
+			<div class="mt-3 font-mono text-2xl font-extrabold text-emerald-600 tabular-nums">{healthyBatches}</div>
+			<div class="mt-1 text-xs text-emerald-600 font-medium">&gt;90d expiry &gt;10 qty</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-warning uppercase">Near Expiry</div>
-				<div class="mt-1 font-mono text-xl font-bold text-warning tabular-nums">{nearExpiryBatches}</div>
-				<div class="text-[10px] text-text-muted">&lt;90 days to expiry</div>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Near Expiry</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
+					<Clock size={18} />
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
-				<Clock size={16} />
-			</div>
+			<div class="mt-3 font-mono text-2xl font-extrabold text-amber-600 tabular-nums">{nearExpiryBatches}</div>
+			<div class="mt-1 text-xs text-amber-600 font-medium">&lt;90 days to expiry</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-danger uppercase">Expired Batches</div>
-				<div class="mt-1 font-mono text-xl font-bold text-danger tabular-nums">{expiredBatches}</div>
-				<div class="text-[10px] text-text-muted">Disposal / Return required</div>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-rose-600 uppercase tracking-wider">Expired Batches</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
+					<AlertTriangle size={18} />
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-danger-light text-danger">
-				<AlertTriangle size={16} />
-			</div>
+			<div class="mt-3 font-mono text-2xl font-extrabold text-rose-600 tabular-nums">{expiredBatches}</div>
+			<div class="mt-1 text-xs text-rose-600 font-medium">Return / Write-off</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs col-span-2 sm:col-span-1">
-			<div>
-				<div class="text-[11px] font-semibold text-accent uppercase">Stock Valuation</div>
-				<div class="mt-1 font-mono text-xl font-bold text-accent tabular-nums">₹{totalStockValuation.toFixed(0)}</div>
-				<div class="text-[10px] text-text-muted">MRP: ₹{totalMrpValuation.toFixed(0)}</div>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow col-span-2 sm:col-span-1">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-teal-700 uppercase tracking-wider">Stock Valuation</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600 border border-teal-100">
+					<DollarSign size={18} />
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<DollarSign size={16} />
-			</div>
+			<div class="mt-3 font-mono text-2xl font-extrabold text-teal-700 tabular-nums">₹{totalStockValuation.toFixed(0)}</div>
+			<div class="mt-1 text-xs text-slate-500 font-medium">MRP: ₹{totalMrpValuation.toFixed(0)}</div>
 		</div>
 	</div>
 
 	<!-- Toolbar & Filters -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div class="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
-				<Search size={15} />
+			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+				<Search size={16} />
 			</div>
 			<input
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search by product name, batch code, or supplier..."
-				class="w-full rounded-lg border border-border bg-surface py-2 pr-4 pl-9 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pr-4 pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
 			/>
 		</div>
 
-		<div class="flex flex-wrap items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2.5">
 			<!-- Status Filter -->
 			<select
 				bind:value={statusFilter}
-				class="rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all shadow-2xs cursor-pointer"
 			>
 				<option value="all">All Batches ({totalBatches})</option>
 				<option value="healthy">Healthy Stock ({healthyBatches})</option>
@@ -257,7 +261,7 @@
 			<!-- Sort Order -->
 			<select
 				bind:value={sortBy}
-				class="rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all shadow-2xs cursor-pointer"
 			>
 				<option value="expiry_asc">Expiry (Earliest / FEFO First)</option>
 				<option value="expiry_desc">Expiry (Latest First)</option>

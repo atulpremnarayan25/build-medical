@@ -55,42 +55,42 @@
 
 <div class="flex-1 overflow-auto border-r border-l border-border bg-surface">
 	<table class="w-full text-left align-top text-xs">
-		<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase shadow-2xs">
+		<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase shadow-2xs">
 			<tr>
-				<th class="w-10 px-2.5 py-2 text-center">#</th>
-				<th class="px-2.5 py-2">Product Name</th>
-				<th class="w-32 px-2 py-2">Batch No*</th>
-				<th class="w-32 px-2 py-2">Expiry*</th>
-				<th class="w-20 px-2 py-2 text-right">Qty*</th>
-				<th class="w-20 px-2 py-2 text-right">Free</th>
-				<th class="w-24 px-2 py-2 text-right">Pur.Rate (₹)*</th>
-				<th class="w-24 px-2 py-2 text-right">MRP (₹)*</th>
-				<th class="w-20 px-2 py-2 text-right">Dis%</th>
-				<th class="w-20 px-2 py-2 text-right">GST%</th>
-				<th class="w-28 px-2.5 py-2 text-right">Amount (₹)</th>
-				<th class="w-10 px-2 py-2"></th>
+				<th class="w-10 px-2.5 py-2.5 text-center">#</th>
+				<th class="px-2.5 py-2.5">PRODUCT</th>
+				<th class="w-32 px-2 py-2.5">BATCH NO*</th>
+				<th class="w-36 px-2 py-2.5">EXPIRY*</th>
+				<th class="w-20 px-2 py-2.5 text-right">QTY*</th>
+				<th class="w-16 px-2 py-2.5 text-right">FREE</th>
+				<th class="w-24 px-2 py-2.5 text-right">PUR.RATE*</th>
+				<th class="w-24 px-2 py-2.5 text-right">MRP*</th>
+				<th class="w-16 px-2 py-2.5 text-right">DIS%</th>
+				<th class="w-16 px-2 py-2.5 text-right">GST%</th>
+				<th class="w-28 px-2.5 py-2.5 text-right">AMOUNT</th>
+				<th class="w-10 px-2 py-2.5"></th>
 			</tr>
 		</thead>
 		<tbody class="divide-y divide-border/60">
 			{#if items.length === 0}
 				<tr>
-					<td colspan="12" class="px-4 py-12 text-center text-xs text-text-muted">
-						Search and select a medicine (or press <kbd class="rounded border border-border bg-surface-secondary px-1 py-0.5 font-mono text-[10px] text-text-primary">F2</kbd>) to add inward items to this purchase voucher.
+					<td colspan="12" class="px-4 py-16 text-center text-xs text-text-muted">
+						Search and select a product (or press <kbd class="rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-accent font-bold">F2</kbd>) to add inward items to this purchase voucher.
 					</td>
 				</tr>
 			{:else}
 				{#each items as item, index (item.uiKey)}
-					<tr class="hover:bg-surface-hover/50">
+					<tr class="hover:bg-surface-hover/50 transition-colors">
 						<td class="px-2.5 py-2 text-center font-mono text-xs text-text-muted tabular-nums">{index + 1}</td>
 						<td class="px-2.5 py-2 font-medium text-text-primary">
-							<div class="truncate max-w-[220px] font-semibold">{item.productName}</div>
+							<div class="truncate max-w-[220px] font-semibold text-text-primary">{item.productName}</div>
 						</td>
 						<td class="px-2 py-1.5">
 							<input
 								type="text"
 								bind:value={item.batchNumber}
 								placeholder="BAT-01"
-								class="batch-input w-full rounded border border-border bg-surface px-2 py-1 font-mono text-xs uppercase text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								class="batch-input w-full rounded border bg-surface px-2 py-1.5 font-mono text-xs uppercase text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors {!item.batchNumber?.trim() ? 'border-amber-500/40' : 'border-border'}"
 								onkeydown={(e) => handleRowKeyDown(e, index, 'batchNumber')}
 							/>
 						</td>
@@ -98,7 +98,7 @@
 							<input
 								type="date"
 								bind:value={item.expiryDate}
-								class="expiry-input w-full rounded border border-border bg-surface px-1.5 py-1 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								class="expiry-input w-full rounded border bg-surface px-2 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-colors {!item.expiryDate ? 'border-amber-500/40' : 'border-border'}"
 								onkeydown={(e) => handleRowKeyDown(e, index, 'expiryDate')}
 							/>
 						</td>
@@ -107,7 +107,7 @@
 								type="number"
 								bind:value={item.quantity}
 								min="1"
-								class="qty-input w-full rounded border border-border bg-surface px-1.5 py-1 text-right font-mono text-xs font-semibold text-text-primary tabular-nums focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								class="qty-input w-full rounded border border-border bg-surface px-2 py-1.5 text-right font-mono text-xs font-semibold text-text-primary tabular-nums focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 								onkeydown={(e) => handleRowKeyDown(e, index, 'quantity')}
 							/>
 						</td>

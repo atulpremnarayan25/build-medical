@@ -15,11 +15,11 @@
 </script>
 
 <div
-	class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs"
+	class="overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-xs"
 >
-	<table class="w-full text-left text-xs text-text-secondary">
+	<table class="w-full text-left text-xs text-slate-700">
 		<thead
-			class="border-b border-border bg-surface-secondary text-[11px] font-semibold tracking-wider text-text-muted uppercase"
+			class="border-b border-slate-100 bg-slate-50/80 text-[10px] font-bold tracking-wider text-slate-500 uppercase"
 		>
 			<tr>
 				{#each columns as col (col.header)}
@@ -34,12 +34,12 @@
 				{/each}
 			</tr>
 		</thead>
-		<tbody class="divide-y divide-border-subtle">
+		<tbody class="divide-y divide-slate-100">
 			{#if items.length === 0}
 				<tr>
 					<td
 						colspan={columns.length}
-						class="px-4 py-8 text-center text-text-muted"
+						class="px-4 py-8 text-center text-slate-400"
 					>
 						{emptyMessage}
 					</td>
@@ -47,7 +47,7 @@
 			{:else}
 				{#each items as item, index (index)}
 					<tr
-						class="transition-colors hover:bg-surface-hover/70"
+						class="transition-colors hover:bg-teal-50/40"
 					>
 						{@render row(item)}
 					</tr>

@@ -1,22 +1,46 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle as drizzlePg } from 'drizzle-orm/postgres-js';
+import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
+import { PGlite } from '@electric-sql/pglite';
 import postgres from 'postgres';
 import * as schema from './schema.js';
+import fs from 'fs';
+import path from 'path';
+
+declare global {
+	// eslint-disable-next-line no-var
+	var __pglite_client__: PGlite | undefined;
+	// eslint-disable-next-line no-var
+	var __db_instance__: any;
+}
 
 /**
  * PostgreSQL connection (Store Server / Cloud share this schema — spec §0).
  *
- * DATABASE_URL must be set in production. The localhost fallback exists so
- * `npm run dev` works out of the box against a local instance created with:
- *   createuser -s mederp && createdb -O mederp mederp
- * Migrations: npx drizzle-kit migrate (see migrations-pg/).
+ * Uses standalone PostgreSQL when DATABASE_URL is configured,
+ * or embedded persistent PGlite for frictionless local development.
  */
-const connectionString = process.env.DATABASE_URL || 'postgresql://mederp@localhost:5432/mederp';
+if (!globalThis.__db_instance__) {
+	const connectionString = process.env.DATABASE_URL;
+	if (connectionString && !connectionString.includes('localhost:5432/mederp')) {
+		const client = postgres(connectionString, {
+			max: 10,
+			idle_timeout: 20,
+			connect_timeout: 10
+		});
+		globalThis.__db_instance__ = drizzlePg(client, { schema });
+	} else {
+		const dataDir = path.resolve(process.cwd(), 'data/pglite');
+		if (!fs.existsSync(dataDir)) {
+			fs.mkdirSync(dataDir, { recursive: true });
+		}
+		if (!globalThis.__pglite_client__) {
+			globalThis.__pglite_client__ = new PGlite(dataDir);
+		}
+		globalThis.__db_instance__ = drizzlePglite(globalThis.__pglite_client__, { schema });
+	}
+}
 
-const client = postgres(connectionString, {
-	// SvelteKit dev server needs this to avoid holding connections across HMR reloads
-	max: 10,
-	idle_timeout: 20,
-	connect_timeout: 10
-});
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-export const db = drizzle(client, { schema });
+export const db = globalThis.__db_instance__ as PostgresJsDatabase<typeof schema>;
+

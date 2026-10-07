@@ -79,79 +79,89 @@
 	});
 </script>
 
-<div class="space-y-4">
-	<PageHeader title="Payment & Receipt Vouchers" subtitle="Track all incoming receipts, outgoing supplier disbursements, and bank settlements">
-		{#snippet actions()}
-			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={() => goto('/payments/pay')}>
-					<ArrowUpRight size={14} class="mr-1 text-danger" />
-					<span>- Pay Supplier</span>
-				</Button>
-				<Button variant="primary" size="sm" onclick={() => goto('/payments/receive')}>
-					<ArrowDownLeft size={14} class="mr-1 text-white" />
-					<span>+ Receive Payment</span>
-				</Button>
+<div class="space-y-5">
+	<!-- Page Header -->
+	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+		<div>
+			<div class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-0.5 text-[11px] font-bold text-teal-700 border border-teal-200/80 mb-1.5">
+				<CreditCard size={12} class="text-teal-600" />
+				<span>Axiscare Financial Ledger</span>
 			</div>
-		{/snippet}
-	</PageHeader>
+			<h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Payment & Receipt Vouchers</h1>
+			<p class="text-xs text-slate-500">Track all incoming receipts, outgoing supplier disbursements, and bank settlements</p>
+		</div>
+		<div class="flex items-center gap-2">
+			<Button variant="secondary" size="sm" onclick={() => goto('/payments/pay')}>
+				<ArrowUpRight size={14} class="mr-1 text-rose-600" />
+				<span>- Pay Supplier</span>
+			</Button>
+			<Button variant="royal" size="sm" onclick={() => goto('/payments/receive')}>
+				<ArrowDownLeft size={14} class="mr-1 text-white" />
+				<span>+ Receive Payment</span>
+			</Button>
+		</div>
+	</div>
 
 	<!-- Quick Voucher Metrics -->
-	<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Customer Receipts</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums text-success">
-					{formatCurrency(totalReceived)}
-				</h3>
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Customer Receipts</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+					<ArrowDownLeft size={18} />
+				</div>
 			</div>
-			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-success-light text-success">
-				<ArrowDownLeft size={18} />
+			<div class="mt-3 font-mono text-2xl font-extrabold text-emerald-600 tabular-nums">
+				{formatCurrency(totalReceived)}
 			</div>
+			<div class="mt-1 text-xs text-emerald-600 font-medium">Realized collections</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Supplier Disbursements</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums text-danger">
-					{formatCurrency(totalPaid)}
-				</h3>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Supplier Disbursements</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
+					<ArrowUpRight size={18} />
+				</div>
 			</div>
-			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-danger-light text-danger">
-				<ArrowUpRight size={18} />
+			<div class="mt-3 font-mono text-2xl font-extrabold text-rose-600 tabular-nums">
+				{formatCurrency(totalPaid)}
 			</div>
+			<div class="mt-1 text-xs text-rose-600 font-medium">Outward remittance</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Net Cash / Bank Movement</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums {totalReceived >= totalPaid ? 'text-accent' : 'text-warning'}">
-					{formatCurrency(totalReceived - totalPaid)}
-				</h3>
+		<div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
+			<div class="flex items-center justify-between">
+				<span class="text-xs font-semibold text-teal-700 uppercase tracking-wider">Net Movement</span>
+				<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600 border border-teal-100">
+					<ArrowRightLeft size={18} />
+				</div>
 			</div>
-			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<ArrowRightLeft size={18} />
+			<div class="mt-3 font-mono text-2xl font-extrabold tabular-nums {totalReceived >= totalPaid ? 'text-teal-700' : 'text-amber-600'}">
+				{formatCurrency(totalReceived - totalPaid)}
 			</div>
+			<div class="mt-1 text-xs text-slate-500 font-medium">Net cash flow position</div>
 		</div>
 	</div>
 
 	<!-- Search and Filter Bar -->
-	<div class="flex flex-col items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row">
-		<div class="relative w-full max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-				<Search size={15} class="text-text-muted" />
+	<div class="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+		<div class="relative w-full sm:max-w-md">
+			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+				<Search size={16} />
 			</div>
 			<input
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search by party, voucher ref, or invoice number..."
-				class="block w-full rounded-md border border-border bg-surface py-1.5 pr-3 pl-9 text-xs text-text-accent placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="w-full rounded-xl border border-slate-200 bg-slate-50/50 py-2.5 pr-4 pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all"
 			/>
 		</div>
-		<div class="flex w-full items-center gap-2 sm:w-auto">
-			<span class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Voucher Type:</span>
+		<div class="flex flex-wrap items-center gap-2.5">
+			<span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Voucher Type:</span>
 			<select
 				bind:value={typeFilter}
-				class="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs text-text-accent focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all shadow-2xs cursor-pointer"
 			>
 				<option value="all">All Vouchers ({payments.length})</option>
 				<option value="received">Receipts In ({payments.filter(p => p.type === 'received').length})</option>
