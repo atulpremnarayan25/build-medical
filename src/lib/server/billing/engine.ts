@@ -117,6 +117,25 @@ async function loadContext(
 		if (u.isBaseUnit) baseUnitByProduct.set(u.productId, entry);
 	}
 
+	for (const p of products) {
+		if (!baseUnitByProduct.has(p.id)) {
+			const [inserted] = await tx
+				.insert(productUnitsTable)
+				.values({
+					productId: p.id,
+					unitName: p.baseUnit || 'Unit',
+					conversionToBase: '1',
+					retailPrice: p.sellingRate || p.mrp || '0',
+					wholesalePrice: p.sellingRate || p.mrp || '0',
+					isBaseUnit: true
+				})
+				.returning();
+			const entry = { unit: inserted, conversion: 1 };
+			baseUnitByProduct.set(p.id, entry);
+			unitsById.set(inserted.id, entry);
+		}
+	}
+
 	const baseQuery = tx
 		.select()
 		.from(batchesTable)

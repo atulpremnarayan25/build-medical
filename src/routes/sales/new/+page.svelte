@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { PageHeader, Button } from '$lib/components/common/index.js';
+	import type { PageData } from './$types.js';
 	import ProductSearch from '$lib/components/billing/ProductSearch.svelte';
-	import BatchSelector from '$lib/components/billing/BatchSelector.svelte';
 	import InvoiceItemsTable from '$lib/components/billing/InvoiceItemsTable.svelte';
-	import InvoiceSummary from '$lib/components/billing/InvoiceSummary.svelte';
 	import CustomerSearch from '$lib/components/billing/CustomerSearch.svelte';
 	import KeyboardShortcutsModal from '$lib/components/billing/KeyboardShortcutsModal.svelte';
 	import HoldBillsModal, { type HeldBill } from '$lib/components/billing/HoldBillsModal.svelte';
+	import PrintableInvoice, { type PrintableInvoiceData } from '$lib/components/billing/PrintableInvoice.svelte';
 
 	import type {
 		Product,
@@ -22,26 +21,32 @@
 	import {
 		ShieldAlert,
 		CreditCard,
-		Receipt,
 		Clock,
 		CheckCircle2,
 		Keyboard,
-		Sparkles,
-		FileText,
 		ArrowLeft,
-		Banknote,
-		Building2,
+		Printer,
+		FileText,
+		Layers,
+		MapPin,
+		Package,
+		Sparkles,
+		AlertTriangle,
 		User,
-		AlertCircle
+		Building2,
+		RotateCcw
 	} from '@lucide/svelte';
 
-	// Header State
+	let { data }: { data: PageData } = $props();
+
+	// Header & Transaction State
 	let selectedCustomer = $state<Customer | null>(null);
 	let invoiceNumber = $state('INV-NEW');
 	let date = $state(new Date().toISOString().split('T')[0]);
 	let paymentType = $state<PaymentMethod>('cash');
 	let customerType = $state<'retail' | 'wholesale'>('retail');
 	let amountTendered = $state<number>(0);
+	let printMode = $state<'thermal' | 'tax-invoice'>('thermal');
 
 	let searchInputRef = $state<HTMLInputElement | undefined>();
 	let customerInputRef = $state<HTMLInputElement | undefined>();
@@ -53,8 +58,26 @@
 	let holdBillsOpen = $state(false);
 
 	// Line Items State
-	let items = $state<(CreateSaleItemInput & { uiKey: number; drugSchedule?: string; availableStock?: number })[]>([]);
+	let items = $state<
+		(CreateSaleItemInput & {
+			uiKey: number;
+			drugSchedule?: string;
+			availableStock?: number;
+			genericName?: string;
+			rackLocation?: string;
+			hsnCode?: string;
+			category?: string;
+		})[]
+	>([]);
 	let nextUiKey = 0;
+	let activeItemIndex = $state(0);
+
+	// Active Item for Bottom Inspector Strip
+	let activeItem = $derived(
+		items.length > 0
+			? items[Math.min(activeItemIndex, items.length - 1)] ?? null
+			: null
+	);
 
 	// H1 tracking fields & field-anchored validation
 	let hasH1Item = $derived(
@@ -65,11 +88,14 @@
 	let prescriberRegNo = $state('');
 	let h1Errors = $state({ patient: false, prescriber: false, regNo: false });
 
-	// Server-authoritative quote (FEFO, pricing, GST).
+	// Server-authoritative quote (FEFO, pricing, GST)
 	let quote = $state<SaleQuote | null>(null);
 	let quoteError = $state<string | null>(null);
 	let isQuoting = $state(false);
 	let quoteSeq = 0;
+
+	// Printable Invoice Snapshot
+	let lastCompletedSale = $state<PrintableInvoiceData | null>(null);
 
 	onMount(() => {
 		loadHeldBills();
@@ -154,7 +180,7 @@
 		void lineSignature;
 		void customerType;
 		void selectedCustomer?.id;
-		const t = setTimeout(refreshQuote, 250);
+		const t = setTimeout(refreshQuote, 200);
 		return () => clearTimeout(t);
 	});
 
@@ -162,15 +188,12 @@
 	let subtotal = $derived(quote?.subtotalRupees ?? 0);
 	let discountTotal = $derived(quote?.discountRupees ?? 0);
 	let taxableTotal = $derived(quote?.taxableTotalRupees ?? 0);
+	let cgstTotal = $derived(quote?.gstTotalRupees ? quote.gstTotalRupees / 2 : 0);
+	let sgstTotal = $derived(quote?.gstTotalRupees ? quote.gstTotalRupees / 2 : 0);
 	let gstTotal = $derived(quote?.gstTotalRupees ?? 0);
 	let roundOff = $derived(quote?.roundOffRupees ?? 0);
 	let changeDue = $derived(amountTendered > grandTotal ? amountTendered - grandTotal : 0);
 	let amountPending = $derived(grandTotal > amountTendered ? grandTotal - amountTendered : 0);
-
-	// Batch selection modal state
-	let selectorOpen = $state(false);
-	let selectorProduct = $state<Product | null>(null);
-	let selectorBatches = $state<Batch[]>([]);
 
 	function handleCustomerSelect(customer: Customer | null) {
 		selectedCustomer = customer;
@@ -179,23 +202,9 @@
 		}, 50);
 	}
 
-	function handleProductSelect(product: Product, batches: Batch[]) {
-		const activeBatches = batches.filter((b) => b.quantity > 0 && b.status !== 'expired');
-
-		if (activeBatches.length === 1) {
-			addBatchToInvoice(product, activeBatches[0]);
-		} else if (activeBatches.length > 1) {
-			selectorProduct = product;
-			selectorBatches = activeBatches;
-			selectorOpen = true;
-		} else {
-			addToast('error', `No available stock for ${product.name}`);
-			searchInputRef?.focus();
-		}
-	}
-
-	function addBatchToInvoice(product: Product, batch: Batch) {
-		const newItem: CreateSaleItemInput & { uiKey: number; drugSchedule?: string; availableStock?: number } = {
+	// Inline batch selection callback from ProductSearch.svelte
+	function handleInlineBatchSelect(product: Product, batch: Batch) {
+		const newItem = {
 			uiKey: nextUiKey++,
 			productId: product.id,
 			productName: product.name,
@@ -204,13 +213,19 @@
 			expiryDate: batch.expiryDate,
 			quantity: 1,
 			mrp: batch.mrp,
-			rate: batch.sellingRate,
+			rate: customerType === 'wholesale' ? (batch.purchaseRate * 1.1) : batch.sellingRate,
 			discount: 0,
 			gstRate: product.gstRate,
 			drugSchedule: product.drugSchedule,
-			availableStock: batch.quantity
+			availableStock: batch.quantity,
+			genericName: product.genericName || 'Standard Formulation',
+			rackLocation: (product as any).rackLocation || 'Rack A-01',
+			hsnCode: product.hsnCode || product.hsn || '3004',
+			category: product.category || 'General'
 		};
+
 		items = [...items, newItem];
+		activeItemIndex = items.length - 1;
 
 		setTimeout(() => {
 			const qtyInputs = document.querySelectorAll('.qty-input');
@@ -222,42 +237,33 @@
 		}, 50);
 	}
 
-	function handleBatchSelected(batch: Batch) {
-		if (selectorProduct) {
-			addBatchToInvoice(selectorProduct, batch);
-		}
-		selectorOpen = false;
-	}
-
-	function handleBatchSelectorCancel() {
-		selectorOpen = false;
-		searchInputRef?.focus();
-	}
-
 	function handleRemoveItem(index: number) {
 		items = items.filter((_, i) => i !== index);
+		if (activeItemIndex >= items.length) {
+			activeItemIndex = Math.max(0, items.length - 1);
+		}
 		searchInputRef?.focus();
 	}
 
 	async function handleSaveSale() {
-		// H1 tracking & field-anchored validation
+		// H1 statutory tracking & field-anchored validation
 		if (hasH1Item) {
 			h1Errors = { patient: false, prescriber: false, regNo: false };
 			if (!patientName.trim()) {
 				h1Errors.patient = true;
-				addToast('error', 'Patient Name is strictly required for Schedule H1 drug sales.');
+				addToast('error', 'Patient Name is strictly required for Schedule H/H1 drug sales.');
 				tick().then(() => document.getElementById('h1-patient')?.focus());
 				return;
 			}
 			if (!prescriberName.trim()) {
 				h1Errors.prescriber = true;
-				addToast('error', 'Prescribing Doctor Name is required for Schedule H1 drugs.');
+				addToast('error', 'Prescribing Doctor Name is required for Schedule H/H1 drugs.');
 				tick().then(() => document.getElementById('h1-prescriber')?.focus());
 				return;
 			}
 			if (!prescriberRegNo.trim()) {
 				h1Errors.regNo = true;
-				addToast('error', 'Doctor Registration Number is required for Schedule H1 drugs.');
+				addToast('error', 'Doctor Registration Number is required for Schedule H/H1 drugs.');
 				tick().then(() => document.getElementById('h1-regno')?.focus());
 				return;
 			}
@@ -265,6 +271,7 @@
 
 		if (items.length === 0) {
 			addToast('error', 'Add at least one item to save the invoice');
+			searchInputRef?.focus();
 			return;
 		}
 
@@ -275,7 +282,7 @@
 				customerType === 'retail'
 					? paymentType === 'credit'
 						? 0
-						: grandTotal
+						: (amountTendered > 0 ? amountTendered : grandTotal)
 					: Math.min(amountTendered || 0, grandTotal);
 
 			const h1Notes = hasH1Item
@@ -293,9 +300,50 @@
 
 			const invoice = await saleService.createSale(payload);
 
-			addToast('success', `Invoice ${invoice.invoiceNumber} created successfully`);
+			// Prepare printable view data snapshot
+			lastCompletedSale = {
+				invoiceNumber: invoice.invoiceNumber,
+				createdAt: invoice.createdAt || new Date().toISOString(),
+				saleType: customerType,
+				paymentMethod: paymentType,
+				subtotal: subtotal,
+				discountTotal: discountTotal,
+				taxableTotal: taxableTotal,
+				cgstTotal: cgstTotal,
+				sgstTotal: sgstTotal,
+				gstTotal: gstTotal,
+				roundOff: roundOff,
+				grandTotal: grandTotal,
+				amountTendered: amountTendered || grandTotal,
+				changeDue: changeDue,
+				customer: selectedCustomer,
+				items: items.map((i) => ({
+					productName: i.productName,
+					batchNumber: i.batchNumber,
+					expiryDate: i.expiryDate,
+					quantity: i.quantity,
+					mrp: i.mrp,
+					rate: i.rate,
+					discount: i.discount,
+					gstRate: i.gstRate,
+					hsnCode: i.hsnCode,
+					lineTotal: Number((i.quantity * i.rate * (1 - i.discount / 100)).toFixed(2)),
+					drugSchedule: i.drugSchedule
+				})),
+				patientName,
+				prescriberName,
+				prescriberRegNo
+			};
 
-			// Reset form for next billing
+			addToast('success', `Invoice ${invoice.invoiceNumber} saved! Launching print...`);
+
+			// Trigger print subsystem
+			await tick();
+			setTimeout(() => {
+				window.print();
+			}, 100);
+
+			// Reset terminal fields for next customer
 			items = [];
 			selectedCustomer = null;
 			paymentType = 'cash';
@@ -306,9 +354,13 @@
 			prescriberRegNo = '';
 			h1Errors = { patient: false, prescriber: false, regNo: false };
 			date = new Date().toISOString().split('T')[0];
+			activeItemIndex = 0;
 			await generateInvoiceNumber();
 
-			searchInputRef?.focus();
+			// Auto-focus search for the next customer
+			setTimeout(() => {
+				searchInputRef?.focus();
+			}, 300);
 		} catch (e) {
 			console.error(e);
 			addToast('error', e instanceof Error ? e.message : 'Failed to save invoice');
@@ -318,10 +370,17 @@
 	}
 
 	function cyclePaymentType() {
-		if (paymentType === 'cash') paymentType = 'credit';
-		else if (paymentType === 'credit') paymentType = 'bank';
-		else paymentType = 'cash';
-		addToast('info', `Payment Mode: ${paymentType.toUpperCase()}`);
+		// Cash -> UPI -> Credit Khata
+		if (paymentType === 'cash') {
+			paymentType = 'bank';
+			addToast('info', 'Payment Mode: UPI / BANK');
+		} else if (paymentType === 'bank') {
+			paymentType = 'credit';
+			addToast('info', 'Payment Mode: CREDIT KHATA');
+		} else {
+			paymentType = 'cash';
+			addToast('info', 'Payment Mode: CASH');
+		}
 	}
 
 	function toggleSaleType() {
@@ -330,7 +389,7 @@
 	}
 
 	function setQuickTender(amount: number) {
-		amountTendered = amount;
+		amountTendered = Math.round(amount);
 	}
 
 	function addQuickTender(extra: number) {
@@ -389,6 +448,7 @@
 		prescriberName = bill.prescriberName || '';
 		prescriberRegNo = bill.prescriberRegNo || '';
 		h1Errors = { patient: false, prescriber: false, regNo: false };
+		activeItemIndex = 0;
 
 		saveHeldBills(heldBills.filter((b) => b.id !== bill.id));
 		holdBillsOpen = false;
@@ -405,32 +465,28 @@
 		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
 			e.preventDefault();
 			handleSaveSale();
-		}
-		if (e.key === 'F2') {
+		} else if (e.key === 'F2') {
 			e.preventDefault();
 			searchInputRef?.focus();
-		}
-		if (e.key === 'F3') {
+		} else if (e.key === 'F3') {
 			e.preventDefault();
 			customerInputRef?.focus();
-		}
-		if (e.key === 'F4') {
+		} else if (e.key === 'F4') {
 			e.preventDefault();
 			cyclePaymentType();
-		}
-		if (e.key === 'F6') {
+		} else if (e.key === 'F6') {
 			e.preventDefault();
 			handleHoldSale();
-		}
-		if (e.key === 'F8') {
+		} else if (e.key === 'F7') {
+			e.preventDefault();
+			holdBillsOpen = true;
+		} else if (e.key === 'F8') {
 			e.preventDefault();
 			toggleSaleType();
-		}
-		if (e.key === 'F10') {
+		} else if (e.key === 'F10') {
 			e.preventDefault();
 			handleSaveSale();
-		}
-		if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+		} else if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
 			e.preventDefault();
 			shortcutsOpen = !shortcutsOpen;
 		}
@@ -439,9 +495,10 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
-<div class="flex flex-col gap-3 min-h-[calc(100vh-85px)]">
-	<!-- Top Bar / Action Header -->
-	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+<!-- POS SCREEN LAYOUT: 65/35 Ergonomic Split Screen -->
+<div class="pos-screen-layout flex flex-col gap-2.5 min-h-[calc(100vh-80px)]">
+	<!-- Top Bar / Terminal Navigation -->
+	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface px-4 py-2.5 shadow-2xs">
 		<div class="flex items-center gap-3">
 			<a
 				href="/sales"
@@ -452,346 +509,510 @@
 			</a>
 			<div>
 				<div class="flex items-center gap-2">
-					<h1 class="text-base font-bold text-text-primary">High-Speed Billing Terminal</h1>
-					<span class="rounded-md border border-accent/20 bg-accent-light/50 px-2 py-0.5 font-mono text-[11px] font-bold text-accent">
+					<h1 class="text-sm font-bold text-text-primary">High-Speed Billing Terminal</h1>
+					<span class="rounded border border-accent/20 bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent">
 						{invoiceNumber}
 					</span>
+					<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
+						{data.currentUser?.name || 'Cashier'}
+					</span>
 				</div>
-				<p class="text-xs text-text-muted">Zero-latency keyboard POS for retail and wholesale billing</p>
 			</div>
 		</div>
 
+		<!-- Action bar & shortcut toggles -->
 		<div class="flex items-center gap-2">
+			<!-- Print format switch (Thermal 80mm vs A4 Tax Invoice) -->
+			<div class="flex items-center rounded-lg border border-border bg-surface-secondary p-0.5 text-xs font-semibold">
+				<button
+					type="button"
+					onclick={() => (printMode = 'thermal')}
+					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode === 'thermal'
+						? 'bg-surface text-accent shadow-2xs font-bold'
+						: 'text-text-muted hover:text-text-primary'}"
+				>
+					<Printer size={12} />
+					<span>80mm Thermal</span>
+				</button>
+				<button
+					type="button"
+					onclick={() => (printMode = 'tax-invoice')}
+					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode === 'tax-invoice'
+						? 'bg-surface text-accent shadow-2xs font-bold'
+						: 'text-text-muted hover:text-text-primary'}"
+				>
+					<FileText size={12} />
+					<span>A4 Tax Invoice</span>
+				</button>
+			</div>
+
 			<button
 				type="button"
 				onclick={() => (shortcutsOpen = true)}
-				class="flex items-center gap-1.5 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+				class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 				title="View keyboard shortcuts (?)"
 			>
-				<Keyboard size={14} class="text-accent" />
+				<Keyboard size={13} class="text-accent" />
 				<span class="hidden sm:inline">Shortcuts</span>
-				<kbd class="font-mono text-[11px] text-text-muted border border-border rounded px-1">?</kbd>
+				<kbd class="font-mono text-[10px] text-text-muted border border-border rounded px-1">?</kbd>
 			</button>
 
-			<Button variant="outline" size="sm" onclick={handleHoldSale}>
-				<Clock size={13} class="mr-1" />
+			<button
+				type="button"
+				onclick={handleHoldSale}
+				class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+			>
+				<Clock size={13} class="text-warning" />
 				<span>Hold (F6)</span>
 				{#if heldBills.length > 0}
-					<span class="ml-1.5 rounded-full bg-warning-light border border-warning/20 px-1.5 py-0.2 font-mono text-[11px] font-bold text-warning">
+					<span class="rounded-full bg-warning-light border border-warning/20 px-1.5 py-0.2 font-mono text-[10px] font-bold text-warning">
 						{heldBills.length}
 					</span>
 				{/if}
-			</Button>
+			</button>
 
 			{#if heldBills.length > 0}
-				<Button variant="secondary" size="sm" onclick={() => (holdBillsOpen = true)}>
-					<span>Parked ({heldBills.length})</span>
-				</Button>
+				<button
+					type="button"
+					onclick={() => (holdBillsOpen = true)}
+					class="flex items-center gap-1 rounded-lg border border-warning/30 bg-warning-light px-2.5 py-1.5 text-xs font-bold text-warning hover:bg-warning-light/80"
+				>
+					<RotateCcw size={13} />
+					<span>Recall Parked (F7) [{heldBills.length}]</span>
+				</button>
 			{/if}
-
-			<Button variant="primary" size="sm" disabled={isSaving || items.length === 0} onclick={handleSaveSale}>
-				<CheckCircle2 size={14} class="mr-1.5" />
-				<span>{isSaving ? 'Processing...' : 'Save & Print (Ctrl+S)'}</span>
-			</Button>
 		</div>
 	</div>
 
-	<!-- High-Visibility Keyboard Function Bar -->
-	<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/80 px-3 py-1.5 text-xs">
+	<!-- High-Visibility Ergonomic Shortcut Legend -->
+	<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/70 px-3 py-1.5 text-xs">
 		<div class="flex flex-wrap items-center gap-3">
-			<button type="button" onclick={() => searchInputRef?.focus()} class="flex items-center gap-1 text-accent font-medium hover:underline">
+			<button type="button" onclick={() => searchInputRef?.focus()} class="flex items-center gap-1 text-accent font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-accent shadow-2xs">F2</kbd>
-				<span>Search Medicine</span>
+				<span>Medicine</span>
 			</button>
-			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1 text-text-primary font-medium hover:underline">
+			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1 text-text-primary font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-primary shadow-2xs">F3</kbd>
 				<span>Customer</span>
 			</button>
-			<button type="button" onclick={cyclePaymentType} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
+			<button type="button" onclick={cyclePaymentType} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F4</kbd>
 				<span>Mode: <strong class="uppercase text-accent">{paymentType}</strong></span>
 			</button>
-			<button type="button" onclick={handleHoldSale} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
+			<button type="button" onclick={handleHoldSale} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F6</kbd>
-				<span>Hold / Recall {#if heldBills.length > 0}<strong class="text-warning">({heldBills.length})</strong>{/if}</span>
+				<span>Park Bill</span>
 			</button>
-			<button type="button" onclick={toggleSaleType} class="flex items-center gap-1 text-text-secondary font-medium hover:underline">
+			<button type="button" onclick={() => (holdBillsOpen = true)} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
+				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F7</kbd>
+				<span>Recall Parked</span>
+			</button>
+			<button type="button" onclick={toggleSaleType} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F8</kbd>
-				<span>Type: <strong class="uppercase text-accent">{customerType}</strong></span>
+				<span>Pricing: <strong class="uppercase text-accent">{customerType}</strong></span>
+			</button>
+			<button type="button" onclick={handleSaveSale} class="flex items-center gap-1 text-accent font-semibold hover:underline">
+				<kbd class="rounded border border-accent bg-accent text-white px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-2xs">F10 / Ctrl+S</kbd>
+				<span>Save & Print</span>
 			</button>
 		</div>
 
 		<div class="flex items-center gap-2 text-[11px] text-text-muted">
 			<span class="flex items-center gap-1">
-				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[11px]">Enter</kbd>
-				<span>advance cell</span>
+				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Enter on Qty</kbd>
+				<span>→ moves cursor to F2</span>
 			</span>
 			<span>•</span>
 			<span class="flex items-center gap-1">
-				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[11px]">Ctrl+Del</kbd>
-				<span>delete item</span>
+				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Ctrl+Del</kbd>
+				<span>→ delete row</span>
 			</span>
 		</div>
 	</div>
 
-	<!-- Billing Controls Box (STABLE: Search & Customer Fixed Here, No Layout Shift) -->
-	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-4">
-		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-			<!-- Sale Type -->
-			<div>
-				<label for="sale-type-select" class="mb-1 block text-xs font-semibold text-text-secondary">
-					Sale Type (F8)
-				</label>
-				<select
-					id="sale-type-select"
-					bind:value={customerType}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				>
-					<option value="retail">Retail (B2C Standard)</option>
-					<option value="wholesale">Wholesale (B2B Bulk)</option>
-				</select>
-			</div>
-
-			<!-- Customer Search -->
-			<div class="lg:col-span-2">
-				<label for="customer-search-box" class="mb-1 block text-xs font-semibold text-text-secondary">
-					Customer / Patient (F3)
-				</label>
-				<CustomerSearch
-					onSelect={handleCustomerSelect}
-					bind:selectedCustomer
-					bind:inputRef={customerInputRef}
+	<!-- 65 / 35 ERGONOMIC SPLIT SCREEN CONTAINER -->
+	<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 items-start">
+		<!-- LEFT COLUMN (65% WIDTH = lg:col-span-8 approx 66.6% or flex-[65]) -->
+		<div class="lg:col-span-8 flex flex-col gap-2.5 h-full">
+			<!-- Anchored Medicine Search Bar (Hero on Load) -->
+			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
+				<ProductSearch
+					onSelectBatch={handleInlineBatchSelect}
+					bind:inputRef={searchInputRef}
 				/>
 			</div>
 
-			<!-- Invoice Date -->
-			<div>
-				<label for="date-input" class="mb-1 block text-xs font-semibold text-text-secondary">
-					Invoice Date
-				</label>
-				<input
-					id="date-input"
-					type="date"
-					bind:value={date}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+			<!-- Line Items Grid (28px Row Height) -->
+			<div class="flex flex-col flex-1 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs min-h-[380px]">
+				<InvoiceItemsTable
+					bind:items
+					bind:activeIndex={activeItemIndex}
+					onRemoveItem={handleRemoveItem}
+					onFocusSearch={() => searchInputRef?.focus()}
 				/>
-			</div>
 
-			<!-- Payment Method -->
-			<div>
-				<label for="payment-method-select" class="mb-1 block text-xs font-semibold text-text-secondary">
-					Payment Mode (F4)
-				</label>
-				<select
-					id="payment-method-select"
-					bind:value={paymentType}
-					class="w-full rounded-md border border-border bg-surface px-2.5 py-2 text-xs font-bold text-accent focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				>
-					<option value="cash">💵 Cash Payment</option>
-					<option value="bank">📱 UPI / Bank Transfer</option>
-					<option value="credit">📑 Credit Ledger (Due)</option>
-				</select>
-			</div>
-		</div>
-
-		<!-- Product Search Input Hero (Anchored, never moves) -->
-		<ProductSearch onSelect={handleProductSelect} bind:inputRef={searchInputRef} />
-	</div>
-
-	<!-- Line Items Data Grid -->
-	<div class="flex flex-1 flex-col rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
-		<InvoiceItemsTable bind:items onRemoveItem={handleRemoveItem} />
-
-		{#if quoteError}
-			<div class="border-t border-danger/30 bg-danger-light/50 px-4 py-2 text-xs font-medium text-danger">
-				⚠️ {quoteError}
-			</div>
-		{/if}
-
-		<InvoiceSummary
-			itemCount={items.length}
-			{subtotal}
-			{discountTotal}
-			{taxableTotal}
-			{gstTotal}
-			{roundOff}
-			{grandTotal}
-		/>
-	</div>
-
-	<!-- Statutory Schedule H1 & Controlled Drugs Mandatory Register Box (Placed below items grid to eliminate CLS) -->
-	{#if hasH1Item}
-		<div class="rounded-xl border border-warning/30 bg-warning-light/20 p-4 shadow-2xs">
-			<div class="flex items-center justify-between gap-2 mb-3">
-				<div class="flex items-center gap-2">
-					<div class="flex h-6 w-6 items-center justify-center rounded bg-warning-light text-warning border border-warning/20">
-						<ShieldAlert size={14} />
+				{#if quoteError}
+					<div class="border-t border-danger/30 bg-danger-light/50 px-3 py-1.5 text-xs font-semibold text-danger">
+						⚠️ {quoteError}
 					</div>
-					<span class="text-xs font-bold text-text-primary">
-						Schedule H1 / Regulated Drug Register (Mandatory Statutory Compliance)
-					</span>
-				</div>
-				<span class="text-[11px] font-semibold text-warning">
-					Required by Drugs & Cosmetics Rules, 1945
-				</span>
+				{/if}
 			</div>
 
-			<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-				<div>
-					<label for="h1-patient" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Patient Name & Address <span class="text-danger">*</span>
-					</label>
-					<input
-						id="h1-patient"
-						type="text"
-						bind:value={patientName}
-						oninput={() => (h1Errors.patient = false)}
-						placeholder="Patient Full Name & Address"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
-							{h1Errors.patient
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
-					/>
+			<!-- ACTIVE ITEM INSPECTOR STRIP AT BOTTOM -->
+			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
+				<div class="flex items-center justify-between pb-1.5 mb-2 border-b border-border text-xs">
+					<div class="flex items-center gap-2">
+						<span class="flex h-2 w-2 rounded-full {activeItem ? 'bg-success animate-pulse' : 'bg-text-muted'}"></span>
+						<span class="font-bold text-text-primary uppercase tracking-wider text-[11px]">Active Item Inspector</span>
+						{#if activeItem}
+							<span class="font-mono text-[11px] text-text-muted">
+								(Row {activeItemIndex + 1} of {items.length})
+							</span>
+						{/if}
+					</div>
+					<div class="text-[11px] text-text-muted">
+						{#if activeItem}
+							<span>Pack Size: 10's • HSN: {activeItem.hsnCode || '3004'}</span>
+						{:else}
+							<span>Select or add an item to inspect stock and shelf location</span>
+						{/if}
+					</div>
 				</div>
 
-				<div>
-					<label for="h1-prescriber" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Prescribing Doctor <span class="text-danger">*</span>
-					</label>
-					<input
-						id="h1-prescriber"
-						type="text"
-						bind:value={prescriberName}
-						oninput={() => (h1Errors.prescriber = false)}
-						placeholder="Dr. Full Name"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
-							{h1Errors.prescriber
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
-					/>
-				</div>
+				{#if activeItem}
+					<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+						<!-- Salt / Generic Name -->
+						<div class="space-y-0.5">
+							<div class="text-[10px] font-semibold uppercase text-text-muted">Generic / Salt Composition</div>
+							<div class="font-bold text-text-primary truncate" title={activeItem.genericName}>
+								{activeItem.genericName || 'Standard Chemical Entity'}
+							</div>
+							<div class="text-[10px] text-text-muted">{activeItem.category || 'Pharmaceuticals'}</div>
+						</div>
 
-				<div>
-					<label for="h1-regno" class="mb-1 block text-[11px] font-semibold text-text-secondary">
-						Doctor Reg Number <span class="text-danger">*</span>
-					</label>
-					<input
-						id="h1-regno"
-						type="text"
-						bind:value={prescriberRegNo}
-						oninput={() => (h1Errors.regNo = false)}
-						placeholder="MCI / State Medical Council Reg No"
-						class="w-full rounded-md border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors
-							{h1Errors.regNo
-								? 'border-danger ring-2 ring-danger/40'
-								: 'border-border focus:border-accent focus:ring-1 focus:ring-accent'}"
-					/>
-				</div>
+						<!-- Selected Batch & Expiry -->
+						<div class="space-y-0.5">
+							<div class="text-[10px] font-semibold uppercase text-text-muted">Selected Batch & Expiry</div>
+							<div class="flex items-center gap-1.5 font-mono">
+								<span class="font-bold text-text-primary">{activeItem.batchNumber}</span>
+								<span class="text-text-muted text-[11px]">Exp: {activeItem.expiryDate?.substring(0, 7) || '-'}</span>
+							</div>
+							{#if activeItem.drugSchedule && activeItem.drugSchedule !== 'none'}
+								<span class="inline-block rounded bg-danger-light border border-danger/20 text-danger text-[9px] font-bold px-1 uppercase">
+									Schedule {activeItem.drugSchedule}
+								</span>
+							{/if}
+						</div>
+
+						<!-- Available Stock -->
+						<div class="space-y-0.5">
+							<div class="text-[10px] font-semibold uppercase text-text-muted">Batch Stock Available</div>
+							<div class="flex items-center gap-1.5 font-mono">
+								<span class="text-sm font-black text-accent tabular-nums">
+									{activeItem.availableStock !== undefined ? activeItem.availableStock : '—'}
+								</span>
+								<span class="text-[10px] text-text-muted">Units in Hand</span>
+							</div>
+							<div class="text-[10px] text-success font-medium">FEFO Verified</div>
+						</div>
+
+						<!-- Shelf / Rack Location -->
+						<div class="space-y-0.5">
+							<div class="text-[10px] font-semibold uppercase text-text-muted">Pharmacy Rack / Shelf</div>
+							<div class="flex items-center gap-1 font-mono font-bold text-text-primary">
+								<MapPin size={12} class="text-accent" />
+								<span>{activeItem.rackLocation || 'Rack A-01'}</span>
+							</div>
+							<div class="text-[10px] text-text-muted">Near Counter Front</div>
+						</div>
+					</div>
+				{:else}
+					<div class="py-2 text-center text-xs text-text-muted italic">
+						No item active in grid. Select a row or press F2 to search medicines.
+					</div>
+				{/if}
 			</div>
 		</div>
-	{/if}
 
-	<!-- Payment Settlement & Cash Drawer Strip -->
-	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-			<!-- Tendered input & quick cash helpers -->
-			<div class="space-y-2">
-				<div class="flex items-center gap-2">
+		<!-- RIGHT COLUMN (35% WIDTH = lg:col-span-4) -->
+		<div class="lg:col-span-4 flex flex-col gap-2.5">
+			<!-- CUSTOMER & DOCTOR COMPLIANCE PANEL (F3) -->
+			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-3">
+				<div class="flex items-center justify-between pb-1 border-b border-border">
+					<div class="flex items-center gap-1.5 font-bold text-xs text-text-primary">
+						<User size={14} class="text-accent" />
+						<span>Customer & Doctor (F3)</span>
+					</div>
+					<div class="flex items-center gap-1 text-[11px]">
+						<span class="text-text-muted">Date:</span>
+						<span class="font-mono font-semibold text-text-primary">{date}</span>
+					</div>
+				</div>
+
+				<!-- Customer Search Box with On-The-Fly Quick Create -->
+				<div>
+					<label for="customer-search-input" class="block text-[11px] font-semibold text-text-secondary mb-1">
+						Search Customer / Mobile (F3)
+					</label>
+					<CustomerSearch
+						onSelect={handleCustomerSelect}
+						bind:selectedCustomer
+						bind:inputRef={customerInputRef}
+					/>
+				</div>
+
+				<!-- Pricing & Payment Controls -->
+				<div class="grid grid-cols-2 gap-2 pt-1 border-t border-border-subtle">
+					<div>
+						<label for="sale-type-sel" class="block text-[10px] font-semibold text-text-muted uppercase mb-0.5">
+							Sale Type (F8)
+						</label>
+						<select
+							id="sale-type-sel"
+							bind:value={customerType}
+							class="w-full rounded border border-border bg-surface px-2 py-1 text-xs font-semibold text-text-primary focus:border-accent focus:outline-none"
+						>
+							<option value="retail">Retail (MRP)</option>
+							<option value="wholesale">Wholesale (PTR)</option>
+						</select>
+					</div>
+
+					<div>
+						<label for="payment-mode-sel" class="block text-[10px] font-semibold text-text-muted uppercase mb-0.5">
+							Payment (F4)
+						</label>
+						<select
+							id="payment-mode-sel"
+							bind:value={paymentType}
+							class="w-full rounded border border-border bg-surface px-2 py-1 text-xs font-bold text-accent focus:border-accent focus:outline-none"
+						>
+							<option value="cash">💵 Cash</option>
+							<option value="bank">📱 UPI / Bank</option>
+							<option value="credit">📑 Credit Khata</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Statutory Schedule H / H1 Doctor Register (Mandatory compliance) -->
+				{#if hasH1Item}
+					<div class="rounded-lg border border-warning/40 bg-warning-light/30 p-2.5 text-xs space-y-2 mt-2">
+						<div class="flex items-center gap-1.5 font-bold text-warning text-[11px]">
+							<ShieldAlert size={13} />
+							<span>Schedule H/H1 Doctor Compliance</span>
+						</div>
+
+						<div>
+							<label for="h1-patient" class="block text-[10px] font-semibold text-text-muted">
+								Patient Name & Address *
+							</label>
+							<input
+								id="h1-patient"
+								type="text"
+								bind:value={patientName}
+								oninput={() => (h1Errors.patient = false)}
+								placeholder="Patient Name"
+								class="w-full rounded border bg-surface px-2 py-1 text-xs text-text-primary focus:outline-none
+									{h1Errors.patient ? 'border-danger ring-1 ring-danger' : 'border-border focus:border-accent'}"
+							/>
+						</div>
+
+						<div class="grid grid-cols-2 gap-2">
+							<div>
+								<label for="h1-prescriber" class="block text-[10px] font-semibold text-text-muted">
+									Doctor Name *
+								</label>
+								<input
+									id="h1-prescriber"
+									type="text"
+									bind:value={prescriberName}
+									oninput={() => (h1Errors.prescriber = false)}
+									placeholder="Dr. Name"
+									class="w-full rounded border bg-surface px-2 py-1 text-xs text-text-primary focus:outline-none
+										{h1Errors.prescriber ? 'border-danger ring-1 ring-danger' : 'border-border focus:border-accent'}"
+								/>
+							</div>
+							<div>
+								<label for="h1-regno" class="block text-[10px] font-semibold text-text-muted">
+									Doctor Reg No *
+								</label>
+								<input
+									id="h1-regno"
+									type="text"
+									bind:value={prescriberRegNo}
+									oninput={() => (h1Errors.regNo = false)}
+									placeholder="MCI Reg No"
+									class="w-full rounded border bg-surface px-2 py-1 text-xs text-text-primary focus:outline-none
+										{h1Errors.regNo ? 'border-danger ring-1 ring-danger' : 'border-border focus:border-accent'}"
+								/>
+							</div>
+						</div>
+					</div>
+				{/if}
+			</div>
+
+			<!-- BILL TOTALS PANEL -->
+			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-2">
+				<div class="flex items-center justify-between pb-1 border-b border-border">
+					<span class="font-bold text-xs text-text-primary">Bill Totals</span>
+					<span class="text-[11px] font-mono text-text-muted">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+				</div>
+
+				<div class="space-y-1.5 text-xs">
+					<div class="flex justify-between text-text-secondary">
+						<span>Subtotal:</span>
+						<span class="font-mono tabular-nums">₹{subtotal.toFixed(2)}</span>
+					</div>
+
+					{#if discountTotal > 0}
+						<div class="flex justify-between text-success">
+							<span>Item Discount:</span>
+							<span class="font-mono tabular-nums">-₹{discountTotal.toFixed(2)}</span>
+						</div>
+					{/if}
+
+					<div class="flex justify-between text-text-secondary">
+						<span>Taxable Turnover:</span>
+						<span class="font-mono tabular-nums">₹{taxableTotal.toFixed(2)}</span>
+					</div>
+
+					<div class="flex justify-between text-text-muted text-[11px]">
+						<span>CGST Output:</span>
+						<span class="font-mono tabular-nums">₹{cgstTotal.toFixed(2)}</span>
+					</div>
+
+					<div class="flex justify-between text-text-muted text-[11px]">
+						<span>SGST Output:</span>
+						<span class="font-mono tabular-nums">₹{sgstTotal.toFixed(2)}</span>
+					</div>
+
+					{#if Math.abs(roundOff) > 0.001}
+						<div class="flex justify-between text-text-muted text-[11px]">
+							<span>Round-Off:</span>
+							<span class="font-mono tabular-nums">₹{roundOff.toFixed(2)}</span>
+						</div>
+					{/if}
+
+					<!-- Grand Total Highlight -->
+					<div class="flex items-center justify-between pt-2 border-t border-border">
+						<span class="text-xs font-bold uppercase text-text-primary">Grand Total:</span>
+						<span class="font-mono text-2xl font-black text-accent tabular-nums">
+							₹{grandTotal.toFixed(2)}
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- TENDERED CASH & GREEN "CHANGE TO RETURN" PANEL -->
+			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-3">
+				<div class="flex items-center justify-between">
 					<label for="amountTendered" class="text-xs font-bold text-text-primary">
 						{customerType === 'retail' ? 'Cash Tendered (₹)' : 'Immediate Payment (₹)'}:
 					</label>
 					{#if isQuoting}
-						<span class="text-[11px] text-accent animate-pulse font-medium">calculating tax…</span>
+						<span class="text-[10px] text-accent animate-pulse font-medium">calculating...</span>
 					{/if}
 				</div>
 
-				<div class="flex flex-wrap items-center gap-2">
+				<div class="flex items-center gap-2">
 					<input
 						id="amountTendered"
 						type="number"
 						bind:value={amountTendered}
 						min="0"
-						step="0.01"
+						step="1"
 						placeholder="0.00"
-						class="w-36 rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-base font-bold text-text-primary tabular-nums focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+						class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-base font-bold text-text-primary tabular-nums focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 					/>
-
 					<button
 						type="button"
 						onclick={() => setQuickTender(grandTotal)}
-						class="rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="whitespace-nowrap rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 					>
-						Exact (₹{grandTotal.toFixed(0)})
+						Exact
 					</button>
+				</div>
+
+				<!-- Quick Tender Pills -->
+				<div class="grid grid-cols-3 gap-1.5">
 					<button
 						type="button"
 						onclick={() => addQuickTender(100)}
-						class="rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
 					>
 						+₹100
 					</button>
 					<button
 						type="button"
 						onclick={() => addQuickTender(500)}
-						class="rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
 					>
 						+₹500
 					</button>
 					<button
 						type="button"
 						onclick={() => addQuickTender(2000)}
-						class="rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
 					>
 						+₹2000
 					</button>
 				</div>
-			</div>
 
-			<!-- Real-time change / balance calculation pills -->
-			<div class="flex flex-wrap items-center gap-4">
+				<!-- Real-time Green "Change to Return" Display -->
 				{#if customerType === 'retail'}
-					<div class="flex items-center gap-3 rounded-lg border border-border bg-surface-secondary px-4 py-2">
+					<div class="rounded-lg border border-success/30 bg-success-light/40 p-2.5 flex items-center justify-between">
 						<div>
-							<div class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Change to Return</div>
-							<div class="font-mono text-xl font-black {changeDue > 0 ? 'text-success' : 'text-text-primary'} tabular-nums">
-								₹{changeDue.toFixed(2)}
+							<div class="text-[10px] font-bold uppercase tracking-wider text-success">
+								Change to Return
 							</div>
+							<div class="text-[11px] text-text-muted">Return to customer</div>
+						</div>
+						<div class="font-mono text-2xl font-black text-success tabular-nums">
+							₹{changeDue.toFixed(2)}
 						</div>
 					</div>
 				{:else}
-					<div class="flex items-center gap-3 rounded-lg border border-border bg-surface-secondary px-4 py-2">
+					<div class="rounded-lg border border-warning/30 bg-warning-light/30 p-2.5 flex items-center justify-between">
 						<div>
-							<div class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Balance to Ledger (Due)</div>
-							<div class="font-mono text-xl font-black {amountPending > 0 ? 'text-warning' : 'text-text-primary'} tabular-nums">
-								₹{amountPending.toFixed(2)}
+							<div class="text-[10px] font-bold uppercase tracking-wider text-warning">
+								Balance to Ledger (Due)
 							</div>
+							<div class="text-[11px] text-text-muted">Khata outstanding</div>
+						</div>
+						<div class="font-mono text-2xl font-black text-warning tabular-nums">
+							₹{amountPending.toFixed(2)}
 						</div>
 					</div>
 				{/if}
 
-				<Button
-					variant="primary"
-					size="lg"
+				<!-- PRIMARY ACTION: SAVE & PRINT INVOICE (F10 / Ctrl+S) -->
+				<button
+					type="button"
 					disabled={isSaving || items.length === 0}
 					onclick={handleSaveSale}
-					class="w-full sm:w-auto"
+					class="w-full flex items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-white shadow-lg hover:bg-accent-hover focus:outline-none disabled:opacity-50 transition-all active:scale-[0.99]"
 				>
-					<CheckCircle2 size={18} class="mr-2" />
-					<span>Finalize & Print (Ctrl+S)</span>
-				</Button>
+					{#if isSaving}
+						<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+						<span>Finalizing Sale...</span>
+					{:else}
+						<CheckCircle2 size={18} />
+						<span>Save & Print Invoice (F10 / Ctrl+S)</span>
+					{/if}
+				</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<BatchSelector
-	bind:open={selectorOpen}
-	product={selectorProduct}
-	batches={selectorBatches}
-	onSelect={handleBatchSelected}
-	onCancel={handleBatchSelectorCancel}
+<!-- DUAL-MODE PRINTABLE INVOICE VIEW (Hidden on screen, rendered on window.print()) -->
+<PrintableInvoice
+	invoice={lastCompletedSale}
+	store={data.store}
+	cashierName={data.currentUser?.name || data.currentUser?.username || 'Cashier'}
+	{printMode}
 />
 
+<!-- PARKED BILLS RECALL MODAL -->
 <HoldBillsModal
 	bind:open={holdBillsOpen}
 	{heldBills}
@@ -800,4 +1021,19 @@
 	onclose={() => (holdBillsOpen = false)}
 />
 
-<KeyboardShortcutsModal bind:open={shortcutsOpen} onclose={() => (shortcutsOpen = false)} />
+<!-- KEYBOARD SHORTCUTS REFERENCE MODAL -->
+<KeyboardShortcutsModal
+	bind:open={shortcutsOpen}
+	onclose={() => (shortcutsOpen = false)}
+/>
+
+<style>
+	@media print {
+		:global(.pos-screen-layout),
+		:global(header),
+		:global(aside),
+		:global(nav) {
+			display: none !important;
+		}
+	}
+</style>

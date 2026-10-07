@@ -1,6 +1,6 @@
 import type { CustomerRepository } from '$lib/repositories/customerRepository.js';
 import type { Customer, CreateCustomerInput } from '$lib/types/index.js';
-import { customersTable } from '../db/schema.js';
+import { customersTable, storesTable } from '../db/schema.js';
 import { eq, and, ilike, or } from 'drizzle-orm';
 import { mapToCustomer } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,26 +35,23 @@ export class DbCustomerRepository implements CustomerRepository {
 
 	async create(input: CreateCustomerInput): Promise<Customer> {
 		const id = uuidv4();
-		const now = new Date();
-		const _input = input as any;
+		const stores = await this._db.select().from(storesTable).limit(1);
+		const storeId = stores[0]?.id;
 
-		const values = {
+		const values: any = {
 			id,
+			storeId,
 			name: input.name,
-			code: null as string | null,
-			phone: input.phone || '',
-			email: null as string | null,
-			address: input.address || '',
-			gstin: input.gstin || '',
-			creditLimit: input.creditLimit ? Number(input.creditLimit) : 0,
-			outstandingBalance: 0,
-			active: true,
-			createdAt: now.toISOString(),
-			updatedAt: now.toISOString()
+			contactPhone: input.phone || null,
+			address: input.address || null,
+			gstin: input.gstin || null,
+			creditLimit: input.creditLimit !== undefined ? String(input.creditLimit) : '0',
+			customerType: 'retail',
+			isActive: true
 		};
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.insert(customersTable).values(values as any);
+			await this._db.insert(customersTable).values(values);
 			await logSyncOutbox(tx, 'customers', id, 'insert', values);
 		});
 
@@ -62,12 +59,12 @@ export class DbCustomerRepository implements CustomerRepository {
 	}
 
 	async update(id: string, input: Partial<CreateCustomerInput>): Promise<Customer> {
-		const updateData: any = { updatedAt: new Date().toISOString() };
+		const updateData: any = { updatedAt: new Date() };
 		if (input.name !== undefined) updateData.name = input.name;
-		if (input.phone !== undefined) updateData.phone = input.phone;
+		if (input.phone !== undefined) updateData.contactPhone = input.phone;
 		if (input.address !== undefined) updateData.address = input.address;
 		if (input.gstin !== undefined) updateData.gstin = input.gstin;
-		if (input.creditLimit !== undefined) updateData.creditLimit = Number(input.creditLimit);
+		if (input.creditLimit !== undefined) updateData.creditLimit = String(input.creditLimit);
 
 		await pgDb.transaction(async (tx) => {
 			await this._db.update(customersTable).set(updateData).where(eq(customersTable.id, id));
