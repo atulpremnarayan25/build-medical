@@ -459,9 +459,13 @@ async function seedDb() {
 		id: storeId,
 		name: 'Main Medical Store',
 		address: '123 Health Ave, Medical District',
+		phone: '9876543210',
+		email: 'contact@mainmedical.com',
 		gstin: '29ABCDE1234F1Z5',
 		drugLicenseNo: 'DL-MAIN-001',
-		drugLicenseNo2: 'DL-MAIN-002'
+		drugLicenseNo2: 'DL-MAIN-002',
+		invoicePrefix: 'INV',
+		invoiceTerms: '1. Goods once sold will not be taken back.\n2. Consult doctor before using scheduled drugs.'
 	});
 
 	// 2. Users — admin, a biller for role testing, plus agent QA accounts

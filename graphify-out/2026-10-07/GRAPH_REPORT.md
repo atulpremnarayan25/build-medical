@@ -1,13 +1,13 @@
 # Graph Report - build-medical  (2026-10-07)
 
 ## Corpus Check
-- 241 files · ~143,016 words
+- 233 files · ~131,926 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
 ## Summary
-- 1055 nodes · 2364 edges · 81 communities (57 shown, 24 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 48 edges (avg confidence: 0.9)
+- 1018 nodes · 2261 edges · 78 communities (53 shown, 25 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -21,25 +21,24 @@
 - appStore.svelte.ts
 - errorResponse
 - servicesLocator.ts
-- Batch
+- logSyncOutbox
 - $app/navigation
 - devDependencies
 - auth/index.ts
 - Sale
 - schema.ts
-- 3. Phased Implementation Roadmap
+- Purchase
 - svelte
 - package.json
 - toastStore.svelte.ts
-- seed.ts
+- Customer
 - Supplier
-- logSyncOutbox
+- server/repositories/productRepository.ts
 - generate.js
-- db/index.ts
-- drizzle-orm
+- returns/+server.ts
+- Payment
 - LedgerEntry
-- batches/+page.svelte
-- ref_types
+- common/index.ts
 - compilerOptions
 - MedStock ERP Project
 - formatters.ts
@@ -48,7 +47,7 @@
 - scripts
 - 6.2 Complete Table-by-Table Reference
 - Software Requirements Specification
-- services/index.ts
+- unwrap.ts
 - api/sales/+server.ts
 - Implementation Plan
 - eslint.config.js
@@ -56,7 +55,7 @@
 - 2. Operating Context & Domain Foundations (The "WHY")
 - dependencies
 - 3. System Architecture & Deployment Topology (The "HOW")
-- common/index.ts
+- login/+page.svelte
 - batches Table
 - Technical Requirements Document
 - Layered Frontend Architecture
@@ -90,18 +89,15 @@
 - 8. UI/UX Ergonomics & "The Clinical Console" Design System
 - 1. Executive Summary & High-Level Purpose
 - 4. Technology Stack & Architectural Guardrails
-- @sveltejs/kit
-- sales/[id]/+page.svelte
-- customers/[id]/ledger/+server.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `errorResponse()` - 50 edges
-2. `jsonResponse()` - 48 edges
-3. `@sveltejs/kit` - 36 edges
-4. `drizzle-orm` - 34 edges
-5. `db` - 29 edges
-6. `logSyncOutbox()` - 28 edges
-7. `Sale` - 26 edges
+1. `errorResponse()` - 41 edges
+2. `jsonResponse()` - 39 edges
+3. `@sveltejs/kit` - 35 edges
+4. `drizzle-orm` - 29 edges
+5. `logSyncOutbox()` - 28 edges
+6. `Sale` - 26 edges
+7. `db` - 24 edges
 8. `Batch` - 24 edges
 9. `Purchase` - 23 edges
 10. `Customer` - 18 edges
@@ -127,11 +123,11 @@
 - **FEFO Billing and Stock Management System** — agents_fefo, build_med_plans_06_batches_table, build_med_plans_06_batch_stock_events_table, build_med_plans_07_sales_quote_endpoint, build_med_plans_04_retail_sale_flow [INFERRED 0.85]
 - **Store Server Sync Architecture** — build_med_plans_03_store_server_model, build_med_plans_03_outbox_sync, build_med_plans_03_delta_stock_reconciliation, build_med_plans_06_sync_outbox_table, build_med_plans_07_sync_api [INFERRED 0.85]
 
-## Communities (81 total, 24 thin omitted)
+## Communities (78 total, 25 thin omitted)
 
 ### Community 0 - "types/index.ts"
-Cohesion: 0.06
-Nodes (40): PaymentRepository, PurchaseRepository, DbPaymentRepository, DbPurchaseRepository, mapPurchaseRow(), QuoteSaleInput, saleService, createPaymentService() (+32 more)
+Cohesion: 0.13
+Nodes (23): QuoteSaleInput, saleService, AppState, BusinessInfo, SyncStatus, Theme, PaymentType, CreatePurchaseItemInput (+15 more)
 
 ### Community 1 - "engine.ts"
 Cohesion: 0.07
@@ -139,19 +135,19 @@ Nodes (51): 7.1 Sub-Second POS Sale Finalization (`finalizeSale`), 7.2 Pure FEFO
 
 ### Community 2 - "appStore.svelte.ts"
 Cohesion: 0.07
-Nodes (20): DEFAULT_ACTIVE_SUBSCRIPTION, DEFAULT_EXPIRED_SUBSCRIPTION, SUBSCRIPTION_PLANS, subscriptionService, applyTheme(), currentSubscription, getSubscription(), lastSyncAt (+12 more)
+Nodes (21): DEFAULT_ACTIVE_SUBSCRIPTION, DEFAULT_EXPIRED_SUBSCRIPTION, SUBSCRIPTION_PLANS, subscriptionService, applyTheme(), currentSubscription, getSubscription(), lastSyncAt (+13 more)
 
 ### Community 3 - "errorResponse"
-Cohesion: 0.18
-Nodes (21): errorResponse(), jsonResponse(), productService, supplierService, GET(), PATCH(), GET(), POST() (+13 more)
+Cohesion: 0.15
+Nodes (26): ref_types, errorResponse(), jsonResponse(), customerService, inventoryService, productService, supplierService, GET() (+18 more)
 
 ### Community 4 - "servicesLocator.ts"
-Cohesion: 0.07
-Nodes (11): batchRepo, customerRepo, ledgerRepo, paymentRepo, paymentService, productRepo, purchaseRepo, purchaseService (+3 more)
+Cohesion: 0.06
+Nodes (13): @sveltejs/kit, batchRepo, customerRepo, ledgerRepo, ledgerService, paymentRepo, paymentService, productRepo (+5 more)
 
-### Community 5 - "Batch"
-Cohesion: 0.16
-Nodes (8): BatchRepository, mapToBatch(), computeBatchStatus(), DbBatchRepository, createBatchService(), Batch, BatchStatus, CreateBatchInput
+### Community 5 - "logSyncOutbox"
+Cohesion: 0.15
+Nodes (9): BatchRepository, mapToBatch(), logSyncOutbox(), computeBatchStatus(), DbBatchRepository, createBatchService(), Batch, BatchStatus (+1 more)
 
 ### Community 6 - "$app/navigation"
 Cohesion: 0.08
@@ -162,68 +158,64 @@ Cohesion: 0.07
 Nodes (29): devDependencies, drizzle-kit, eslint, eslint-config-prettier, @eslint/js, eslint-plugin-svelte, globals, @playwright/test (+21 more)
 
 ### Community 8 - "auth/index.ts"
-Cohesion: 0.12
-Nodes (14): ref_app, bcryptjs, ref_crypto, handle(), createSession(), invalidateSession(), validateSession(), verifyPassword() (+6 more)
+Cohesion: 0.11
+Nodes (16): ref_app, bcryptjs, ref_crypto, handle(), createSession(), hashPassword(), invalidateSession(), validateSession() (+8 more)
 
 ### Community 9 - "Sale"
-Cohesion: 0.15
-Nodes (6): SaleRepository, DbSaleRepository, mapSaleRow(), createSaleService(), CreateSaleInput, Sale
+Cohesion: 0.14
+Nodes (7): SaleRepository, DbSaleRepository, mapSaleRow(), createCustomerService(), createSaleService(), CreateSaleInput, Sale
 
 ### Community 10 - "schema.ts"
-Cohesion: 0.07
-Nodes (27): AuditLogEntry, auditLogTable, Batch, BatchStockEvent, batchStockEventsTable, createdAt, Customer, InvoiceSequence (+19 more)
+Cohesion: 0.06
+Nodes (50): drizzle-orm, ref_env, uuid, isoDate(), masterPasswordHash, money(), PRODUCTS, ProductSeed (+42 more)
 
-### Community 11 - "3. Phased Implementation Roadmap"
-Cohesion: 0.09
-Nodes (22): 1. Executive Diagnosis: Why the Current Build is Not Commercial-Grade, 2.1 The Ergonomic 65/35 POS Screen Division, 2.2 Global Keyboard Ergonomics Matrix, 2.3 Visual Design Tokens & Clinical Styling System, 2. Target UI/UX Architecture: "The Clinical Console v2", 3. Phased Implementation Roadmap, 4. Immediate Next Steps & Execution Order, Detailed Tasks: (+14 more)
+### Community 11 - "Purchase"
+Cohesion: 0.17
+Nodes (7): PurchaseRepository, DbPurchaseRepository, mapPurchaseRow(), createPurchaseService(), CreatePurchaseInput, Purchase, PaymentStatus
 
 ### Community 12 - "svelte"
-Cohesion: 0.14
-Nodes (4): index(), toggleSidebar(), handleKeydown(), svelte
+Cohesion: 0.12
+Nodes (4): src_lib_assets_favicon, index(), handleKeydown(), svelte
 
 ### Community 13 - "package.json"
 Cohesion: 0.09
 Nodes (22): name, private, type, version, dotenv, @lucide/svelte, @playwright/test, postgres (+14 more)
 
 ### Community 14 - "toastStore.svelte.ts"
-Cohesion: 0.11
-Nodes (9): addToast(), generateId(), removeToast(), Toast, toasts, ToastType, cyclePaymentType(), handleSavePurchase() (+1 more)
+Cohesion: 0.12
+Nodes (10): addToast(), generateId(), removeToast(), Toast, toasts, ToastType, DrugSchedule, cyclePaymentType() (+2 more)
 
-### Community 15 - "seed.ts"
-Cohesion: 0.17
-Nodes (11): uuid, isoDate(), masterPasswordHash, money(), PRODUCTS, ProductSeed, seedDb(), customersTable (+3 more)
+### Community 15 - "Customer"
+Cohesion: 0.21
+Nodes (5): CustomerRepository, mapToCustomer(), DbCustomerRepository, CreateCustomerInput, Customer
 
 ### Community 16 - "Supplier"
 Cohesion: 0.19
 Nodes (6): SupplierRepository, mapToSupplier(), DbSupplierRepository, createSupplierService(), CreateSupplierInput, Supplier
 
-### Community 17 - "logSyncOutbox"
-Cohesion: 0.09
-Nodes (13): CustomerRepository, ProductRepository, mapToCustomer(), mapToProduct(), logSyncOutbox(), DbCustomerRepository, DbProductRepository, createCustomerService() (+5 more)
+### Community 17 - "server/repositories/productRepository.ts"
+Cohesion: 0.21
+Nodes (6): ProductRepository, mapToProduct(), DbProductRepository, createProductService(), CreateProductInput, Product
 
 ### Community 18 - "generate.js"
 Cohesion: 0.10
 Nodes (14): better-sqlite3, ref_fs, ref_path, ref_src_lib_mock_data_customers_js, ref_src_lib_mock_data_purchases_js, ref_src_lib_mock_data_sales_js, ref_src_lib_mock_data_suppliers_js, text (+6 more)
 
-### Community 19 - "db/index.ts"
-Cohesion: 0.17
-Nodes (13): processReturn(), client, db, batchesTable, productsTable, purchaseItemsTable, purchasesTable, returnItemsTable (+5 more)
+### Community 19 - "returns/+server.ts"
+Cohesion: 0.23
+Nodes (10): processReturn(), returnItemsTable, returnsTable, CreateReturnInput, CreateReturnItemInput, Return, ReturnItem, ReturnType (+2 more)
 
-### Community 20 - "drizzle-orm"
-Cohesion: 0.28
-Nodes (10): drizzle-orm, ref_types_js, hashPassword(), storesTable, usersTable, GET(), POST(), PATCH() (+2 more)
+### Community 20 - "Payment"
+Cohesion: 0.17
+Nodes (5): PaymentRepository, DbPaymentRepository, createPaymentService(), CreatePaymentInput, Payment
 
 ### Community 21 - "LedgerEntry"
 Cohesion: 0.19
 Nodes (7): LedgerRepository, paymentsTable, DbLedgerRepository, createLedgerService(), CreateLedgerEntryInput, LedgerEntry, LedgerEntryType
 
-### Community 22 - "batches/+page.svelte"
-Cohesion: 0.20
-Nodes (6): batch(), filteredBatches, paginatedBatches, totalMrpValuation, totalPages, totalStockValuation
-
-### Community 23 - "ref_types"
-Cohesion: 0.14
-Nodes (4): ref_types, inventoryService, GET(), GET()
+### Community 22 - "common/index.ts"
+Cohesion: 0.12
+Nodes (5): filteredBatches, paginatedBatches, totalMrpValuation, totalPages, totalStockValuation
 
 ### Community 24 - "compilerOptions"
 Cohesion: 0.14
@@ -234,7 +226,7 @@ Cohesion: 0.15
 Nodes (15): FEFO (First Expiry First Out), GST Tax Calculations, MedStock ERP Project, SvelteKit Framework, Tailwind CSS, Tauri Desktop Shell, MedERP Working Name, POST /sales/quote Endpoint (+7 more)
 
 ### Community 26 - "formatters.ts"
-Cohesion: 0.12
+Cohesion: 0.18
 Nodes (3): formatDate(), numberToWordsRupees(), exportToCSV()
 
 ### Community 27 - "returns/+page.svelte"
@@ -257,8 +249,8 @@ Nodes (17): 10. `purchases` & `purchase_items`, 11. `sales` & `sale_items`, 12. 
 Cohesion: 0.27
 Nodes (10): Documentation Set Index, Multi-Device Concurrent Billing, Role-Based Access Control, Software Requirements Specification, App Flow Document, Backend Schema Document, API Specification, REST API Contract (+2 more)
 
-### Community 32 - "services/index.ts"
-Cohesion: 0.25
+### Community 32 - "unwrap.ts"
+Cohesion: 0.17
 Nodes (9): batchService, inventoryService, customerService, ledgerService, paymentService, productService, purchaseService, supplierService (+1 more)
 
 ### Community 33 - "api/sales/+server.ts"
@@ -288,10 +280,6 @@ Nodes (8): dependencies, bcryptjs, better-sqlite3, dotenv, drizzle-orm, @lucide/
 ### Community 39 - "3. System Architecture & Deployment Topology (The "HOW")"
 Cohesion: 0.33
 Nodes (6): 3.1 The Store Server Model (Local Primary + Cloud Replica), 3.2 Offline-First LAN Operation vs. Internet Disruption, 3.3 Transactional Outbox Sync Engine, 3.4 Conflict Resolution & Delta-Based Stock Reconciliation, 3.5 Non-Colliding Distributed Invoice Numbering, 3. System Architecture & Deployment Topology (The "HOW")
-
-### Community 40 - "common/index.ts"
-Cohesion: 0.15
-Nodes (3): DrugSchedule, ./$types, ./$types
 
 ### Community 41 - "batches Table"
 Cohesion: 0.29
@@ -349,33 +337,25 @@ Nodes (3): 1. Executive Summary & High-Level Purpose, What it does:, Why generic
 Cohesion: 0.67
 Nodes (3): 4.1 Core Technologies, 4.2 Prohibited Technologies & Anti-Patterns, 4. Technology Stack & Architectural Guardrails
 
-### Community 78 - "@sveltejs/kit"
-Cohesion: 0.22
-Nodes (3): ref_env, @sveltejs/kit, tableMap
-
-### Community 80 - "customers/[id]/ledger/+server.ts"
-Cohesion: 0.25
-Nodes (3): customerService, ledgerService, GET()
-
 ## Knowledge Gaps
-- **282 isolated node(s):** `gitignorePath`, `name`, `private`, `version`, `type` (+277 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 409 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **270 isolated node(s):** `gitignorePath`, `name`, `private`, `version`, `type` (+265 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 395 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `drizzle-orm` connect `drizzle-orm` to `types/index.ts`, `engine.ts`, `Batch`, `auth/index.ts`, `Sale`, `schema.ts`, `package.json`, `@sveltejs/kit`, `seed.ts`, `Supplier`, `logSyncOutbox`, `generate.js`, `db/index.ts`, `LedgerEntry`?**
-  _High betweenness centrality (0.098) - this node is a cross-community bridge._
+- **Why does `drizzle-orm` connect `schema.ts` to `engine.ts`, `logSyncOutbox`, `auth/index.ts`, `package.json`, `Customer`, `Supplier`, `server/repositories/productRepository.ts`, `generate.js`, `returns/+server.ts`, `Payment`, `LedgerEntry`?**
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
 - **Why does `MedStock ERP — Technical & Domain Architecture Guide (`explain.md`)` connect `MedStock ERP — Technical & Domain Architecture Guide (`explain.md`)` to `engine.ts`, `2. Operating Context & Domain Foundations (The "WHY")`, `3. System Architecture & Deployment Topology (The "HOW")`, `5. Codebase Layering & Strict Separation of Concerns`, `8. UI/UX Ergonomics & "The Clinical Console" Design System`, `1. Executive Summary & High-Level Purpose`, `4. Technology Stack & Architectural Guardrails`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **Why does `logSyncOutbox()` connect `logSyncOutbox` to `types/index.ts`, `engine.ts`, `errorResponse`, `Batch`, `Sale`, `schema.ts`, `seed.ts`, `Supplier`, `db/index.ts`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `package.json`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **What connects `gitignorePath`, `name`, `private` to the rest of the system?**
-  _282 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _270 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `types/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.055642633228840124 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
 - **Should `engine.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07231638418079096 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0711864406779661 - nodes in this community are weakly interconnected._
 - **Should `appStore.svelte.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07373737373737374 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07171717171717172 - nodes in this community are weakly interconnected._

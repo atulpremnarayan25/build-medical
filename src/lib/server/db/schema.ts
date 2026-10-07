@@ -52,9 +52,13 @@ export const storesTable = pgTable('stores', {
 	id: uuid('id').primaryKey().defaultRandom(),
 	name: text('name').notNull(),
 	address: text('address'),
+	phone: text('phone'),
+	email: text('email'),
 	gstin: text('gstin'),
 	drugLicenseNo: text('drug_license_no'),
 	drugLicenseNo2: text('drug_license_no_2'),
+	invoicePrefix: text('invoice_prefix').default('INV'),
+	invoiceTerms: text('invoice_terms'),
 	...createdAt
 });
 
