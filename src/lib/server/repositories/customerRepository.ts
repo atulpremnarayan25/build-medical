@@ -1,7 +1,7 @@
 import type { CustomerRepository } from '$lib/repositories/customerRepository.js';
 import type { Customer, CreateCustomerInput } from '$lib/types/index.js';
 import { customersTable, storesTable } from '../db/schema.js';
-import { eq, and, ilike, or } from 'drizzle-orm';
+import { eq, and, ilike, or, sql } from 'drizzle-orm';
 import { mapToCustomer } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
@@ -14,23 +14,70 @@ export class DbCustomerRepository implements CustomerRepository {
 		this._db = database;
 	}
 
+	private _balanceSql() {
+		return sql<string>`(
+			COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM sales WHERE sales.customer_id = customers.id), 0)
+			- COALESCE((SELECT SUM(CAST(amount AS NUMERIC)) FROM payments WHERE payments.customer_id = customers.id AND payments.direction = 'customer_payment'), 0)
+			- COALESCE((
+				SELECT SUM(CAST(ri.line_amount AS NUMERIC))
+				FROM returns r
+				JOIN return_items ri ON r.id = ri.return_id
+				JOIN sales s ON r.original_sale_id = s.id
+				WHERE s.customer_id = customers.id AND r.return_type = 'sales_return'
+			), 0)
+		)`;
+	}
+
 	async getAll(): Promise<Customer[]> {
 		const rows = await this._db
-			.select()
+			.select({
+				id: customersTable.id,
+				storeId: customersTable.storeId,
+				name: customersTable.name,
+				contactPhone: customersTable.contactPhone,
+				address: customersTable.address,
+				gstin: customersTable.gstin,
+				customerType: customersTable.customerType,
+				creditLimit: customersTable.creditLimit,
+				isActive: customersTable.isActive,
+				createdAt: customersTable.createdAt,
+				updatedAt: customersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(customersTable)
 			.where(eq(customersTable.isActive, true));
 
-		return rows.map(mapToCustomer);
+		return rows.map((r: any) => ({
+			...mapToCustomer(r),
+			outstandingBalance: Number(r.outstandingBalance || 0)
+		}));
 	}
 
 	async getById(id: string): Promise<Customer | null> {
 		const rows = await this._db
-			.select()
+			.select({
+				id: customersTable.id,
+				storeId: customersTable.storeId,
+				name: customersTable.name,
+				contactPhone: customersTable.contactPhone,
+				address: customersTable.address,
+				gstin: customersTable.gstin,
+				customerType: customersTable.customerType,
+				creditLimit: customersTable.creditLimit,
+				isActive: customersTable.isActive,
+				createdAt: customersTable.createdAt,
+				updatedAt: customersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(customersTable)
 			.where(eq(customersTable.id, id))
 			.limit(1);
+
 		if (rows.length === 0) return null;
-		return mapToCustomer(rows[0]);
+		return {
+			...mapToCustomer(rows[0]),
+			outstandingBalance: Number(rows[0].outstandingBalance || 0)
+		};
 	}
 
 	async create(input: CreateCustomerInput): Promise<Customer> {
@@ -83,14 +130,14 @@ export class DbCustomerRepository implements CustomerRepository {
 	}
 
 	async updateBalance(id: string, newBalance: number): Promise<Customer> {
-		// outstandingBalance is dynamically calculated in Postgres schema.
+		// outstandingBalance is dynamically calculated in Postgres schema from transactions.
 		return this.getById(id) as Promise<Customer>;
 	}
 
 	async delete(id: string): Promise<void> {
 		const updateData = {
-			active: false,
-			updatedAt: new Date().toISOString()
+			isActive: false,
+			updatedAt: new Date()
 		} as any;
 
 		await pgDb.transaction(async (tx) => {
@@ -110,7 +157,20 @@ export class DbCustomerRepository implements CustomerRepository {
 	async search(query: string): Promise<Customer[]> {
 		const search = `%${query}%`;
 		const rows = await this._db
-			.select()
+			.select({
+				id: customersTable.id,
+				storeId: customersTable.storeId,
+				name: customersTable.name,
+				contactPhone: customersTable.contactPhone,
+				address: customersTable.address,
+				gstin: customersTable.gstin,
+				customerType: customersTable.customerType,
+				creditLimit: customersTable.creditLimit,
+				isActive: customersTable.isActive,
+				createdAt: customersTable.createdAt,
+				updatedAt: customersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(customersTable)
 			.where(
 				and(
@@ -123,6 +183,9 @@ export class DbCustomerRepository implements CustomerRepository {
 					)
 				)
 			);
-		return rows.map(mapToCustomer);
+		return rows.map((r: any) => ({
+			...mapToCustomer(r),
+			outstandingBalance: Number(r.outstandingBalance || 0)
+		}));
 	}
 }

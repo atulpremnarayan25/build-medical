@@ -4,11 +4,12 @@
 	import { goto } from '$app/navigation';
 	import { PageHeader, LoadingState, Button } from '$lib/components/common/index.js';
 	import CustomerSearch from '$lib/components/billing/CustomerSearch.svelte';
+	import PrintableReceiptSlip, { type ReceiptSlipData, type StoreInfo } from '$lib/components/billing/PrintableReceiptSlip.svelte';
 	import type { Customer, Sale, CreatePaymentInput, PaymentMethod } from '$lib/types/index.js';
 	import { customerService, saleService, paymentService } from '$lib/services/index.js';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import { formatCurrency, numberToWordsRupees } from '$lib/utils/formatters.js';
-	import { ArrowDownLeft, UserCheck, Calendar, CreditCard, FileText } from '@lucide/svelte';
+	import { ArrowDownLeft, UserCheck, Calendar, CreditCard, FileText, Printer, CheckCircle, RotateCcw, BookOpen } from '@lucide/svelte';
 
 	let saleId = $state($page.url.searchParams.get('saleId') || '');
 	let customerIdParam = $state($page.url.searchParams.get('customerId') || '');
@@ -23,6 +24,14 @@
 
 	let loading = $state(!!saleId || !!customerIdParam);
 	let isSaving = $state(false);
+	let recordedSlip = $state<ReceiptSlipData | null>(null);
+
+	let storeInfo = $state<StoreInfo>({
+		name: 'MedStock Pharmacy',
+		address: '123 Healthcare Road, Medical Square',
+		phone: '+91 98765 43210',
+		gstin: '29ABCDE1234F1Z5'
+	});
 
 	let lockedCustomer = $derived(!!saleId && !!selectedCustomer);
 
@@ -40,6 +49,22 @@
 					amount = selectedCustomer.outstandingBalance > 0 ? selectedCustomer.outstandingBalance : 0;
 				}
 			}
+
+			// Fetch store settings for receipt slip header
+			try {
+				const res = await fetch('/api/settings');
+				if (res.ok) {
+					const data = await res.json();
+					if (data) {
+						storeInfo = {
+							name: data.name || storeInfo.name,
+							address: data.address || storeInfo.address,
+							phone: data.phone || storeInfo.phone,
+							gstin: data.gstin || storeInfo.gstin
+						};
+					}
+				}
+			} catch (_) {}
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -75,10 +100,28 @@
 				createdBy: 'user-001'
 			};
 
-			await paymentService.createPayment(payload);
+			const payment = await paymentService.createPayment(payload);
 			addToast('success', `Receipt voucher of ${formatCurrency(amount)} recorded successfully`);
 
-			goto('/payments');
+			// Prepare receipt slip data for one-click printing
+			const prevBal = selectedCustomer.outstandingBalance || 0;
+			const newBal = Math.max(0, prevBal - amount);
+
+			recordedSlip = {
+				receiptNumber: `RCP-${new Date().getFullYear()}-${payment.id ? payment.id.slice(0, 8).toUpperCase() : Math.floor(100000 + Math.random() * 900000)}`,
+				date,
+				partyName: selectedCustomer.name,
+				partyCode: selectedCustomer.code,
+				partyPhone: selectedCustomer.phone,
+				partyType: 'customer',
+				amount,
+				paymentMethod: paymentMethod.toUpperCase(),
+				reference,
+				notes,
+				previousBalance: prevBal,
+				newBalance: newBal,
+				invoiceNumber: sale?.invoiceNumber
+			};
 		} catch (e) {
 			console.error(e);
 			addToast('error', e instanceof Error ? e.message : 'Failed to save receipt voucher');
@@ -86,9 +129,26 @@
 			isSaving = false;
 		}
 	}
+
+	function handlePrintSlip() {
+		window.print();
+	}
+
+	function handleReset() {
+		recordedSlip = null;
+		amount = 0;
+		reference = '';
+		notes = '';
+		if (!lockedCustomer) {
+			selectedCustomer = null;
+		}
+	}
 </script>
 
-<div class="mx-auto max-w-2xl space-y-4">
+<!-- Hidden Printable Slip Component for window.print() -->
+<PrintableReceiptSlip slip={recordedSlip} store={storeInfo} />
+
+<div class="mx-auto max-w-2xl space-y-4 no-print">
 	<PageHeader
 		title="Receipt Voucher (Customer Inflow)"
 		subtitle="Record incoming payment against sales invoice or customer ledger"
@@ -96,17 +156,125 @@
 	>
 		{#snippet actions()}
 			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={() => goto('/payments')}>Cancel</Button>
-				<Button variant="primary" size="sm" disabled={isSaving || !selectedCustomer || amount <= 0} onclick={handleSave}>
-					<ArrowDownLeft size={14} class="mr-1" />
-					<span>{isSaving ? 'Recording...' : 'Record Receipt Voucher'}</span>
-				</Button>
+				{#if recordedSlip}
+					<Button variant="secondary" size="sm" onclick={handleReset}>
+						<RotateCcw size={14} class="mr-1" />
+						<span>Record Another</span>
+					</Button>
+					<Button variant="primary" size="sm" onclick={handlePrintSlip}>
+						<Printer size={14} class="mr-1" />
+						<span>Print Receipt Slip</span>
+					</Button>
+				{:else}
+					<Button variant="secondary" size="sm" onclick={() => goto('/payments')}>Cancel</Button>
+					<Button variant="primary" size="sm" disabled={isSaving || !selectedCustomer || amount <= 0} onclick={handleSave}>
+						<ArrowDownLeft size={14} class="mr-1" />
+						<span>{isSaving ? 'Recording...' : 'Record Receipt Voucher'}</span>
+					</Button>
+				{/if}
 			</div>
 		{/snippet}
 	</PageHeader>
 
 	{#if loading}
 		<LoadingState message="Loading voucher context..." />
+	{:else if recordedSlip}
+		<!-- SUCCESS / RECEIPT SLIP PREVIEW -->
+		<div class="rounded-xl border border-success/30 bg-success/5 p-4 space-y-4">
+			<div class="flex items-center justify-between border-b border-success/20 pb-3">
+				<div class="flex items-center gap-2">
+					<CheckCircle size={20} class="text-success shrink-0" />
+					<div>
+						<h3 class="text-sm font-bold text-text-primary">Payment Voucher Successfully Recorded</h3>
+						<p class="text-xs text-text-muted">Applied to customer ledger with FIFO settlement across unpaid invoices.</p>
+					</div>
+				</div>
+				<Button variant="primary" size="sm" onclick={handlePrintSlip}>
+					<Printer size={14} class="mr-1" />
+					<span>Print Receipt Slip</span>
+				</Button>
+			</div>
+
+			<!-- On-Screen Slip Card -->
+			<div class="rounded-lg border border-border bg-surface p-4 shadow-xs space-y-3 font-sans">
+				<div class="flex justify-between items-start border-b border-border pb-3">
+					<div>
+						<span class="text-xs font-mono font-bold text-primary">{recordedSlip.receiptNumber}</span>
+						<h4 class="text-base font-bold text-text-primary">{recordedSlip.partyName}</h4>
+						<p class="text-xs text-text-muted">{recordedSlip.partyPhone || ''}</p>
+					</div>
+					<div class="text-right">
+						<span class="text-xs text-text-muted">Voucher Date</span>
+						<p class="text-xs font-mono font-semibold text-text-primary">{recordedSlip.date}</p>
+						<span class="inline-block mt-1 rounded bg-surface-alt px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-text-secondary">
+							{recordedSlip.paymentMethod}
+						</span>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-3 text-xs">
+					<div class="space-y-1">
+						{#if recordedSlip.reference}
+							<div class="flex justify-between">
+								<span class="text-text-muted">Ref / UTR:</span>
+								<span class="font-mono font-medium">{recordedSlip.reference}</span>
+							</div>
+						{/if}
+						{#if recordedSlip.invoiceNumber}
+							<div class="flex justify-between">
+								<span class="text-text-muted">Settled Against:</span>
+								<span class="font-mono font-medium text-primary">{recordedSlip.invoiceNumber}</span>
+							</div>
+						{/if}
+						{#if recordedSlip.notes}
+							<div class="text-text-secondary text-[11px] italic">
+								"{recordedSlip.notes}"
+							</div>
+						{/if}
+					</div>
+
+					<div class="space-y-1 rounded-md bg-surface-alt/70 p-2.5">
+						<div class="flex justify-between text-text-muted">
+							<span>Previous Due:</span>
+							<span class="font-mono">{formatCurrency(recordedSlip.previousBalance)}</span>
+						</div>
+						<div class="flex justify-between font-bold text-success">
+							<span>Amount Received:</span>
+							<span class="font-mono">{formatCurrency(recordedSlip.amount)}</span>
+						</div>
+						<div class="flex justify-between border-t border-border/80 pt-1 font-bold text-text-primary">
+							<span>Remaining Balance:</span>
+							<span class="font-mono">{formatCurrency(recordedSlip.newBalance)}</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded bg-surface-alt/40 px-3 py-1.5 text-[11px] italic text-text-secondary">
+					Amount in Words: <strong class="font-medium text-text-primary not-italic">{numberToWordsRupees(recordedSlip.amount)}</strong>
+				</div>
+			</div>
+
+			<!-- Quick Actions -->
+			<div class="flex flex-wrap gap-2 pt-1">
+				<Button variant="primary" onclick={handlePrintSlip}>
+					<Printer size={15} class="mr-1.5" />
+					<span>Print Receipt Slip</span>
+				</Button>
+				{#if selectedCustomer}
+					<Button variant="secondary" onclick={() => selectedCustomer && goto(`/customers/${selectedCustomer.id}`)}>
+						<BookOpen size={15} class="mr-1.5" />
+						<span>View Customer Ledger</span>
+					</Button>
+				{/if}
+				<Button variant="secondary" onclick={handleReset}>
+					<RotateCcw size={15} class="mr-1.5" />
+					<span>Record Another</span>
+				</Button>
+				<Button variant="ghost" onclick={() => goto('/payments')}>
+					<span>Back to Payments</span>
+				</Button>
+			</div>
+		</div>
 	{:else}
 		<!-- Context Notification Banner -->
 		{#if sale}
@@ -121,7 +289,7 @@
 		{:else}
 			<div class="flex items-center gap-2.5 rounded-xl border border-border bg-surface-alt/50 p-3 text-xs text-text-secondary">
 				<UserCheck size={16} class="text-text-muted shrink-0" />
-				<span>Payment will be credited to customer account ledger and settled against oldest unpaid invoices.</span>
+				<span>Payment will be credited to customer account ledger and settled against oldest unpaid invoices (FIFO).</span>
 			</div>
 		{/if}
 
@@ -243,3 +411,11 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	@media print {
+		.no-print {
+			display: none !important;
+		}
+	}
+</style>

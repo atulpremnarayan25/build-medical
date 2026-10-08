@@ -253,6 +253,24 @@ export class DbSaleRepository implements SaleRepository {
 		dueAmount: number,
 		paymentStatus: Sale['paymentStatus']
 	): Promise<Sale> {
+		const now = new Date();
+		await pgDb.transaction(async (tx) => {
+			await tx
+				.update(salesTable)
+				.set({
+					amountPaidAtSale: String(paidAmount),
+					paymentStatus,
+					updatedAt: now
+				})
+				.where(eq(salesTable.id, id));
+
+			await logSyncOutbox(tx, 'sales', id, 'update', {
+				id,
+				amountPaidAtSale: String(paidAmount),
+				paymentStatus
+			});
+		});
+
 		return this.getById(id) as Promise<Sale>;
 	}
 

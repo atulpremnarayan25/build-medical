@@ -1,7 +1,7 @@
 import type { SupplierRepository } from '$lib/repositories/supplierRepository.js';
 import type { Supplier, CreateSupplierInput } from '$lib/types/index.js';
-import { suppliersTable } from '../db/schema.js';
-import { eq, and, ilike, or } from 'drizzle-orm';
+import { suppliersTable, storesTable } from '../db/schema.js';
+import { eq, and, ilike, or, sql } from 'drizzle-orm';
 import { mapToSupplier } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
@@ -14,42 +14,85 @@ export class DbSupplierRepository implements SupplierRepository {
 		this._db = database;
 	}
 
+	private _balanceSql() {
+		return sql<string>`(
+			COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM purchases WHERE purchases.supplier_id = suppliers.id), 0)
+			- COALESCE((SELECT SUM(CAST(amount AS NUMERIC)) FROM payments WHERE payments.supplier_id = suppliers.id AND payments.direction = 'supplier_payment'), 0)
+			- COALESCE((
+				SELECT SUM(CAST(ri.line_amount AS NUMERIC))
+				FROM returns r
+				JOIN return_items ri ON r.id = ri.return_id
+				JOIN purchases p ON r.original_purchase_id = p.id
+				WHERE p.supplier_id = suppliers.id AND r.return_type = 'purchase_return'
+			), 0)
+		)`;
+	}
+
 	async getAll(): Promise<Supplier[]> {
 		const rows = await this._db
-			.select()
+			.select({
+				id: suppliersTable.id,
+				storeId: suppliersTable.storeId,
+				name: suppliersTable.name,
+				contactPhone: suppliersTable.contactPhone,
+				address: suppliersTable.address,
+				gstin: suppliersTable.gstin,
+				isActive: suppliersTable.isActive,
+				createdAt: suppliersTable.createdAt,
+				updatedAt: suppliersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(suppliersTable)
 			.where(eq(suppliersTable.isActive, true));
 
-		return rows.map(mapToSupplier);
+		return rows.map((r: any) => ({
+			...mapToSupplier(r),
+			outstandingBalance: Number(r.outstandingBalance || 0)
+		}));
 	}
 
 	async getById(id: string): Promise<Supplier | null> {
 		const rows = await this._db
-			.select()
+			.select({
+				id: suppliersTable.id,
+				storeId: suppliersTable.storeId,
+				name: suppliersTable.name,
+				contactPhone: suppliersTable.contactPhone,
+				address: suppliersTable.address,
+				gstin: suppliersTable.gstin,
+				isActive: suppliersTable.isActive,
+				createdAt: suppliersTable.createdAt,
+				updatedAt: suppliersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(suppliersTable)
 			.where(eq(suppliersTable.id, id))
 			.limit(1);
+
 		if (rows.length === 0) return null;
-		return mapToSupplier(rows[0]);
+		return {
+			...mapToSupplier(rows[0]),
+			outstandingBalance: Number(rows[0].outstandingBalance || 0)
+		};
 	}
 
 	async create(input: CreateSupplierInput): Promise<Supplier> {
 		const id = uuidv4();
 		const now = new Date();
-		const _input = input as any;
+		const stores = await this._db.select().from(storesTable).limit(1);
+		const storeId = stores[0]?.id;
 
 		const values = {
 			id,
+			storeId,
 			name: input.name,
-			code: null as string | null,
-			phone: input.phone || '',
-			email: null as string | null,
-			address: input.address || '',
-			gstin: input.gstin || '',
-			outstandingBalance: 0,
-			active: true,
-			createdAt: now.toISOString(),
-			updatedAt: now.toISOString()
+			contactPhone: input.phone || null,
+			address: input.address || null,
+			gstin: input.gstin || null,
+			outstandingBalance: '0',
+			isActive: true,
+			createdAt: now,
+			updatedAt: now
 		};
 
 		await pgDb.transaction(async (tx) => {
@@ -61,9 +104,9 @@ export class DbSupplierRepository implements SupplierRepository {
 	}
 
 	async update(id: string, input: Partial<CreateSupplierInput>): Promise<Supplier> {
-		const updateData: any = { updatedAt: new Date().toISOString() };
+		const updateData: any = { updatedAt: new Date() };
 		if (input.name !== undefined) updateData.name = input.name;
-		if (input.phone !== undefined) updateData.phone = input.phone;
+		if (input.phone !== undefined) updateData.contactPhone = input.phone;
 		if (input.address !== undefined) updateData.address = input.address;
 		if (input.gstin !== undefined) updateData.gstin = input.gstin;
 
@@ -104,8 +147,8 @@ export class DbSupplierRepository implements SupplierRepository {
 
 	async delete(id: string): Promise<void> {
 		const updateData = {
-			active: false,
-			updatedAt: new Date().toISOString()
+			isActive: false,
+			updatedAt: new Date()
 		} as any;
 
 		await pgDb.transaction(async (tx) => {
@@ -125,7 +168,18 @@ export class DbSupplierRepository implements SupplierRepository {
 	async search(query: string): Promise<Supplier[]> {
 		const search = `%${query}%`;
 		const rows = await this._db
-			.select()
+			.select({
+				id: suppliersTable.id,
+				storeId: suppliersTable.storeId,
+				name: suppliersTable.name,
+				contactPhone: suppliersTable.contactPhone,
+				address: suppliersTable.address,
+				gstin: suppliersTable.gstin,
+				isActive: suppliersTable.isActive,
+				createdAt: suppliersTable.createdAt,
+				updatedAt: suppliersTable.updatedAt,
+				outstandingBalance: this._balanceSql()
+			})
 			.from(suppliersTable)
 			.where(
 				and(
@@ -138,6 +192,9 @@ export class DbSupplierRepository implements SupplierRepository {
 					)
 				)
 			);
-		return rows.map(mapToSupplier);
+		return rows.map((r: any) => ({
+			...mapToSupplier(r),
+			outstandingBalance: Number(r.outstandingBalance || 0)
+		}));
 	}
 }

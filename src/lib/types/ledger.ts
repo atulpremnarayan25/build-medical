@@ -3,6 +3,8 @@ export type LedgerEntryType =
 	| 'purchase'
 	| 'payment-received'
 	| 'payment-made'
+	| 'sales-return'
+	| 'purchase-return'
 	| 'credit-note'
 	| 'debit-note'
 	| 'opening-balance';

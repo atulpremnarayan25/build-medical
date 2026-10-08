@@ -498,22 +498,22 @@
     "semantic_hash": "6c2274153ea87064f6b7cf8544e9a38a"
   },
   "src/lib/server/repositories/customerRepository.ts": {
-    "mtime": 1791372391.4198937,
-    "seen": 1791373593.583334,
-    "ast_hash": "87855b9059d3fb7cdf23838cdaa0e41b",
+    "mtime": 1791453656.476753,
+    "seen": 1791455171.048067,
+    "ast_hash": "028ff658cf8bb61b856b444efc941329",
     "semantic_hash": ""
   },
   "src/lib/server/repositories/ledgerRepository.ts": {
-    "mtime": 1787518996.3171651,
-    "seen": 1790792341.748205,
-    "ast_hash": "0101f00ea8b2cd763bbc8ea19f7544a4",
-    "semantic_hash": "0101f00ea8b2cd763bbc8ea19f7544a4"
+    "mtime": 1791453473.6299696,
+    "seen": 1791455171.048068,
+    "ast_hash": "f74180b39f7d9fcd680a68529c36b210",
+    "semantic_hash": ""
   },
   "src/lib/server/repositories/paymentRepository.ts": {
-    "mtime": 1787544214.4027936,
-    "seen": 1790792341.748205,
-    "ast_hash": "2247e29e4c393f7c70e3a0ab4c55e2b8",
-    "semantic_hash": "2247e29e4c393f7c70e3a0ab4c55e2b8"
+    "mtime": 1791454128.8932397,
+    "seen": 1791455171.04807,
+    "ast_hash": "0de5997bf23a6bd366e157568f596469",
+    "semantic_hash": ""
   },
   "src/lib/server/repositories/productRepository.ts": {
     "mtime": 1790453913.2308571,
@@ -528,15 +528,15 @@
     "semantic_hash": ""
   },
   "src/lib/server/repositories/saleRepository.ts": {
-    "mtime": 1790453803.3897402,
-    "seen": 1790792341.748208,
-    "ast_hash": "3a7b381fb3af44bc379a6d39e65db190",
-    "semantic_hash": "3a7b381fb3af44bc379a6d39e65db190"
+    "mtime": 1791454055.4827232,
+    "seen": 1791455171.048127,
+    "ast_hash": "0816e329cff391155139cbed3833abb5",
+    "semantic_hash": ""
   },
   "src/lib/server/repositories/supplierRepository.ts": {
-    "mtime": 1791433310.459233,
-    "seen": 1791436288.739543,
-    "ast_hash": "a57444ac671db25df3969035abf8ada1",
+    "mtime": 1791453699.784625,
+    "seen": 1791455171.048128,
+    "ast_hash": "151c597b03c7cf8862ebe1b1ff43207d",
     "semantic_hash": ""
   },
   "src/lib/server/servicesLocator.ts": {
@@ -558,10 +558,10 @@
     "semantic_hash": "3ef44799527f42c46b053481ead1ba3c"
   },
   "src/lib/services/api/ledgerClient.ts": {
-    "mtime": 1787518133.5292459,
-    "seen": 1790792341.7482119,
-    "ast_hash": "3b97114f915b70f7ab5f98ec143c5d14",
-    "semantic_hash": "3b97114f915b70f7ab5f98ec143c5d14"
+    "mtime": 1791453850.3948898,
+    "seen": 1791455171.048234,
+    "ast_hash": "7507c01b021bb1097ef9885afd068a02",
+    "semantic_hash": ""
   },
   "src/lib/services/api/paymentClient.ts": {
     "mtime": 1787518133.521811,
@@ -636,10 +636,10 @@
     "semantic_hash": "a8fa6b826e209053cf214507c6faae91"
   },
   "src/lib/services/paymentService.ts": {
-    "mtime": 1787518505.4769223,
-    "seen": 1790792341.7482219,
-    "ast_hash": "a7e91b4bdcd1a68bc2f01f06e45a3c61",
-    "semantic_hash": "a7e91b4bdcd1a68bc2f01f06e45a3c61"
+    "mtime": 1791454708.6790273,
+    "seen": 1791455171.0485399,
+    "ast_hash": "ecf40d88e131ad05dd92d29cc2bfacfc",
+    "semantic_hash": ""
   },
   "src/lib/services/productService.ts": {
     "mtime": 1787421485.7849925,
@@ -726,10 +726,10 @@
     "semantic_hash": "f19dae492825efd1bc26231939394a5e"
   },
   "src/lib/types/ledger.ts": {
-    "mtime": 1787421485.7317584,
-    "seen": 1790792341.748235,
-    "ast_hash": "8b6a7f5abd065532a5fb032feeb47eba",
-    "semantic_hash": "8b6a7f5abd065532a5fb032feeb47eba"
+    "mtime": 1791453448.3633742,
+    "seen": 1791455171.0488808,
+    "ast_hash": "0888bffb8666fb62dce79d68d2e6312b",
+    "semantic_hash": ""
   },
   "src/lib/types/payment.ts": {
     "mtime": 1787421485.7293153,
@@ -960,10 +960,10 @@
     "semantic_hash": "9a175c3fdde4c018b1f26508fb7e6e96"
   },
   "src/routes/api/reports/ledger/+server.ts": {
-    "mtime": 1790451400.7573166,
-    "seen": 1790792341.748266,
-    "ast_hash": "3f49143e63c3de37b0a718d461c8778d",
-    "semantic_hash": "3f49143e63c3de37b0a718d461c8778d"
+    "mtime": 1791453728.225331,
+    "seen": 1791455171.049949,
+    "ast_hash": "cb58cdc226ab9cfe9c0651183aed7d8c",
+    "semantic_hash": ""
   },
   "src/routes/api/reports/purchases/+server.ts": {
     "mtime": 1790451393.044589,
@@ -1062,10 +1062,10 @@
     "semantic_hash": "0e81f4cd4da2a234b47efea194acc029"
   },
   "src/routes/customers/[id]/+page.svelte": {
-    "mtime": 1790465646.494078,
-    "seen": 1790792341.748287,
-    "ast_hash": "b41a1f060c47def0b624aafb3a237671",
-    "semantic_hash": "b41a1f060c47def0b624aafb3a237671"
+    "mtime": 1791453927.9874566,
+    "seen": 1791455171.0504901,
+    "ast_hash": "a03a11ab26eb5bde892713cb43143507",
+    "semantic_hash": ""
   },
   "src/routes/customers/new/+page.svelte": {
     "mtime": 1787550979.9862325,
@@ -1146,16 +1146,16 @@
     "semantic_hash": "e904a73333c3816b0936749e1c48355c"
   },
   "src/routes/payments/pay/+page.svelte": {
-    "mtime": 1790451754.287686,
-    "seen": 1790792341.748298,
-    "ast_hash": "08763ddf37ad7084f4e417c6440c8f9a",
-    "semantic_hash": "08763ddf37ad7084f4e417c6440c8f9a"
+    "mtime": 1791454572.7557378,
+    "seen": 1791455171.0508401,
+    "ast_hash": "1ce322f58f7e12f60cce0d769310a152",
+    "semantic_hash": ""
   },
   "src/routes/payments/receive/+page.svelte": {
-    "mtime": 1790451759.6620235,
-    "seen": 1790792341.7482991,
-    "ast_hash": "9d6cad9cfe9e2b0e2f49d8fa920e23c7",
-    "semantic_hash": "9d6cad9cfe9e2b0e2f49d8fa920e23c7"
+    "mtime": 1791454576.6816418,
+    "seen": 1791455171.050842,
+    "ast_hash": "13d810de448a5bd82ba2fa15754a21e4",
+    "semantic_hash": ""
   },
   "src/routes/purchases/+page.svelte": {
     "mtime": 1790465691.5992737,
@@ -1278,10 +1278,10 @@
     "semantic_hash": "1ea24169ca36e9ee1eb6d739e5d217e7"
   },
   "src/routes/suppliers/[id]/+page.svelte": {
-    "mtime": 1790465678.5457027,
-    "seen": 1790792341.7483158,
-    "ast_hash": "480b2b381e9ad1a23115ba0842a5751f",
-    "semantic_hash": "480b2b381e9ad1a23115ba0842a5751f"
+    "mtime": 1791453991.6190693,
+    "seen": 1791455171.051411,
+    "ast_hash": "197b5ba900a9d9df1f89e9d7942ba4e5",
+    "semantic_hash": ""
   },
   "src/routes/suppliers/new/+page.svelte": {
     "mtime": 1787550979.989857,
@@ -1515,6 +1515,18 @@
     "mtime": 1791433749.4770825,
     "seen": 1791436288.7405162,
     "ast_hash": "0b0a5efdeda832f2f74687c09bb2ec1a",
+    "semantic_hash": ""
+  },
+  "src/lib/components/billing/PrintableReceiptSlip.svelte": {
+    "mtime": 1791454428.9907072,
+    "seen": 1791455171.046548,
+    "ast_hash": "3c86a96fe0fbdfe4746a777429ba13ce",
+    "semantic_hash": ""
+  },
+  "src/lib/services/khataLedger.spec.ts": {
+    "mtime": 1791455121.7156448,
+    "seen": 1791455171.04849,
+    "ast_hash": "ccc9b23935bda55c143d2033907f3878",
     "semantic_hash": ""
   }
 }

@@ -24,41 +24,59 @@ export function createPaymentService(
 		},
 
 		async createPayment(input: CreatePaymentInput): Promise<Payment> {
+			const isCustomer =
+				input.partyType === 'customer' ||
+				input.type === 'received' ||
+				(input as any).type === 'in';
+
+			const isSupplier =
+				input.partyType === 'supplier' ||
+				input.type === 'made' ||
+				(input as any).type === 'out';
+
+			let customer: any = null;
+			if (isCustomer && internalCustomerService) {
+				customer = await internalCustomerService.getCustomer(input.partyId);
+				if (!customer) {
+					throw new Error('Customer not found.');
+				}
+			}
+
+			let supplier: any = null;
+			if (isSupplier && internalSupplierService) {
+				supplier = await internalSupplierService.getSupplier(input.partyId);
+				if (!supplier) {
+					throw new Error('Supplier not found.');
+				}
+			}
+
 			// Save the payment
 			const payment = await repo.create(input);
 
-			let remainingAmountToApply = input.amount;
+			let remainingAmountToApply = Number(input.amount || 0);
 
-			// Handle Receipt from Customer
-			if (input.type === 'received' && input.partyType === 'customer' && internalCustomerService) {
-				const customer = await internalCustomerService.getCustomer(input.partyId);
-				if (!customer) throw new Error('Customer not found.');
-
+			// Handle Receipt from Customer (FIFO Settlement across unpaid invoices)
+			if (isCustomer && customer) {
 				payment.partyName = customer.name;
 
-				if (remainingAmountToApply > customer.outstandingBalance) {
-					// We'll allow it technically as advance, but update logic accordingly
-				}
-
-				// Apply to sales
+				// Apply sequentially in FIFO order (oldest unpaid invoice first)
 				if (internalSaleService) {
-					// Either one specific sale or apply sequentially
 					let unpaidSales = await internalSaleService.getSalesByCustomer(input.partyId);
 					unpaidSales = unpaidSales
-						.filter((s) => s.dueAmount > 0)
+						.filter((s) => Number(s.dueAmount) > 0)
 						.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 					if (input.invoiceId) {
-						// Filter to exactly this one
 						unpaidSales = unpaidSales.filter((s) => s.id === input.invoiceId);
 					}
 
 					for (const sale of unpaidSales) {
 						if (remainingAmountToApply <= 0) break;
 
-						const appliedAmount = Math.min(remainingAmountToApply, sale.dueAmount);
-						const newPaid = sale.paidAmount + appliedAmount;
-						const newDue = sale.grandTotal - newPaid;
+						const saleDue = Number(sale.dueAmount || 0);
+						const appliedAmount = Math.min(remainingAmountToApply, saleDue);
+						const newPaid = Number(sale.paidAmount || 0) + appliedAmount;
+						const newDue = Math.max(0, Number(sale.grandTotal || 0) - newPaid);
 						const newStatus: PaymentStatus = newDue <= 0 ? 'paid' : 'partial';
 
 						await internalSaleService.updateSalePaymentDetails(sale.id, newPaid, newDue, newStatus);
@@ -67,22 +85,20 @@ export function createPaymentService(
 				}
 
 				// Update Customer Balance
-				const newBalance = customer.outstandingBalance - input.amount;
-				await internalCustomerService.updateCustomerBalance(customer.id, newBalance);
+				const currentBal = Number(customer.outstandingBalance || 0);
+				const newBalance = currentBal - Number(input.amount || 0);
+				await internalCustomerService!.updateCustomerBalance(customer.id, newBalance);
 			}
 
-			// Handle Payment Made to Supplier
-			if (input.type === 'made' && input.partyType === 'supplier' && internalSupplierService) {
-				const supplier = await internalSupplierService.getSupplier(input.partyId);
-				if (!supplier) throw new Error('Supplier not found.');
-
+			// Handle Payment Made to Supplier (FIFO Settlement across unpaid bills)
+			if (isSupplier && supplier) {
 				payment.partyName = supplier.name;
 
-				// Apply to Purchases
+				// Apply sequentially in FIFO order against purchase bills
 				if (internalPurchaseService) {
 					let unpaidPur = await internalPurchaseService.getPurchasesBySupplier(input.partyId);
 					unpaidPur = unpaidPur
-						.filter((p) => p.dueAmount > 0)
+						.filter((p) => Number(p.dueAmount) > 0)
 						.sort((a, b) => new Date(a.invoiceDate).getTime() - new Date(b.invoiceDate).getTime());
 
 					if (input.invoiceId) {
@@ -92,9 +108,10 @@ export function createPaymentService(
 					for (const p of unpaidPur) {
 						if (remainingAmountToApply <= 0) break;
 
-						const appliedAmount = Math.min(remainingAmountToApply, p.dueAmount);
-						const newPaid = p.paidAmount + appliedAmount;
-						const newDue = p.grandTotal - newPaid;
+						const purDue = Number(p.dueAmount || 0);
+						const appliedAmount = Math.min(remainingAmountToApply, purDue);
+						const newPaid = Number(p.paidAmount || 0) + appliedAmount;
+						const newDue = Math.max(0, Number(p.grandTotal || 0) - newPaid);
 						const newStatus: PaymentStatus = newDue <= 0 ? 'paid' : 'partial';
 
 						await internalPurchaseService.updatePurchasePaymentDetails(
@@ -108,8 +125,9 @@ export function createPaymentService(
 				}
 
 				// Update Supplier Balance
-				const newBalance = supplier.outstandingBalance - input.amount;
-				await internalSupplierService.updateSupplierBalance(supplier.id, newBalance);
+				const currentBal = Number(supplier.outstandingBalance || 0);
+				const newBalance = currentBal - Number(input.amount || 0);
+				await internalSupplierService!.updateSupplierBalance(supplier.id, newBalance);
 			}
 
 			return payment;
