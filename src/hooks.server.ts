@@ -18,6 +18,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.url.pathname === '/' ||
 		event.url.pathname === '/login' ||
 		event.url.pathname === '/register' ||
+		event.url.pathname === '/api/health' ||
 		event.url.pathname.startsWith('/api/public') ||
 		event.url.pathname.startsWith('/_');
 	if (!isUnprotected && !event.locals.user) {

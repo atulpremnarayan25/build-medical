@@ -22,6 +22,7 @@ export default defineConfig({
 		})
 	],
 	test: {
+		fileParallelism: false,
 		expect: { requireAssertions: true },
 		projects: [
 			{

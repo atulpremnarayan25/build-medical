@@ -27,6 +27,8 @@ dist/
 *.db-shm
 *.sqlite
 *.sqlite3
+backups/*.sql.gz
+backups/*.sql
 
 # Logs & PID files
 *.log

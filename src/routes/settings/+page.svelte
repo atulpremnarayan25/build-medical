@@ -10,7 +10,12 @@
 		Key,
 		CheckCircle2,
 		XCircle,
-		Shield
+		Shield,
+		Database,
+		Download,
+		HardDrive,
+		Wifi,
+		RefreshCw
 	} from '@lucide/svelte';
 
 	let { data } = $props();
@@ -218,6 +223,56 @@
 			isResettingPassword = false;
 		}
 	}
+
+	// Database Backups state
+	let backupsList = $state<any[]>([]);
+	let isBackingUp = $state(false);
+	let isFetchingBackups = $state(false);
+
+	async function fetchBackups() {
+		isFetchingBackups = true;
+		try {
+			const res = await fetch('/api/settings/backup');
+			const json = await res.json();
+			if (res.ok && json.data?.backups) {
+				backupsList = json.data.backups;
+			}
+		} catch (e) {
+			console.error('Failed to fetch backups', e);
+		} finally {
+			isFetchingBackups = false;
+		}
+	}
+
+	async function triggerManualBackup() {
+		isBackingUp = true;
+		try {
+			const res = await fetch('/api/settings/backup', { method: 'POST' });
+			const json = await res.json();
+			if (!res.ok || json.error) {
+				addToast('error', json.error?.message || 'Failed to create backup');
+			} else {
+				addToast('success', `Database backup ${json.data.backup.filename} created!`);
+				await fetchBackups();
+				// Automatically trigger download to pen drive / browser
+				window.location.href = `/api/settings/backup/download?file=${encodeURIComponent(json.data.backup.filename)}`;
+			}
+		} catch (err: any) {
+			addToast('error', err.message || 'Backup creation failed');
+		} finally {
+			isBackingUp = false;
+		}
+	}
+
+	function downloadBackup(filename: string) {
+		window.location.href = `/api/settings/backup/download?file=${encodeURIComponent(filename)}`;
+	}
+
+	$effect(() => {
+		if (activeTab === 'backups' && backupsList.length === 0) {
+			fetchBackups();
+		}
+	});
 </script>
 
 <svelte:head>
@@ -259,6 +314,26 @@
 			<FileText size={16} />
 			Invoice Settings
 		</button>
+		<button
+			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			'backups'
+				? 'bg-accent-light text-accent'
+				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+			onclick={() => {
+				activeTab = 'backups';
+				fetchBackups();
+			}}
+		>
+			<Database size={16} />
+			Backups & Recovery
+		</button>
+		<a
+			href="/settings/network"
+			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+		>
+			<Wifi size={16} />
+			Network & LAN Terminals
+		</a>
 	</div>
 
 	<!-- Content -->
@@ -549,6 +624,133 @@
 						</Button>
 					</div>
 				</form>
+			</div>
+		{:else if activeTab === 'backups'}
+			<div>
+				<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+					<div>
+						<h2 class="text-base font-bold text-text-primary flex items-center gap-2">
+							<Database size={18} class="text-accent" />
+							Database Backups & Disaster Recovery
+						</h2>
+						<p class="text-xs text-text-muted">
+							Automated nightly compressed snapshots with rolling 30-day retention and one-click USB export.
+						</p>
+					</div>
+					<div class="flex items-center gap-2">
+						<Button
+							variant="secondary"
+							size="sm"
+							class="gap-1.5"
+							disabled={isFetchingBackups}
+							onclick={() => fetchBackups()}
+						>
+							<RefreshCw size={14} class={isFetchingBackups ? 'animate-spin' : ''} /> Refresh
+						</Button>
+						<Button
+							variant="primary"
+							size="sm"
+							class="gap-1.5"
+							disabled={isBackingUp}
+							onclick={() => triggerManualBackup()}
+						>
+							<Download size={14} /> {isBackingUp ? 'Creating Backup...' : 'Manual Backup Now'}
+						</Button>
+					</div>
+				</div>
+
+				<!-- Overview stats -->
+				<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+					<div class="rounded-lg border border-border bg-surface-secondary p-4">
+						<span class="text-xs font-semibold text-text-muted">Available Backups</span>
+						<div class="mt-1 text-lg font-bold text-text-primary">
+							{backupsList.length} <span class="text-xs font-normal text-text-muted">snapshots</span>
+						</div>
+						<div class="text-[11px] text-text-muted">Auto-purges after 30 daily backups</div>
+					</div>
+
+					<div class="rounded-lg border border-border bg-surface-secondary p-4">
+						<span class="text-xs font-semibold text-text-muted">Latest Snapshot</span>
+						<div class="mt-1 truncate font-mono text-xs font-bold text-text-primary">
+							{backupsList[0]?.filename || 'No backups yet'}
+						</div>
+						<div class="text-[11px] text-text-muted">
+							{backupsList[0] ? backupsList[0].sizeFormatted : 'Run a manual backup to create first snapshot'}
+						</div>
+					</div>
+
+					<div class="rounded-lg border border-border bg-surface-secondary p-4">
+						<span class="text-xs font-semibold text-text-muted">Disaster Recovery Command</span>
+						<div class="mt-1 font-mono text-xs font-bold text-accent">
+							npm run restore
+						</div>
+						<div class="text-[11px] text-text-muted">Instant 1-command database restoration</div>
+					</div>
+				</div>
+
+				<!-- Backups List Table -->
+				<div class="overflow-x-auto rounded-lg border border-border">
+					<table class="w-full text-left text-xs">
+						<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase">
+							<tr>
+								<th class="px-4 py-2.5">Backup Filename</th>
+								<th class="px-4 py-2.5">Created Date & Time</th>
+								<th class="px-4 py-2.5">Compressed Size</th>
+								<th class="px-4 py-2.5 text-right">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-border-subtle">
+							{#if backupsList.length === 0}
+								<tr>
+									<td colspan="4" class="px-4 py-8 text-center text-text-muted">
+										No database backups found in <code class="font-mono text-accent">./backups</code>.
+										Click <strong>Manual Backup Now</strong> above to generate your first compressed snapshot.
+									</td>
+								</tr>
+							{:else}
+								{#each backupsList as backup}
+									<tr class="transition-colors hover:bg-surface-hover">
+										<td class="px-4 py-3 font-mono font-medium text-text-primary">
+											<div class="flex items-center gap-2">
+												<HardDrive size={14} class="text-text-muted" />
+												{backup.filename}
+											</div>
+										</td>
+										<td class="px-4 py-3 text-text-secondary">
+											{new Date(backup.createdAt).toLocaleString('en-IN', {
+												dateStyle: 'medium',
+												timeStyle: 'short'
+											})}
+										</td>
+										<td class="px-4 py-3 font-mono font-semibold text-text-primary">
+											{backup.sizeFormatted}
+										</td>
+										<td class="px-4 py-3 text-right">
+											<Button
+												variant="secondary"
+												size="sm"
+												class="gap-1.5"
+												onclick={() => downloadBackup(backup.filename)}
+											>
+												<Download size={13} /> Download to USB
+											</Button>
+										</td>
+									</tr>
+								{/each}
+							{/if}
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Recovery instructions card -->
+				<div class="mt-6 rounded-lg border border-border bg-surface-secondary p-4 text-xs">
+					<h4 class="font-bold text-text-primary">💡 Pharmacy Disaster Recovery Best Practice:</h4>
+					<p class="mt-1 text-text-secondary">
+						Always download your daily <code class="font-mono text-accent">.sql.gz</code> backup to an external USB pen drive at the end of each billing day.
+						In the event of hardware failure, install MedStock ERP on any replacement laptop, insert the pen drive, and run:
+					</p>
+					<pre class="mt-2 rounded bg-surface p-2.5 font-mono text-[11px] text-accent border border-border">npm run restore path/to/medstock_backup_YYYY-MM-DD_HHMM.sql.gz</pre>
+				</div>
 			</div>
 		{/if}
 	</div>
