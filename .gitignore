@@ -47,6 +47,7 @@ Thumbs.db
 .claude/
 .reticle/
 .reticle.json
+.playwright-cli/
 .impeccable/
 .opencode/
 /palace/

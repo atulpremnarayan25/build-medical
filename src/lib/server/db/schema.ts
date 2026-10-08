@@ -201,7 +201,7 @@ export const batchStockEventsTable = pgTable(
 	(t) => [index('batch_stock_events_batch_created_idx').on(t.batchId, t.createdAt)]
 );
 
-/** §7 suppliers — payable balance is derived, never stored. */
+/** §7 suppliers — payable balance is tracked and derived via ledger. */
 export const suppliersTable = pgTable(
 	'suppliers',
 	{
@@ -213,6 +213,7 @@ export const suppliersTable = pgTable(
 		contactPhone: text('contact_phone'),
 		address: text('address'),
 		gstin: text('gstin'),
+		outstandingBalance: numeric('outstanding_balance').notNull().default('0'),
 		isActive: boolean('is_active').notNull().default(true),
 		...createdAt,
 		...syncColumns
@@ -255,6 +256,11 @@ export const purchasesTable = pgTable(
 		supplierInvoiceRef: text('supplier_invoice_ref').notNull(),
 		supplierInvoiceDate: date('supplier_invoice_date', { mode: 'string' }),
 		totalAmount: numeric('total_amount').notNull().default('0'),
+		paymentStatus: text('payment_status').notNull().default('credit'),
+		paidAmount: numeric('paid_amount').notNull().default('0'),
+		dueAmount: numeric('due_amount').notNull().default('0'),
+		paymentMethod: text('payment_method').notNull().default('credit'),
+		notes: text('notes'),
 		createdBy: uuid('created_by').references(() => usersTable.id),
 		...createdAt,
 		...syncColumns

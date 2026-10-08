@@ -25,7 +25,7 @@ export const mapToSupplier = (dbRow: any) => {
 		email: dbRow.email || '',
 		address: dbRow.address || '',
 		gstin: dbRow.gstin || '',
-		outstandingBalance: dbRow.outstandingBalance || 0,
+		outstandingBalance: Number(dbRow.outstandingBalance) || 0,
 		active: dbRow.isDeleted === false || dbRow.active === true,
 		createdAt: dbRow.createdAt ? new Date(dbRow.createdAt).toISOString() : new Date().toISOString(),
 		updatedAt: dbRow.updatedAt ? new Date(dbRow.updatedAt).toISOString() : new Date().toISOString()

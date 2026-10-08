@@ -36,11 +36,7 @@ export const ledgerService = createLedgerService(ledgerRepo);
 
 export const salesService = createSaleService(saleRepo, customerService, inventoryService);
 
-export const purchaseService = createPurchaseService(
-	purchaseRepo,
-	supplierService,
-	inventoryService
-);
+export const purchaseService = createPurchaseService(purchaseRepo);
 
 export const paymentService = createPaymentService(
 	paymentRepo,

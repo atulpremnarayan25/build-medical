@@ -11,8 +11,12 @@ export interface PurchaseItem {
 	expiryDate: string;
 	quantity: number;
 	freeQuantity: number;
+	packSize?: number;
+	unit?: string;
+	baseQuantity?: number;
 	mrp: number;
 	purchaseRate: number;
+	effectiveRate?: number;
 	discount: number;
 	taxableAmount: number;
 	gstRate: number;
@@ -47,11 +51,18 @@ export interface Purchase {
 export type CreatePurchaseItemInput = Omit<
 	PurchaseItem,
 	'id' | 'taxableAmount' | 'gstAmount' | 'totalAmount'
->;
+> & {
+	taxableAmount?: number;
+	gstAmount?: number;
+	totalAmount?: number;
+};
 
 export type CreatePurchaseInput = Omit<
 	Purchase,
-	'id' | 'paidAmount' | 'dueAmount' | 'paymentStatus' | 'createdAt' | 'updatedAt' | 'items'
+	'id' | 'createdAt' | 'updatedAt' | 'items' | 'paidAmount' | 'dueAmount' | 'paymentStatus'
 > & {
 	items: CreatePurchaseItemInput[];
+	paidAmount?: number;
+	dueAmount?: number;
+	paymentStatus?: PaymentStatus;
 };

@@ -236,6 +236,11 @@
 				errorMessage = `Batch ${r.batchNo} (${r.productName}) cannot have negative final stock.`;
 				return;
 			}
+			const reasonText = (r.notes?.trim() || auditReference.trim() || r.reasonCode?.trim() || '');
+			if (!reasonText) {
+				errorMessage = `Batch ${r.batchNo} (${r.productName}): Mandatory reason is required.`;
+				return;
+			}
 		}
 
 		saving = true;

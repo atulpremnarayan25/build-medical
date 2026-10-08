@@ -84,7 +84,21 @@ export class DbSupplierRepository implements SupplierRepository {
 	}
 
 	async updateBalance(id: string, newBalance: number): Promise<Supplier> {
-		// Ledgers are dynamic now
+		await pgDb.transaction(async (tx) => {
+			await tx
+				.update(suppliersTable)
+				.set({
+					outstandingBalance: String(newBalance),
+					updatedAt: new Date()
+				})
+				.where(eq(suppliersTable.id, id));
+
+			await logSyncOutbox(tx, 'suppliers', id, 'update', {
+				id,
+				outstandingBalance: String(newBalance)
+			});
+		});
+
 		return this.getById(id) as Promise<Supplier>;
 	}
 

@@ -80,11 +80,20 @@ export async function POST(event: RequestEvent) {
 			const recordedEvents = [];
 
 			for (const item of items) {
-				const { batchId, delta, reasonCode, notes } = item;
+				const { batchId, delta, reasonCode, notes, reason } = item;
 				const numDelta = Number(delta);
 
 				if (!batchId || isNaN(numDelta) || numDelta === 0) {
 					throw new Error('Valid batchId and non-zero numeric delta required for each item');
+				}
+
+				const combinedReason = (
+					reason ||
+					[reasonCode, notes?.trim()].filter(Boolean).join(' — ')
+				).trim();
+
+				if (!combinedReason) {
+					throw new Error(`Mandatory reason is required for adjusting batch ${batchId}`);
 				}
 
 				const [existingBatch] = await tx
@@ -116,10 +125,6 @@ export async function POST(event: RequestEvent) {
 				await logSyncOutbox(tx, 'batches', updatedBatch.id, 'update', updatedBatch);
 
 				// 2. Insert append-only stock event
-				const combinedReason = [reasonCode || 'Physical Variance', notes?.trim()]
-					.filter(Boolean)
-					.join(' — ');
-
 				const [stockEvent] = await tx
 					.insert(batchStockEventsTable)
 					.values({

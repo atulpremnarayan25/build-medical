@@ -15,6 +15,7 @@
 	} from '$lib/types/index.js';
 	import { purchaseService } from '$lib/services/index.js';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
+	import { toPaise, percentOf, roundToRupee, paiseToRupees } from '$lib/utils/money.js';
 
 	// Header State
 	let selectedSupplier = $state<Supplier | null>(null);
@@ -47,22 +48,53 @@
 	let items = $state<(CreatePurchaseItemInput & { uiKey: number })[]>([]);
 	let nextUiKey = 0;
 
-	// Aggregated Totals
-	let subtotal = $derived(items.reduce((sum, item) => sum + item.quantity * item.purchaseRate, 0));
-	let discountTotal = $derived(
-		items.reduce((sum, item) => sum + item.quantity * item.purchaseRate * (item.discount / 100), 0)
+	// Real-time Line Item Financials with Integer Paise
+	let itemCalculations = $derived(
+		items.map((item) => {
+			const qty = Number(item.quantity) || 0;
+			const freeQty = Number(item.freeQuantity) || 0;
+			const packSize = Number(item.packSize) || 1;
+			const baseQty = (qty + freeQty) * packSize;
+
+			const ratePaise = toPaise(item.purchaseRate || 0);
+			const lineGrossPaise = qty * ratePaise;
+			const discountPaise = percentOf(lineGrossPaise, item.discount || 0);
+			const taxablePaise = lineGrossPaise - discountPaise;
+			const gstPaise = percentOf(taxablePaise, item.gstRate || 0);
+			const lineTotalPaise = taxablePaise + gstPaise;
+
+			const effectiveStripCost =
+				baseQty > 0
+					? paiseToRupees(lineTotalPaise) / baseQty
+					: Number(item.purchaseRate || 0) / packSize;
+
+			return {
+				lineGrossPaise,
+				discountPaise,
+				taxablePaise,
+				gstPaise,
+				lineTotalPaise,
+				baseQty,
+				effectiveStripCost
+			};
+		})
 	);
-	let taxableTotal = $derived(subtotal - discountTotal);
-	let gstTotal = $derived(
-		items.reduce(
-			(sum, item) =>
-				sum + item.quantity * item.purchaseRate * (1 - item.discount / 100) * (item.gstRate / 100),
-			0
-		)
-	);
-	let grandTotalRaw = $derived(taxableTotal + gstTotal);
-	let roundOff = $derived(Math.round(grandTotalRaw) - grandTotalRaw);
-	let grandTotal = $derived(Math.round(grandTotalRaw));
+
+	// Aggregated Totals (Integer Paise, Zero Floating-Point Drift)
+	let subtotalPaise = $derived(itemCalculations.reduce((sum, c) => sum + c.lineGrossPaise, 0));
+	let discountTotalPaise = $derived(itemCalculations.reduce((sum, c) => sum + c.discountPaise, 0));
+	let taxableTotalPaise = $derived(subtotalPaise - discountTotalPaise);
+	let gstTotalPaise = $derived(itemCalculations.reduce((sum, c) => sum + c.gstPaise, 0));
+	let grandTotalRawPaise = $derived(taxableTotalPaise + gstTotalPaise);
+	let grandTotalPaise = $derived(roundToRupee(grandTotalRawPaise));
+	let roundOffPaise = $derived(grandTotalPaise - grandTotalRawPaise);
+
+	let subtotal = $derived(paiseToRupees(subtotalPaise));
+	let discountTotal = $derived(paiseToRupees(discountTotalPaise));
+	let taxableTotal = $derived(paiseToRupees(taxableTotalPaise));
+	let gstTotal = $derived(paiseToRupees(gstTotalPaise));
+	let roundOff = $derived(paiseToRupees(roundOffPaise));
+	let grandTotal = $derived(paiseToRupees(grandTotalPaise));
 
 	function handleSupplierSelect(supplier: Supplier | null) {
 		selectedSupplier = supplier;
@@ -80,6 +112,8 @@
 			expiryDate: '',
 			quantity: 1,
 			freeQuantity: 0,
+			packSize: product.packSize || 10,
+			unit: 'Box',
 			mrp: product.mrp,
 			purchaseRate: product.purchaseRate,
 			discount: 0,
@@ -138,15 +172,26 @@
 		isSaving = true;
 
 		try {
+			const isCredit = paymentType === 'credit';
 			const payload: CreatePurchaseInput = {
 				invoiceNumber,
 				invoiceDate,
 				supplierId: selectedSupplier.id,
 				supplierName: selectedSupplier.name,
-				items: items.map((i) => {
+				items: items.map((i, idx) => {
+					const calc = itemCalculations[idx];
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const { uiKey, ...rest } = i;
-					return rest;
+					return {
+						...rest,
+						packSize: Number(i.packSize) || 1,
+						unit: i.unit || 'Box',
+						baseQuantity: calc?.baseQty ?? Number(i.quantity),
+						effectiveRate: calc?.effectiveStripCost ?? Number(i.purchaseRate),
+						taxableAmount: paiseToRupees(calc?.taxablePaise ?? 0),
+						gstAmount: paiseToRupees(calc?.gstPaise ?? 0),
+						totalAmount: paiseToRupees(calc?.lineTotalPaise ?? 0)
+					};
 				}),
 				subtotal,
 				discountTotal,
@@ -155,6 +200,9 @@
 				roundOff,
 				grandTotal,
 				paymentMethod: paymentType,
+				paymentStatus: isCredit ? 'credit' : 'paid',
+				paidAmount: isCredit ? 0 : grandTotal,
+				dueAmount: isCredit ? grandTotal : 0,
 				status: 'confirmed',
 				notes: `Internal Ref: ${internalPurchaseNo}`,
 				createdBy: 'user-001'

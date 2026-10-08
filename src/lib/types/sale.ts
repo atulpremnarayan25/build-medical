@@ -1,5 +1,5 @@
 export type SaleStatus = 'draft' | 'confirmed' | 'cancelled' | 'returned';
-export type PaymentStatus = 'paid' | 'partial' | 'unpaid' | 'overdue';
+export type PaymentStatus = 'paid' | 'partial' | 'unpaid' | 'overdue' | 'credit';
 export type PaymentMethod = 'cash' | 'bank' | 'upi' | 'cheque' | 'credit' | 'other';
 
 export interface SaleItem {
