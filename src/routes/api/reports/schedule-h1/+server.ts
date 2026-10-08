@@ -6,7 +6,8 @@ import {
 	productsTable,
 	batchesTable,
 	customersTable,
-	usersTable
+	usersTable,
+	storesTable
 } from '$lib/server/db/schema.js';
 import { eq, and, ne, desc, gte, lte, or, ilike } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
@@ -25,7 +26,9 @@ export async function GET(event: RequestEvent) {
 	const filters = [eq(salesTable.storeId, event.locals.user.storeId)];
 
 	if (from) {
-		filters.push(gte(salesTable.createdAt, new Date(from)));
+		const fromDate = new Date(from);
+		fromDate.setHours(0, 0, 0, 0);
+		filters.push(gte(salesTable.createdAt, fromDate));
 	}
 	if (to) {
 		const toDate = new Date(to);
@@ -61,6 +64,19 @@ export async function GET(event: RequestEvent) {
 			)!
 		);
 	}
+
+	const [store] = await db
+		.select({
+			name: storesTable.name,
+			address: storesTable.address,
+			phone: storesTable.phone,
+			gstin: storesTable.gstin,
+			drugLicenseNo: storesTable.drugLicenseNo,
+			drugLicenseNo2: storesTable.drugLicenseNo2
+		})
+		.from(storesTable)
+		.where(eq(storesTable.id, event.locals.user.storeId))
+		.limit(1);
 
 	const rows = await db
 		.select({
@@ -101,13 +117,21 @@ export async function GET(event: RequestEvent) {
 		.where(and(...filters))
 		.orderBy(desc(salesTable.createdAt));
 
-	const formattedRows = rows.map((r) => ({
-		...r,
-		quantity: Number(r.quantity || 0),
-		rate: Number(r.rate || 0),
-		gstRate: Number(r.gstRate || 0),
-		lineTotal: Number(r.lineTotal || 0)
-	}));
+	const formattedRows = rows.map((r) => {
+		const patientDisplayName = r.patientName || r.customerName || 'Walk-in Customer';
+		const patientFullAddress = r.customerAddress || (r.customerPhone ? `Contact: ${r.customerPhone}` : 'Local Resident');
+		return {
+			...r,
+			patientDisplayName,
+			patientFullAddress,
+			medicineWithStrength: r.genericName ? `${r.productName} (${r.genericName})` : r.productName,
+			billerName: r.dispensedBy || 'Registered Pharmacist',
+			quantity: Number(r.quantity || 0),
+			rate: Number(r.rate || 0),
+			gstRate: Number(r.gstRate || 0),
+			lineTotal: Number(r.lineTotal || 0)
+		};
+	});
 
 	const summary = {
 		totalEntries: formattedRows.length,
@@ -120,6 +144,14 @@ export async function GET(event: RequestEvent) {
 	};
 
 	return json({
+		store: store || {
+			name: 'MedStock Pharmacy',
+			address: '123 Healthcare Road, Medical Square',
+			phone: '+91 98765 43210',
+			gstin: '29ABCDE1234F1Z5',
+			drugLicenseNo: 'KA-B2-192847',
+			drugLicenseNo2: 'KA-B2-192848'
+		},
 		entries: formattedRows,
 		summary
 	});

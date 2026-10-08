@@ -292,6 +292,9 @@
 			const payload = {
 				saleType: customerType,
 				customerId: selectedCustomer?.id ?? null,
+				patientName: patientName.trim() || undefined,
+				prescriberName: prescriberName.trim() || undefined,
+				prescriberRegNo: prescriberRegNo.trim() || undefined,
 				items: items.map(toEngineLine),
 				amountPaidAtSaleRupees: paidNow > 0 ? paidNow : undefined,
 				paymentMethod: paymentType,

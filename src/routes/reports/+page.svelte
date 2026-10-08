@@ -65,9 +65,9 @@
 				},
 				{
 					name: 'FEFO Expiry Risk Audit',
-					desc: 'Near-expiry (<90d) batches and expired stock disposal reports',
+					desc: 'Near-expiry (<90d) batches, value at risk, and supplier return debit notes',
 					icon: Search,
-					href: '/inventory/batches?status=near-expiry'
+					href: '/reports/expiry'
 				}
 			]
 		}

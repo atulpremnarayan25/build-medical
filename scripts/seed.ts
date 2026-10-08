@@ -30,6 +30,7 @@ interface ProductSeed {
 	gst: string;
 	kind: 'tablet' | 'bottle' | 'tube' | 'sachet';
 	packMrp: number; // printed MRP of a strip/bottle/tube
+	drugSchedule?: string;
 }
 
 // ~45 products, varied GST rates and pack styles, priced like a real stockist's shelf.
@@ -248,7 +249,8 @@ const PRODUCTS: ProductSeed[] = [
 		hsn: '30049099',
 		gst: '12',
 		kind: 'tablet',
-		packMrp: 42
+		packMrp: 42,
+		drugSchedule: 'H1'
 	},
 	{
 		name: 'Tramadol 50mg',
@@ -257,7 +259,8 @@ const PRODUCTS: ProductSeed[] = [
 		hsn: '30049099',
 		gst: '12',
 		kind: 'tablet',
-		packMrp: 78
+		packMrp: 78,
+		drugSchedule: 'H1'
 	},
 	{
 		name: 'Ibuprofen 400mg',
@@ -564,7 +567,8 @@ async function seedDb() {
 							? 'Tube'
 							: 'Sachet',
 			barcode: i % 3 === 0 ? `89${String(890000000000 + i * 7919).slice(0, 11)}` : null,
-			reorderThreshold: money(i % 4 === 0 ? 50 : 20)
+			reorderThreshold: money(i % 4 === 0 ? 50 : 20),
+			drugSchedule: seed.drugSchedule || (seed.category === 'Antibiotic' ? 'H' : 'none')
 		});
 
 		if (seed.kind === 'tablet') {

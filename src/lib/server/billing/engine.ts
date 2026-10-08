@@ -228,6 +228,18 @@ function prepareLines(
 	const lines: PreparedLine[] = [];
 	for (const line of input.items) {
 		const product = ctx.productById.get(line.productId)!;
+
+		if (
+			(product.drugSchedule === 'H1' || product.drugSchedule === 'X') &&
+			(!input.patientName?.trim() || !input.prescriberName?.trim() || !input.prescriberRegNo?.trim())
+		) {
+			throw new BillingError(
+				'SCHEDULE_H1_COMPLIANCE_REQUIRED',
+				`Rule 65 compliance required: Prescribing Doctor Name, Medical Registration Number, and Patient Name must be provided for Schedule ${product.drugSchedule} medicine (${product.name}).`,
+				422
+			);
+		}
+
 		const { unit, conversion } = pickUnit(ctx, line.productId, line.unitId);
 		const baseNeeded = Math.round(line.quantity * conversion);
 		if (!Number.isFinite(line.quantity) || line.quantity <= 0 || baseNeeded <= 0) {
