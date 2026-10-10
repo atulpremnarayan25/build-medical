@@ -7,6 +7,7 @@
 	import KeyboardShortcutsModal from '$lib/components/billing/KeyboardShortcutsModal.svelte';
 	import HoldBillsModal, { type HeldBill } from '$lib/components/billing/HoldBillsModal.svelte';
 	import PrintableInvoice, { type PrintableInvoiceData } from '$lib/components/billing/PrintableInvoice.svelte';
+	import SalesHistoryPanel from '$lib/components/billing/SalesHistoryPanel.svelte';
 
 	import type {
 		Product,
@@ -41,7 +42,10 @@
 
 	// Header & Transaction State
 	let selectedCustomer = $state<Customer | null>(null);
-	let invoiceNumber = $state('INV-NEW');
+	let isWalkIn = $state(false);
+	let isCustomerSelected = $derived(isWalkIn || selectedCustomer !== null);
+	let billSeries = $state<'T' | 'R'>('T');
+	let invoiceNumber = $state('T000001');
 	let date = $state(new Date().toISOString().split('T')[0]);
 	let paymentType = $state<PaymentMethod>('cash');
 	let customerType = $state<'retail' | 'wholesale'>('retail');
@@ -67,6 +71,10 @@
 			rackLocation?: string;
 			hsnCode?: string;
 			category?: string;
+			pack?: string;
+			packSize?: number;
+			freeQuantity?: number;
+			schemeApplied?: string;
 		})[]
 	>([]);
 	let nextUiKey = 0;
@@ -100,7 +108,7 @@
 	onMount(() => {
 		loadHeldBills();
 		tick().then(() => {
-			if (searchInputRef) searchInputRef.focus();
+			if (customerInputRef) customerInputRef.focus();
 		});
 		generateInvoiceNumber();
 	});
@@ -125,10 +133,11 @@
 		}
 	}
 
-	async function generateInvoiceNumber() {
+	async function generateInvoiceNumber(series = billSeries) {
 		try {
 			const sales = await saleService.getSales();
-			invoiceNumber = `INV/${new Date().getFullYear()}/${(sales.length + 1).toString().padStart(4, '0')}`;
+			const count = (sales.length + 1).toString().padStart(6, '0');
+			invoiceNumber = `${series}${count}`;
 		} catch (e) {
 			console.error(e);
 		}
@@ -195,11 +204,51 @@
 	let changeDue = $derived(amountTendered > grandTotal ? amountTendered - grandTotal : 0);
 	let amountPending = $derived(grandTotal > amountTendered ? grandTotal - amountTendered : 0);
 
-	function handleCustomerSelect(customer: Customer | null) {
-		selectedCustomer = customer;
-		setTimeout(() => {
-			searchInputRef?.focus();
-		}, 50);
+	function handleCustomerSelect(customer: Customer | null, walkIn = false) {
+		if (customer) {
+			selectedCustomer = customer;
+			isWalkIn = false;
+			if (customer.billSeries) {
+				billSeries = customer.billSeries === 'R' ? 'R' : 'T';
+			} else if (customer.gstin) {
+				billSeries = 'T';
+			}
+			if (customer.gstin || billSeries === 'T') {
+				customerType = 'wholesale';
+			}
+			generateInvoiceNumber(billSeries);
+			addToast('info', `Customer selected: ${customer.name}`);
+			setTimeout(() => {
+				searchInputRef?.focus();
+				searchInputRef?.select();
+			}, 50);
+		} else if (walkIn) {
+			selectedCustomer = null;
+			isWalkIn = true;
+			customerType = 'retail';
+			billSeries = 'R';
+			generateInvoiceNumber(billSeries);
+			addToast('info', 'Walk-in Customer selected (Cash Sale)');
+			setTimeout(() => {
+				searchInputRef?.focus();
+				searchInputRef?.select();
+			}, 50);
+		} else {
+			// Clearing customer
+			if (items.length > 0) {
+				selectedCustomer = null;
+				isWalkIn = true;
+				customerType = 'retail';
+				billSeries = 'R';
+				addToast('warning', 'Customer cleared. Bill converted to Walk-in Cash Sale.');
+			} else {
+				selectedCustomer = null;
+				isWalkIn = false;
+				setTimeout(() => {
+					customerInputRef?.focus();
+				}, 50);
+			}
+		}
 	}
 
 	// Inline batch selection callback from ProductSearch.svelte
@@ -211,7 +260,11 @@
 			batchId: batch.id,
 			batchNumber: batch.batchNumber,
 			expiryDate: batch.expiryDate,
+			pack: (product as any).pack || (product.packSize ? `1X${product.packSize}` : '1PH'),
+			packSize: product.packSize || 10,
 			quantity: 1,
+			freeQuantity: 0,
+			schemeApplied: '',
 			mrp: batch.mrp,
 			rate: customerType === 'wholesale' ? (batch.purchaseRate * 1.1) : batch.sellingRate,
 			discount: 0,
@@ -349,6 +402,7 @@
 			// Reset terminal fields for next customer
 			items = [];
 			selectedCustomer = null;
+			isWalkIn = false;
 			paymentType = 'cash';
 			customerType = 'retail';
 			amountTendered = 0;
@@ -360,9 +414,9 @@
 			activeItemIndex = 0;
 			await generateInvoiceNumber();
 
-			// Auto-focus search for the next customer
+			// Auto-focus customer input for the next customer
 			setTimeout(() => {
-				searchInputRef?.focus();
+				customerInputRef?.focus();
 			}, 300);
 		} catch (e) {
 			console.error(e);
@@ -430,6 +484,7 @@
 		// Reset for next customer
 		items = [];
 		selectedCustomer = null;
+		isWalkIn = false;
 		paymentType = 'cash';
 		customerType = 'retail';
 		amountTendered = 0;
@@ -438,12 +493,13 @@
 		prescriberRegNo = '';
 		h1Errors = { patient: false, prescriber: false, regNo: false };
 		generateInvoiceNumber();
-		searchInputRef?.focus();
+		customerInputRef?.focus();
 	}
 
 	function handleRecallBill(bill: HeldBill) {
 		items = bill.items;
 		selectedCustomer = bill.customer;
+		isWalkIn = bill.customer === null;
 		customerType = bill.customerType;
 		paymentType = bill.paymentType;
 		amountTendered = bill.amountTendered;
@@ -470,10 +526,21 @@
 			handleSaveSale();
 		} else if (e.key === 'F2') {
 			e.preventDefault();
-			searchInputRef?.focus();
+			if (!isCustomerSelected) {
+				customerInputRef?.focus();
+				customerInputRef?.select();
+				addToast('info', 'Please select a customer or press Enter for Walk-in first.');
+			} else {
+				searchInputRef?.focus();
+				searchInputRef?.select();
+			}
 		} else if (e.key === 'F3') {
 			e.preventDefault();
 			customerInputRef?.focus();
+			customerInputRef?.select();
+		} else if (e.altKey && e.key.toLowerCase() === 'w') {
+			e.preventDefault();
+			handleCustomerSelect(null, true);
 		} else if (e.key === 'F4') {
 			e.preventDefault();
 			cyclePaymentType();
@@ -513,9 +580,29 @@
 			<div>
 				<div class="flex items-center gap-2">
 					<h1 class="text-sm font-bold text-text-primary">High-Speed Billing Terminal</h1>
-					<span class="rounded border border-accent/20 bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent">
-						{invoiceNumber}
-					</span>
+					<div class="flex items-center gap-1">
+						<select
+							bind:value={billSeries}
+							onchange={() => generateInvoiceNumber(billSeries)}
+							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-xs font-bold text-primary focus:border-accent focus:outline-none"
+							title="Bill Series: T (Tax Invoice / B2B) or R (Retail Cash Memo)"
+						>
+							<option value="T">T (Tax)</option>
+							<option value="R">R (Retail)</option>
+						</select>
+						<span class="rounded border border-accent/20 bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent">
+							{invoiceNumber}
+						</span>
+					</div>
+					{#if customerType === 'wholesale'}
+						<span class="rounded bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent border border-accent/30">
+							Rate in P.T.R.
+						</span>
+					{:else}
+						<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
+							Rate in MRP
+						</span>
+					{/if}
 					<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
 						{data.currentUser?.name || 'Cashier'}
 					</span>
@@ -590,9 +677,25 @@
 	<!-- High-Visibility Ergonomic Shortcut Legend -->
 	<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/70 px-3 py-1.5 text-xs">
 		<div class="flex flex-wrap items-center gap-3">
-			<button type="button" onclick={() => searchInputRef?.focus()} class="flex items-center gap-1 text-accent font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-accent shadow-2xs">F2</kbd>
-				<span>Medicine</span>
+			<button
+				type="button"
+				onclick={() => {
+					if (!isCustomerSelected) {
+						customerInputRef?.focus();
+						customerInputRef?.select();
+						addToast('info', 'Please select a customer or press Enter for Walk-in first.');
+					} else {
+						searchInputRef?.focus();
+						searchInputRef?.select();
+					}
+				}}
+				class="flex items-center gap-1 font-semibold hover:underline {isCustomerSelected ? 'text-accent' : 'text-text-muted opacity-75'}"
+			>
+				<kbd class="rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-2xs
+					{isCustomerSelected ? 'border-border-strong bg-surface text-accent' : 'border-border bg-surface-secondary text-text-muted'}">
+					F2
+				</kbd>
+				<span>Medicine {#if !isCustomerSelected}(Locked){/if}</span>
 			</button>
 			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1 text-text-primary font-semibold hover:underline">
 				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-primary shadow-2xs">F3</kbd>
@@ -622,8 +725,13 @@
 
 		<div class="flex items-center gap-2 text-[11px] text-text-muted">
 			<span class="flex items-center gap-1">
+				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Alt+W</kbd>
+				<span>→ walk-in cash</span>
+			</span>
+			<span>•</span>
+			<span class="flex items-center gap-1">
 				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Enter on Qty</kbd>
-				<span>→ moves cursor to F2</span>
+				<span>→ next item</span>
 			</span>
 			<span>•</span>
 			<span class="flex items-center gap-1">
@@ -642,6 +750,11 @@
 				<ProductSearch
 					onSelectBatch={handleInlineBatchSelect}
 					bind:inputRef={searchInputRef}
+					disabled={!isCustomerSelected}
+					onFocusCustomer={() => {
+						customerInputRef?.focus();
+						customerInputRef?.select();
+					}}
 				/>
 			</div>
 
@@ -651,7 +764,16 @@
 					bind:items
 					bind:activeIndex={activeItemIndex}
 					onRemoveItem={handleRemoveItem}
-					onFocusSearch={() => searchInputRef?.focus()}
+					onFocusSearch={() => {
+						if (!isCustomerSelected) {
+							customerInputRef?.focus();
+							customerInputRef?.select();
+						} else {
+							searchInputRef?.focus();
+						}
+					}}
+					disabled={!isCustomerSelected}
+					onSelectWalkIn={() => handleCustomerSelect(null, true)}
 				/>
 
 				{#if quoteError}
@@ -659,6 +781,15 @@
 						⚠️ {quoteError}
 					</div>
 				{/if}
+
+				<SalesHistoryPanel
+					productId={activeItem?.productId}
+					productName={activeItem?.productName}
+					batchNo={activeItem?.batchNumber}
+					packSize={activeItem?.packSize || 10}
+					customerId={selectedCustomer?.id}
+					saleType={customerType}
+				/>
 			</div>
 
 			<!-- ACTIVE ITEM INSPECTOR STRIP AT BOTTOM -->
@@ -760,6 +891,7 @@
 					<CustomerSearch
 						onSelect={handleCustomerSelect}
 						bind:selectedCustomer
+						bind:isWalkIn
 						bind:inputRef={customerInputRef}
 					/>
 				</div>

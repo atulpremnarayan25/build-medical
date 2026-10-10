@@ -86,11 +86,27 @@ export class DbSupplierRepository implements SupplierRepository {
 			id,
 			storeId,
 			name: input.name,
+			code: input.code || null,
 			contactPhone: input.phone || null,
+			telephone: input.telephone || null,
 			address: input.address || null,
+			city: input.city || null,
+			pinCode: input.pinCode || null,
 			gstin: input.gstin || null,
+			stateCode: input.stateCode || null,
+			stateName: input.stateName || null,
+			panNo: input.panNo || null,
+			drugLicenseNo1: input.drugLicenseNo1 || null,
+			drugLicenseNo2: input.drugLicenseNo2 || null,
+			drugLicenseExpiry: input.drugLicenseExpiry || null,
+			fssaiLicenseNo: input.fssaiLicenseNo || null,
+			tdsApplicable: input.tdsApplicable ?? false,
+			creditDays: input.creditDays !== undefined ? input.creditDays : 21,
+			openingBalance: input.openingBalance !== undefined ? String(input.openingBalance) : '0',
+			contactPerson: input.contactPerson || null,
+			remarks: input.remarks || null,
 			outstandingBalance: '0',
-			isActive: true,
+			isActive: input.active !== undefined ? input.active : true,
 			createdAt: now,
 			updatedAt: now
 		};
@@ -106,9 +122,26 @@ export class DbSupplierRepository implements SupplierRepository {
 	async update(id: string, input: Partial<CreateSupplierInput>): Promise<Supplier> {
 		const updateData: any = { updatedAt: new Date() };
 		if (input.name !== undefined) updateData.name = input.name;
+		if (input.code !== undefined) updateData.code = input.code;
 		if (input.phone !== undefined) updateData.contactPhone = input.phone;
+		if (input.telephone !== undefined) updateData.telephone = input.telephone;
 		if (input.address !== undefined) updateData.address = input.address;
+		if (input.city !== undefined) updateData.city = input.city;
+		if (input.pinCode !== undefined) updateData.pinCode = input.pinCode;
 		if (input.gstin !== undefined) updateData.gstin = input.gstin;
+		if (input.stateCode !== undefined) updateData.stateCode = input.stateCode;
+		if (input.stateName !== undefined) updateData.stateName = input.stateName;
+		if (input.panNo !== undefined) updateData.panNo = input.panNo;
+		if (input.drugLicenseNo1 !== undefined) updateData.drugLicenseNo1 = input.drugLicenseNo1;
+		if (input.drugLicenseNo2 !== undefined) updateData.drugLicenseNo2 = input.drugLicenseNo2;
+		if (input.drugLicenseExpiry !== undefined) updateData.drugLicenseExpiry = input.drugLicenseExpiry;
+		if (input.fssaiLicenseNo !== undefined) updateData.fssaiLicenseNo = input.fssaiLicenseNo;
+		if (input.tdsApplicable !== undefined) updateData.tdsApplicable = input.tdsApplicable;
+		if (input.creditDays !== undefined) updateData.creditDays = input.creditDays;
+		if (input.openingBalance !== undefined) updateData.openingBalance = String(input.openingBalance);
+		if (input.contactPerson !== undefined) updateData.contactPerson = input.contactPerson;
+		if (input.remarks !== undefined) updateData.remarks = input.remarks;
+		if (input.active !== undefined) updateData.isActive = input.active;
 
 		await pgDb.transaction(async (tx) => {
 			await this._db.update(suppliersTable).set(updateData).where(eq(suppliersTable.id, id));

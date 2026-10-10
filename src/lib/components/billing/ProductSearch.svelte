@@ -2,17 +2,21 @@
 	import type { Product } from '$lib/types/product.js';
 	import { productService, batchService } from '$lib/services/index.js';
 	import type { Batch } from '$lib/types/batch.js';
-	import { Search, Pill, ShieldAlert, AlertTriangle, ArrowLeft, Check, AlertCircle } from '@lucide/svelte';
+	import { Search, Pill, ShieldAlert, AlertTriangle, ArrowLeft, Check, AlertCircle, Lock } from '@lucide/svelte';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 
 	let {
 		onSelectBatch,
 		onSelect,
-		inputRef = $bindable()
+		inputRef = $bindable(),
+		disabled = false,
+		onFocusCustomer
 	}: {
 		onSelectBatch?: (product: Product, batch: Batch) => void;
 		onSelect?: (product: Product, batches: Batch[]) => void;
 		inputRef?: HTMLInputElement;
+		disabled?: boolean;
+		onFocusCustomer?: () => void;
 	} = $props();
 
 	let searchQuery = $state('');
@@ -227,14 +231,24 @@
 
 <div class="relative w-full">
 	<div class="relative flex items-center">
+		{#if disabled}
+			<button
+				type="button"
+				class="absolute inset-0 z-10 w-full h-full cursor-not-allowed bg-transparent"
+				onclick={() => onFocusCustomer?.()}
+				aria-label="Customer selection required before adding medicines"
+			></button>
+		{/if}
 		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-text-muted">
-			<Search size={18} class="text-accent" />
+			<Search size={18} class={disabled ? 'text-text-muted opacity-50' : 'text-accent'} />
 		</div>
 		<input
 			bind:this={inputRef}
 			type="text"
 			bind:value={searchQuery}
+			disabled={disabled}
 			onfocus={() => {
+				if (disabled) return;
 				isFocused = true;
 				if (selectionMode === 'batches') selectionMode = 'products';
 			}}
@@ -242,16 +256,25 @@
 				if (selectionMode === 'products') isFocused = false;
 			}, 250)}
 			onkeydown={handleKeyDown}
-			placeholder="Search medicine by Brand, Composition, Generic or Barcode (F2)..."
-			class="block w-full rounded-lg border border-border bg-surface py-2.5 pr-20 pl-11 text-sm font-medium text-text-primary placeholder:text-text-muted transition-all duration-150 ease-in-out focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none"
+			placeholder={disabled
+				? 'Select a customer first to search medicines (F3)...'
+				: 'Search medicine by Brand, Composition, Generic or Barcode (F2)...'}
+			class="block w-full rounded-lg border border-border bg-surface py-2.5 pr-20 pl-11 text-sm font-medium text-text-primary placeholder:text-text-muted transition-all duration-150 ease-in-out focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-secondary/70 disabled:text-text-muted disabled:border-border-subtle"
 		/>
 		<div class="absolute inset-y-0 right-0 flex items-center pr-3 gap-1.5 pointer-events-none">
 			{#if isLoading}
 				<span class="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
 			{/if}
-			<kbd class="hidden sm:inline-flex items-center rounded border border-border-strong bg-surface-secondary px-2 py-0.5 font-mono text-[11px] font-semibold text-text-muted shadow-2xs">
-				F2
-			</kbd>
+			{#if disabled}
+				<span class="inline-flex items-center gap-1 rounded bg-surface-secondary border border-border px-2 py-0.5 text-[11px] font-semibold text-text-muted">
+					<Lock size={12} />
+					<span class="hidden sm:inline">Customer Required</span>
+				</span>
+			{:else}
+				<kbd class="hidden sm:inline-flex items-center rounded border border-border-strong bg-surface-secondary px-2 py-0.5 font-mono text-[11px] font-semibold text-text-muted shadow-2xs">
+					F2
+				</kbd>
+			{/if}
 		</div>
 	</div>
 

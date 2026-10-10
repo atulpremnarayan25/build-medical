@@ -9,6 +9,7 @@
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import GlobalSearch from '../common/GlobalSearch.svelte';
 	import ThemeToggle from '../common/ThemeToggle.svelte';
+	import PharmaMenuBar from './PharmaMenuBar.svelte';
 	import {
 		Menu,
 		PanelLeftClose,
@@ -87,6 +88,9 @@
 
 	<!-- Search trigger -->
 	<GlobalSearch />
+
+	<!-- Classic Pharma ERP Menu Hierarchy (File, Report, Account) -->
+	<PharmaMenuBar />
 
 	<!-- Spacer -->
 	<div class="flex-1 sm:hidden"></div>

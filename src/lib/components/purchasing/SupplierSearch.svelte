@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Supplier } from '$lib/types/supplier.js';
 	import { supplierService } from '$lib/services/index.js';
+	import { Truck, CheckCircle2, X } from '@lucide/svelte';
 
 	let {
 		onSelect,
@@ -33,6 +34,8 @@
 	$effect(() => {
 		if (selectedSupplier) {
 			searchQuery = selectedSupplier.name;
+		} else if (!isFocused && searchQuery !== '') {
+			searchQuery = '';
 		}
 	});
 
@@ -50,7 +53,7 @@
 			const all = await supplierService.searchSuppliers(query);
 			results = all.slice(0, 10);
 			selectedIndex = 0;
-		}, 200);
+		}, 180);
 	}
 
 	function handleSelect(supplier: Supplier | null) {
@@ -58,6 +61,14 @@
 		searchQuery = supplier ? supplier.name : '';
 		results = [];
 		onSelect(supplier);
+	}
+
+	function handleClear() {
+		selectedSupplier = null;
+		searchQuery = '';
+		results = [];
+		onSelect(null);
+		inputRef?.focus();
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
@@ -79,22 +90,61 @@
 </script>
 
 <div class="relative w-full">
-	<input
-		bind:this={inputRef}
-		type="text"
-		bind:value={searchQuery}
-		oninput={handleSearch}
-		onfocus={() => (isFocused = true)}
-		onblur={() => setTimeout(() => (isFocused = false), 200)}
-		onkeydown={handleKeyDown}
-		placeholder="Search distributor / supplier (F3)..."
-		class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-	/>
+	<div class="relative flex items-center">
+		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-text-muted">
+			{#if selectedSupplier}
+				<CheckCircle2 size={15} class="text-accent" />
+			{:else}
+				<Truck size={15} class="text-text-muted" />
+			{/if}
+		</div>
+		<input
+			bind:this={inputRef}
+			type="text"
+			bind:value={searchQuery}
+			oninput={handleSearch}
+			onfocus={() => {
+				isFocused = true;
+				if (selectedSupplier) {
+					setTimeout(() => inputRef?.select(), 10);
+				}
+			}}
+			onblur={() => setTimeout(() => (isFocused = false), 250)}
+			onkeydown={handleKeyDown}
+			placeholder="Search distributor / supplier (F3)..."
+			class="w-full rounded border border-border bg-surface py-1.5 pr-14 pl-8 text-xs text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+		/>
+		<div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
+			{#if selectedSupplier}
+				<button
+					type="button"
+					onclick={handleClear}
+					class="rounded p-0.5 text-text-muted hover:bg-surface-hover hover:text-text-primary"
+					title="Clear supplier selection"
+					aria-label="Clear supplier selection"
+				>
+					<X size={13} />
+				</button>
+			{/if}
+			<kbd class="pointer-events-none rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted">
+				F3
+			</kbd>
+		</div>
+	</div>
+
+	{#if selectedSupplier}
+		<div class="mt-1 flex flex-wrap items-center justify-between rounded bg-accent/10 border border-accent/20 px-2 py-0.5 text-[11px] text-accent">
+			<span class="truncate font-semibold">{selectedSupplier.name}</span>
+			{#if selectedSupplier.gstNumber}
+				<span class="font-mono text-[10px] text-text-muted">GST: {selectedSupplier.gstNumber}</span>
+			{/if}
+		</div>
+	{/if}
 
 	{#if isFocused && results.length > 0}
 		<ul
 			bind:this={listRef}
-			class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl divide-y divide-border/60 focus:outline-none"
+			class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl divide-y divide-border/60 focus:outline-none"
 		>
 			{#each results as supplier, i (supplier.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->

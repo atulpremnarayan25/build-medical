@@ -11,6 +11,7 @@ export interface PurchaseItem {
 	expiryDate: string;
 	quantity: number;
 	freeQuantity: number;
+	dealScheme?: string;
 	packSize?: number;
 	unit?: string;
 	baseQuantity?: number;

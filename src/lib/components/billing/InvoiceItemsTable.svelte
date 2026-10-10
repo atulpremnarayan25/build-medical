@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type { CreateSaleItemInput } from '$lib/types/sale.js';
-	import { Trash2, Pill, ShieldAlert, AlertTriangle } from '@lucide/svelte';
+	import { Trash2, Pill, ShieldAlert, User } from '@lucide/svelte';
 
 	let {
 		items = $bindable(),
 		onRemoveItem,
 		onFocusSearch,
-		activeIndex = $bindable(0)
+		activeIndex = $bindable(0),
+		disabled = false,
+		onSelectWalkIn
 	}: {
 		items: (CreateSaleItemInput & {
 			uiKey: number;
@@ -15,25 +17,27 @@
 			genericName?: string;
 			rackLocation?: string;
 			hsnCode?: string;
+			pack?: string;
+			packSize?: number;
+			freeQuantity?: number;
+			schemeApplied?: string;
 		})[];
 		onRemoveItem: (index: number) => void;
 		onFocusSearch?: () => void;
 		activeIndex?: number;
+		disabled?: boolean;
+		onSelectWalkIn?: () => void;
 	} = $props();
 
 	function handleQtyKeyDown(e: KeyboardEvent, index: number) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
-			if (onFocusSearch) {
+			const rateInput = document.querySelector(`.rate-input-${index}`) as HTMLInputElement;
+			if (rateInput) {
+				rateInput.focus();
+				rateInput.select();
+			} else if (onFocusSearch) {
 				onFocusSearch();
-			} else {
-				const searchInput = document.querySelector(
-					'input[placeholder*="Search medicine"]'
-				) as HTMLInputElement;
-				if (searchInput) {
-					searchInput.focus();
-					searchInput.select();
-				}
 			}
 		} else if (e.key === 'ArrowDown') {
 			if (index < items.length - 1) {
@@ -112,13 +116,15 @@
 			<tr>
 				<th class="w-8 px-2 py-1 text-center">#</th>
 				<th class="px-2.5 py-1">Medicine Description</th>
+				<th class="w-16 px-1.5 py-1 text-center">Pack</th>
 				<th class="w-24 px-2 py-1">Batch</th>
 				<th class="w-16 px-1.5 py-1 text-center">Exp</th>
-				<th class="w-20 px-1.5 py-1 text-right">Qty</th>
-				<th class="w-20 px-2 py-1 text-right">MRP (₹)</th>
+				<th class="w-16 px-1.5 py-1 text-right">Qty</th>
+				<th class="w-16 px-1.5 py-1 text-center">Free/Deal</th>
 				<th class="w-20 px-1.5 py-1 text-right">Rate (₹)</th>
 				<th class="w-16 px-1.5 py-1 text-right">Dis %</th>
 				<th class="w-14 px-1.5 py-1 text-right">GST %</th>
+				<th class="w-20 px-2 py-1 text-right">MRP (₹)</th>
 				<th class="w-24 px-2.5 py-1 text-right">Net (₹)</th>
 				<th class="w-8 px-1.5 py-1 text-center"></th>
 			</tr>
@@ -126,15 +132,35 @@
 		<tbody class="divide-y divide-border-subtle">
 			{#if items.length === 0}
 				<tr>
-					<td colspan="11" class="px-4 py-16 text-center text-text-muted">
+					<td colspan="13" class="px-4 py-16 text-center text-text-muted">
 						<div class="mx-auto flex max-w-sm flex-col items-center justify-center">
-							<div class="flex h-10 w-10 items-center justify-center rounded-full bg-accent-light/40 text-accent mb-2">
-								<Pill size={20} />
-							</div>
-							<p class="font-semibold text-text-primary text-xs">Line Items Grid Ready</p>
-							<p class="text-[11px] text-text-muted mt-1">
-								Press <kbd class="rounded border border-border-strong bg-surface-secondary px-1 py-0.2 font-mono text-[10px] font-bold text-accent shadow-2xs">F2</kbd> to search products, or scan a barcode to add line items.
-							</p>
+							{#if disabled}
+								<div class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-secondary text-text-muted mb-2">
+									<User size={20} />
+								</div>
+								<p class="font-bold text-text-primary text-xs">Customer Selection Required</p>
+								<p class="text-[11px] text-text-muted mt-1 max-w-[280px]">
+									Select an existing customer (F3) or choose Walk-in cash sale before adding medicines to the bill.
+								</p>
+								{#if onSelectWalkIn}
+									<button
+										type="button"
+										onclick={onSelectWalkIn}
+										class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-accent-hover active:scale-95 transition-all"
+									>
+										<User size={13} />
+										<span>⚡ Select Walk-in Customer</span>
+									</button>
+								{/if}
+							{:else}
+								<div class="flex h-10 w-10 items-center justify-center rounded-full bg-accent-light/40 text-accent mb-2">
+									<Pill size={20} />
+								</div>
+								<p class="font-semibold text-text-primary text-xs">Line Items Grid Ready</p>
+								<p class="text-[11px] text-text-muted mt-1">
+									Press <kbd class="rounded border border-border-strong bg-surface-secondary px-1 py-0.2 font-mono text-[10px] font-bold text-accent shadow-2xs">F2</kbd> to search products, or scan a barcode to add line items.
+								</p>
+							{/if}
 						</div>
 					</td>
 				</tr>
@@ -142,10 +168,9 @@
 				{#each items as item, index (item.uiKey)}
 					{@const isStockShortage = item.availableStock !== undefined && item.quantity > item.availableStock}
 					{@const isSelected = activeIndex === index}
-					<!-- 28px compact row height -->
 					<tr
 						class="h-[28px] max-h-[28px] transition-colors group cursor-pointer
-							{isSelected ? 'bg-accent-light/50 font-medium' : 'hover:bg-surface-hover/70'}
+							{isSelected ? 'bg-accent-light/50 font-medium ring-1 ring-inset ring-primary/20' : 'hover:bg-surface-hover/70'}
 							{isStockShortage ? 'bg-danger-light/25' : ''}"
 						onclick={() => (activeIndex = index)}
 					>
@@ -157,7 +182,7 @@
 						<!-- Product Name & Schedule Tag -->
 						<td class="px-2.5 py-0.5">
 							<div class="flex items-center gap-1.5 truncate">
-								<span class="truncate font-semibold text-text-primary max-w-[240px]">{item.productName}</span>
+								<span class="truncate font-semibold text-text-primary max-w-[220px]">{item.productName}</span>
 								{#if item.drugSchedule && item.drugSchedule !== 'none'}
 									<span class="inline-flex shrink-0 items-center gap-0.5 rounded px-1 py-0.2 text-[9px] font-bold uppercase tracking-wider
 										{item.drugSchedule === 'H1' || item.drugSchedule === 'X'
@@ -168,6 +193,13 @@
 									</span>
 								{/if}
 							</div>
+						</td>
+
+						<!-- Pack -->
+						<td class="px-1.5 py-0.5 text-center">
+							<span class="rounded bg-surface-secondary px-1.5 py-0.2 font-mono text-[10px] text-text-muted">
+								{item.pack || (item.packSize ? `1X${item.packSize}` : '1PH')}
+							</span>
 						</td>
 
 						<!-- Batch -->
@@ -184,7 +216,7 @@
 							</span>
 						</td>
 
-						<!-- Quantity (Interactive 28px height input) -->
+						<!-- Quantity -->
 						<td class="px-1.5 py-0.5 text-right">
 							<div class="relative w-full flex items-center justify-end">
 								<input
@@ -201,9 +233,15 @@
 							</div>
 						</td>
 
-						<!-- MRP -->
-						<td class="px-2 py-0.5 text-right font-mono text-[11px] text-text-muted tabular-nums">
-							₹{item.mrp.toFixed(2)}
+						<!-- Free / Deal -->
+						<td class="px-1.5 py-0.5 text-center font-mono text-[11px] text-text-muted">
+							{#if item.freeQuantity}
+								<span class="rounded bg-success/10 px-1 py-0.2 font-semibold text-success">+{item.freeQuantity}</span>
+							{:else if item.schemeApplied}
+								<span class="rounded bg-primary/10 px-1 py-0.2 text-[10px] text-primary">{item.schemeApplied}</span>
+							{:else}
+								-
+							{/if}
 						</td>
 
 						<!-- Rate (Interactive) -->
@@ -235,6 +273,11 @@
 						<!-- GST % -->
 						<td class="px-1.5 py-0.5 text-right font-mono text-[11px] text-text-muted tabular-nums">
 							{item.gstRate}%
+						</td>
+
+						<!-- MRP -->
+						<td class="px-2 py-0.5 text-right font-mono text-[11px] text-text-muted tabular-nums">
+							₹{item.mrp.toFixed(2)}
 						</td>
 
 						<!-- Net Amount -->

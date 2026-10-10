@@ -1,14 +1,18 @@
 <script lang="ts">
 	import type { Product } from '$lib/types/product.js';
 	import { productService } from '$lib/services/index.js';
-	import { Search } from '@lucide/svelte';
+	import { Search, Lock } from '@lucide/svelte';
 
 	let {
 		onSelect,
-		inputRef = $bindable()
+		inputRef = $bindable(),
+		disabled = false,
+		onFocusSupplier
 	}: {
 		onSelect: (product: Product) => void;
 		inputRef?: HTMLInputElement;
+		disabled?: boolean;
+		onFocusSupplier?: () => void;
 	} = $props();
 
 	let searchQuery = $state('');
@@ -68,22 +72,40 @@
 </script>
 
 <div class="relative w-full">
+	{#if disabled}
+		<button
+			type="button"
+			class="absolute inset-0 z-10 w-full h-full cursor-not-allowed bg-transparent"
+			onclick={() => onFocusSupplier?.()}
+			aria-label="Supplier selection required before adding medicines"
+		></button>
+	{/if}
 	<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
-		<Search size={16} />
+		<Search size={16} class={disabled ? 'text-text-muted opacity-50' : 'text-accent'} />
 	</div>
 	<input
 		bind:this={inputRef}
 		type="text"
 		bind:value={searchQuery}
+		disabled={disabled}
 		oninput={handleSearch}
 		onfocus={() => (isFocused = true)}
 		onblur={() => setTimeout(() => (isFocused = false), 200)}
 		onkeydown={handleKeyDown}
-		placeholder="Search product by brand, generic, or scan barcode (Press F2)..."
-		class="block w-full rounded-lg border-2 border-accent/40 bg-surface py-2.5 pr-10 pl-9.5 text-xs font-semibold text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+		placeholder={disabled
+			? 'Select a supplier first to search medicines (F3)...'
+			: 'Search product by brand, generic, or scan barcode (Press F2)...'}
+		class="block w-full rounded-lg border-2 border-accent/40 bg-surface py-2.5 pr-28 pl-9.5 text-xs font-semibold text-text-primary placeholder:text-text-muted transition-all focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-secondary/70 disabled:text-text-muted disabled:border-border-subtle"
 	/>
-	<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-		<kbd class="rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted">F2</kbd>
+	<div class="absolute inset-y-0 right-0 flex items-center pr-3 gap-1.5 pointer-events-none">
+		{#if disabled}
+			<span class="inline-flex items-center gap-1 rounded bg-surface-secondary border border-border px-2 py-0.5 text-[11px] font-semibold text-text-muted">
+				<Lock size={12} />
+				<span class="hidden sm:inline">Supplier Required</span>
+			</span>
+		{:else}
+			<kbd class="rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted">F2</kbd>
+		{/if}
 	</div>
 
 	{#if isFocused && results.length > 0}

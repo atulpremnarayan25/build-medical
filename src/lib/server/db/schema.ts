@@ -210,15 +210,34 @@ export const suppliersTable = pgTable(
 			.notNull()
 			.references(() => storesTable.id),
 		name: text('name').notNull(),
+		code: text('code'),
 		contactPhone: text('contact_phone'),
+		telephone: text('telephone'),
 		address: text('address'),
+		city: text('city'),
+		pinCode: text('pin_code'),
 		gstin: text('gstin'),
+		stateCode: text('state_code'),
+		stateName: text('state_name'),
+		panNo: text('pan_no'),
+		drugLicenseNo1: text('drug_license_no_1'),
+		drugLicenseNo2: text('drug_license_no_2'),
+		drugLicenseExpiry: date('drug_license_expiry', { mode: 'string' }),
+		fssaiLicenseNo: text('fssai_license_no'),
+		tdsApplicable: boolean('tds_applicable').default(false),
+		creditDays: integer('credit_days').default(21),
+		openingBalance: numeric('opening_balance').default('0'),
+		contactPerson: text('contact_person'),
+		remarks: text('remarks'),
 		outstandingBalance: numeric('outstanding_balance').notNull().default('0'),
 		isActive: boolean('is_active').notNull().default(true),
 		...createdAt,
 		...syncColumns
 	},
-	(t) => [index('suppliers_store_name_idx').on(t.storeId, t.name)]
+	(t) => [
+		index('suppliers_store_name_idx').on(t.storeId, t.name),
+		index('suppliers_code_idx').on(t.storeId, t.code)
+	]
 );
 
 /** §8 customers — khata balance is derived, never stored. */
@@ -230,16 +249,42 @@ export const customersTable = pgTable(
 			.notNull()
 			.references(() => storesTable.id),
 		name: text('name').notNull(),
+		code: text('code'),
 		contactPhone: text('contact_phone'),
+		telephone: text('telephone'),
+		mobileSms: text('mobile_sms'),
 		address: text('address'),
+		city: text('city'),
+		pinCode: text('pin_code'),
 		gstin: text('gstin'), // wholesale/B2B only
+		stateCode: text('state_code'),
+		stateName: text('state_name'),
+		panNo: text('pan_no'),
+		drugLicenseNo1: text('drug_license_no_1'),
+		drugLicenseNo2: text('drug_license_no_2'),
+		drugLicenseExpiry: date('drug_license_expiry', { mode: 'string' }),
+		fssaiLicenseNo: text('fssai_license_no'),
+		isComposite: boolean('is_composite').default(false),
+		billSeries: text('bill_series').default('T'),
+		salesRep: text('sales_rep'),
 		customerType: text('customer_type').notNull().default('retail'), // wholesale|retail
 		creditLimit: numeric('credit_limit'),
+		creditDays: integer('credit_days').default(30),
+		openingBalance: numeric('opening_balance').default('0'),
+		defaultAddAmount: numeric('default_add_amount').default('0'),
+		defaultAddDetail: text('default_add_detail'),
+		defaultLessAmount: numeric('default_less_amount').default('0'),
+		defaultLessDetail: text('default_less_detail'),
+		contactPerson: text('contact_person'),
+		remarks: text('remarks'),
 		isActive: boolean('is_active').notNull().default(true),
 		...createdAt,
 		...syncColumns
 	},
-	(t) => [index('customers_store_name_idx').on(t.storeId, t.name)]
+	(t) => [
+		index('customers_store_name_idx').on(t.storeId, t.name),
+		index('customers_code_idx').on(t.storeId, t.code)
+	]
 );
 
 /** §9 purchases + purchase_items */

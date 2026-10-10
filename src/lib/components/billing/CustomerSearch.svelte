@@ -7,10 +7,12 @@
 	let {
 		onSelect,
 		selectedCustomer = $bindable(null),
+		isWalkIn = $bindable(false),
 		inputRef = $bindable()
 	}: {
-		onSelect: (customer: Customer | null) => void;
+		onSelect: (customer: Customer | null, isWalkIn?: boolean) => void;
 		selectedCustomer?: Customer | null;
+		isWalkIn?: boolean;
 		inputRef?: HTMLInputElement;
 	} = $props();
 
@@ -45,6 +47,8 @@
 	$effect(() => {
 		if (selectedCustomer) {
 			searchQuery = selectedCustomer.name;
+		} else if (isWalkIn) {
+			searchQuery = 'Walk-in Customer';
 		} else if (!isFocused && searchQuery !== '') {
 			searchQuery = '';
 		}
@@ -52,6 +56,11 @@
 
 	$effect(() => {
 		const query = searchQuery.trim().toLowerCase();
+		if (query === 'walk-in customer') {
+			results = [];
+			isSearching = false;
+			return;
+		}
 		if (query.length < 2) {
 			results = [];
 			isSearching = false;
@@ -96,20 +105,31 @@
 		};
 	});
 
-	function handleSelect(customer: Customer | null) {
-		selectedCustomer = customer;
-		searchQuery = customer ? customer.name : '';
+	function selectWalkIn() {
+		selectedCustomer = null;
+		isWalkIn = true;
+		searchQuery = 'Walk-in Customer';
 		results = [];
 		isQuickCreateMode = false;
-		onSelect(customer);
+		onSelect(null, true);
+	}
+
+	function handleSelect(customer: Customer | null) {
+		selectedCustomer = customer;
+		isWalkIn = customer === null;
+		searchQuery = customer ? customer.name : 'Walk-in Customer';
+		results = [];
+		isQuickCreateMode = false;
+		onSelect(customer, isWalkIn);
 	}
 
 	function handleClear() {
 		selectedCustomer = null;
+		isWalkIn = false;
 		searchQuery = '';
 		results = [];
 		isQuickCreateMode = false;
-		onSelect(null);
+		onSelect(null, false);
 		inputRef?.focus();
 	}
 
@@ -159,7 +179,7 @@
 				if (selectedIndex >= 0 && selectedIndex < results.length) {
 					handleSelect(results[selectedIndex]);
 				} else {
-					handleSelect(null);
+					selectWalkIn();
 				}
 			} else if (e.key === 'Escape') {
 				results = [];
@@ -170,7 +190,7 @@
 				isQuickCreateMode = true;
 				setTimeout(() => nameInputRef?.focus(), 50);
 			} else {
-				handleSelect(null);
+				selectWalkIn();
 			}
 		}
 	}
@@ -181,6 +201,8 @@
 		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
 			{#if selectedCustomer}
 				<UserCheck size={16} class="text-accent" />
+			{:else if isWalkIn}
+				<UserCheck size={16} class="text-success" />
 			{:else}
 				<User size={16} class="text-text-muted" />
 			{/if}
@@ -189,19 +211,24 @@
 			bind:this={inputRef}
 			type="text"
 			bind:value={searchQuery}
-			onfocus={() => (isFocused = true)}
+			onfocus={() => {
+				isFocused = true;
+				if (isWalkIn && !selectedCustomer) {
+					setTimeout(() => inputRef?.select(), 10);
+				}
+			}}
 			onblur={() => setTimeout(() => {
 				if (!isQuickCreateMode) isFocused = false;
 			}, 250)}
 			onkeydown={handleKeyDown}
-			placeholder="Search customer by Name / Phone (F3)..."
+			placeholder="Search customer by Name / Phone (F3) or Enter for Walk-in..."
 			class="w-full rounded-md border border-border bg-surface py-2 pr-16 pl-9 text-xs font-medium text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 		/>
 		<div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
 			{#if isSearching}
 				<span class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
 			{/if}
-			{#if selectedCustomer}
+			{#if selectedCustomer || isWalkIn}
 				<button
 					type="button"
 					onclick={handleClear}
@@ -216,6 +243,30 @@
 			</kbd>
 		</div>
 	</div>
+
+	<!-- 1-Click Fast Walk-in Button when no customer selected -->
+	{#if !selectedCustomer && !isWalkIn}
+		<button
+			type="button"
+			onclick={selectWalkIn}
+			class="mt-1.5 flex w-full items-center justify-between rounded-md border border-accent/30 bg-accent-light/40 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent-light transition-colors"
+			title="Select Walk-in Cash Sale (Enter or Alt+W)"
+		>
+			<span class="flex items-center gap-1.5">
+				<User size={13} />
+				<span>⚡ Fast Walk-in (Cash Sale)</span>
+			</span>
+			<kbd class="font-mono text-[10px] text-accent/80 border border-accent/30 rounded px-1">Enter</kbd>
+		</button>
+	{:else if isWalkIn && !selectedCustomer}
+		<div class="mt-1 flex items-center justify-between rounded bg-success-light border border-success/20 px-2 py-0.5 text-[11px] text-success font-medium">
+			<span class="flex items-center gap-1">
+				<UserCheck size={12} />
+				<span>Walk-in Customer (Retail Cash Sale)</span>
+			</span>
+			<button type="button" onclick={handleClear} class="text-[10px] underline hover:text-text-primary">Change (F3)</button>
+		</div>
+	{/if}
 
 	<!-- Credit Alert Badge if customer has high outstanding -->
 	{#if selectedCustomer && selectedCustomer.outstandingBalance > 0}

@@ -5,6 +5,7 @@
 	import PurchaseItemsTable from '$lib/components/purchasing/PurchaseItemsTable.svelte';
 	import PurchaseSummary from '$lib/components/purchasing/PurchaseSummary.svelte';
 	import SupplierSearch from '$lib/components/purchasing/SupplierSearch.svelte';
+	import PurchaseHistoryPanel from '$lib/components/purchasing/PurchaseHistoryPanel.svelte';
 
 	import type {
 		Product,
@@ -19,6 +20,7 @@
 
 	// Header State
 	let selectedSupplier = $state<Supplier | null>(null);
+	let isSupplierSelected = $derived(selectedSupplier !== null);
 	let invoiceNumber = $state('');
 	let internalPurchaseNo = $state('PUR-NEW');
 	let invoiceDate = $state(new Date().toISOString().split('T')[0]);
@@ -30,7 +32,7 @@
 
 	onMount(() => {
 		tick().then(() => {
-			if (searchInputRef) searchInputRef.focus();
+			if (supplierInputRef) supplierInputRef.focus();
 		});
 		generateInternalNumber();
 	});
@@ -46,6 +48,8 @@
 
 	// Line Items State
 	let items = $state<(CreatePurchaseItemInput & { uiKey: number })[]>([]);
+	let activeRowIndex = $state(0);
+	let activeItem = $derived(items[activeRowIndex] || items[items.length - 1] || null);
 	let nextUiKey = 0;
 
 	// Real-time Line Item Financials with Integer Paise
@@ -98,9 +102,19 @@
 
 	function handleSupplierSelect(supplier: Supplier | null) {
 		selectedSupplier = supplier;
-		setTimeout(() => {
-			searchInputRef?.focus();
-		}, 50);
+		if (supplier) {
+			setTimeout(() => {
+				searchInputRef?.focus();
+			}, 50);
+		} else {
+			supplierInputRef?.focus();
+		}
+	}
+
+	function focusSupplier() {
+		supplierInputRef?.focus();
+		supplierInputRef?.select();
+		addToast('info', 'Please select a supplier first (F3).');
 	}
 
 	function handleProductSelect(product: Product) {
@@ -220,7 +234,7 @@
 			invoiceDate = new Date().toISOString().split('T')[0];
 			await generateInternalNumber();
 
-			searchInputRef?.focus();
+			supplierInputRef?.focus();
 		} catch (e) {
 			console.error(e);
 			addToast('error', 'Failed to save purchase');
@@ -243,11 +257,17 @@
 		}
 		if (e.key === 'F2') {
 			e.preventDefault();
-			searchInputRef?.focus();
+			if (!isSupplierSelected) {
+				focusSupplier();
+			} else {
+				searchInputRef?.focus();
+				searchInputRef?.select();
+			}
 		}
 		if (e.key === 'F3') {
 			e.preventDefault();
 			supplierInputRef?.focus();
+			supplierInputRef?.select();
 		}
 		if (e.key === 'F4') {
 			e.preventDefault();
@@ -276,14 +296,30 @@
 	<div
 		class="flex flex-wrap items-center gap-3 rounded-t-xl border border-b-0 border-border bg-sidebar px-4 py-2 text-xs font-medium text-sidebar-text shadow-2xs"
 	>
-		<span class="flex items-center gap-1.5 text-accent-hover">
+		<button
+			type="button"
+			class="flex items-center gap-1.5 transition-colors {!isSupplierSelected ? 'text-text-muted opacity-60' : 'text-accent-hover'}"
+			onclick={() => {
+				if (!isSupplierSelected) {
+					focusSupplier();
+				} else {
+					searchInputRef?.focus();
+				}
+			}}
+		>
 			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F2</kbd>
-			<span>Product Search</span>
-		</span>
-		<span class="flex items-center gap-1.5 text-info">
+			<span>{!isSupplierSelected ? 'Product Search (Locked)' : 'Product Search'}</span>
+		</button>
+		<button
+			type="button"
+			class="flex items-center gap-1.5 text-info transition-colors"
+			onclick={() => {
+				supplierInputRef?.focus();
+			}}
+		>
 			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F3</kbd>
 			<span>Supplier / Distributor</span>
-		</span>
+		</button>
 		<span class="flex items-center gap-1.5 text-schedule-h1">
 			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F4</kbd>
 			<span>Payment Terms</span>
@@ -351,10 +387,27 @@
 			</div>
 		</div>
 
-		<PurchaseProductSearch onSelect={handleProductSelect} bind:inputRef={searchInputRef} />
+		<PurchaseProductSearch
+			onSelect={handleProductSelect}
+			bind:inputRef={searchInputRef}
+			disabled={!isSupplierSelected}
+			onFocusSupplier={focusSupplier}
+		/>
 	</div>
 
-	<PurchaseItemsTable bind:items onRemoveItem={handleRemoveItem} />
+	<PurchaseItemsTable
+		bind:items
+		bind:activeRowIndex
+		onRemoveItem={handleRemoveItem}
+		disabled={!isSupplierSelected}
+		onFocusSupplier={focusSupplier}
+	/>
+
+	<PurchaseHistoryPanel
+		productId={activeItem?.productId}
+		productName={activeItem?.productName}
+		currentRate={Number(activeItem?.purchaseRate) || 0}
+	/>
 
 	<PurchaseSummary
 		itemCount={items.length}

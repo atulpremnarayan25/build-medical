@@ -9,7 +9,11 @@ export interface SaleItem {
 	batchId: string;
 	batchNumber: string;
 	expiryDate: string;
+	pack?: string;
+	packSize?: number;
 	quantity: number;
+	freeQuantity?: number;
+	schemeApplied?: string;
 	mrp: number;
 	rate: number;
 	discount: number;

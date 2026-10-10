@@ -89,12 +89,35 @@ export class DbCustomerRepository implements CustomerRepository {
 			id,
 			storeId,
 			name: input.name,
+			code: input.code || null,
 			contactPhone: input.phone || null,
+			telephone: input.telephone || null,
+			mobileSms: input.mobileSms || null,
 			address: input.address || null,
+			city: input.city || null,
+			pinCode: input.pinCode || null,
 			gstin: input.gstin || null,
+			stateCode: input.stateCode || null,
+			stateName: input.stateName || null,
+			panNo: input.panNo || null,
+			drugLicenseNo1: input.drugLicenseNo1 || null,
+			drugLicenseNo2: input.drugLicenseNo2 || null,
+			drugLicenseExpiry: input.drugLicenseExpiry || null,
+			fssaiLicenseNo: input.fssaiLicenseNo || null,
+			isComposite: input.isComposite ?? false,
+			billSeries: input.billSeries || 'T',
+			salesRep: input.salesRep || null,
 			creditLimit: input.creditLimit !== undefined ? String(input.creditLimit) : '0',
-			customerType: 'retail',
-			isActive: true
+			creditDays: input.creditDays !== undefined ? input.creditDays : 30,
+			openingBalance: input.openingBalance !== undefined ? String(input.openingBalance) : '0',
+			defaultAddAmount: input.defaultAddAmount !== undefined ? String(input.defaultAddAmount) : '0',
+			defaultAddDetail: input.defaultAddDetail || null,
+			defaultLessAmount: input.defaultLessAmount !== undefined ? String(input.defaultLessAmount) : '0',
+			defaultLessDetail: input.defaultLessDetail || null,
+			contactPerson: input.contactPerson || null,
+			remarks: input.remarks || null,
+			customerType: input.customerType || (input.gstin ? 'wholesale' : 'retail'),
+			isActive: input.active !== undefined ? input.active : true
 		};
 
 		await pgDb.transaction(async (tx) => {
@@ -108,10 +131,35 @@ export class DbCustomerRepository implements CustomerRepository {
 	async update(id: string, input: Partial<CreateCustomerInput>): Promise<Customer> {
 		const updateData: any = { updatedAt: new Date() };
 		if (input.name !== undefined) updateData.name = input.name;
+		if (input.code !== undefined) updateData.code = input.code;
 		if (input.phone !== undefined) updateData.contactPhone = input.phone;
+		if (input.telephone !== undefined) updateData.telephone = input.telephone;
+		if (input.mobileSms !== undefined) updateData.mobileSms = input.mobileSms;
 		if (input.address !== undefined) updateData.address = input.address;
+		if (input.city !== undefined) updateData.city = input.city;
+		if (input.pinCode !== undefined) updateData.pinCode = input.pinCode;
 		if (input.gstin !== undefined) updateData.gstin = input.gstin;
+		if (input.stateCode !== undefined) updateData.stateCode = input.stateCode;
+		if (input.stateName !== undefined) updateData.stateName = input.stateName;
+		if (input.panNo !== undefined) updateData.panNo = input.panNo;
+		if (input.drugLicenseNo1 !== undefined) updateData.drugLicenseNo1 = input.drugLicenseNo1;
+		if (input.drugLicenseNo2 !== undefined) updateData.drugLicenseNo2 = input.drugLicenseNo2;
+		if (input.drugLicenseExpiry !== undefined) updateData.drugLicenseExpiry = input.drugLicenseExpiry;
+		if (input.fssaiLicenseNo !== undefined) updateData.fssaiLicenseNo = input.fssaiLicenseNo;
+		if (input.isComposite !== undefined) updateData.isComposite = input.isComposite;
+		if (input.billSeries !== undefined) updateData.billSeries = input.billSeries;
+		if (input.salesRep !== undefined) updateData.salesRep = input.salesRep;
 		if (input.creditLimit !== undefined) updateData.creditLimit = String(input.creditLimit);
+		if (input.creditDays !== undefined) updateData.creditDays = input.creditDays;
+		if (input.openingBalance !== undefined) updateData.openingBalance = String(input.openingBalance);
+		if (input.defaultAddAmount !== undefined) updateData.defaultAddAmount = String(input.defaultAddAmount);
+		if (input.defaultAddDetail !== undefined) updateData.defaultAddDetail = input.defaultAddDetail;
+		if (input.defaultLessAmount !== undefined) updateData.defaultLessAmount = String(input.defaultLessAmount);
+		if (input.defaultLessDetail !== undefined) updateData.defaultLessDetail = input.defaultLessDetail;
+		if (input.contactPerson !== undefined) updateData.contactPerson = input.contactPerson;
+		if (input.remarks !== undefined) updateData.remarks = input.remarks;
+		if (input.customerType !== undefined) updateData.customerType = input.customerType;
+		if (input.active !== undefined) updateData.isActive = input.active;
 
 		await pgDb.transaction(async (tx) => {
 			await this._db.update(customersTable).set(updateData).where(eq(customersTable.id, id));
