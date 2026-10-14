@@ -39,7 +39,11 @@ function formatBytes(bytes: number): string {
 function getDatabaseUrl(): string {
 	return (
 		process.env.DATABASE_URL ||
-		'postgresql://mederp:mederp@localhost:5432/mederp'
+		(process.env.NODE_ENV === 'production'
+			? (() => {
+					throw new Error('DATABASE_URL environment variable is required in production');
+				})()
+			: 'postgresql://mederp@localhost:5432/mederp')
 	);
 }
 

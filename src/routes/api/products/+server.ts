@@ -24,8 +24,16 @@ export async function GET({ url }: RequestEvent) {
 	}
 }
 
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can create products', 403);
+		}
+
 		const input = await request.json();
 		const newProduct = await productService.createProduct(input);
 		return jsonResponse(newProduct, 201);

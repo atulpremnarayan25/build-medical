@@ -3,6 +3,9 @@ import { jsonResponse, errorResponse } from '$lib/server/apiUtils.js';
 import { createBackup, listBackups } from '$lib/server/backup/engine.js';
 
 export const GET: RequestHandler = async ({ locals }) => {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Access restricted to owner/admin', 403);
+	}
 	try {
 		const backups = listBackups();
 		return jsonResponse({ backups });
@@ -13,6 +16,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 export const POST: RequestHandler = async ({ locals }) => {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Access restricted to owner/admin', 403);
+	}
 	try {
 		const result = await createBackup();
 		return jsonResponse(result);

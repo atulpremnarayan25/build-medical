@@ -6,6 +6,13 @@ export async function POST({ request, locals }) {
 		return new Response('Unauthorized', { status: 401 });
 	}
 
+	if (locals.user.role !== 'owner_admin') {
+		return new Response(
+			JSON.stringify({ error: 'Forbidden: Admin role required for supplier payments' }),
+			{ status: 403, headers: { 'Content-Type': 'application/json' } }
+		);
+	}
+
 	const data = await request.json();
 	// inject created by
 	data.createdBy = locals.user.id;

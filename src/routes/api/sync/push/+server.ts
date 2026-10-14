@@ -4,7 +4,7 @@ import * as schema from '$lib/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { AnyPgTable } from 'drizzle-orm/pg-core';
 
-// Map string names to schema tables
+// Map string names to schema tables (strictly transactional & domain tables; exclude users, stores, sessions, audit_log, settings)
 const tableMap: Record<string, AnyPgTable> = {
 	products: schema.productsTable,
 	product_units: schema.productUnitsTable,
@@ -18,14 +18,14 @@ const tableMap: Record<string, AnyPgTable> = {
 	sale_items: schema.saleItemsTable,
 	payments: schema.paymentsTable,
 	returns: schema.returnsTable,
-	return_items: schema.returnItemsTable,
-	audit_log: schema.auditLogTable,
-	settings: schema.settingsTable,
-	users: schema.usersTable,
-	stores: schema.storesTable
+	return_items: schema.returnItemsTable
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	const body = await request.json();
 	const items: schema.SyncOutboxEntry[] = body.items || [];
 
@@ -37,7 +37,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			await db.transaction(async (tx) => {
 				const table = tableMap[item.tableName];
 				if (!table) throw new Error(`Unknown table: ${item.tableName}`);
-				const payload = item.payload as any;
+				const payload = { ...(item.payload as any) };
+				if (payload.storeId && locals.user?.storeId && payload.storeId !== locals.user.storeId) {
+					throw new Error('Tenant mismatch in sync payload');
+				}
 
 				if (item.tableName === 'batch_stock_events') {
 					// Delta replay for stock events

@@ -46,7 +46,7 @@ fi
 
 # 3. Run Database Migrations
 echo "🔄 Synchronizing database schema (Drizzle ORM)..."
-npx drizzle-kit push --force 2>/dev/null || npx drizzle-kit push
+npx drizzle-kit push
 
 # 4. Check & Seed Initial Dataset
 npx tsx scripts/db-check-and-seed.ts
@@ -74,9 +74,16 @@ for ip in $LAN_IPS; do
     echo "  • Local LAN Counter IP:    http://${ip}:${PORT}"
 done
 echo ""
+echo "  👉 First-time setup: Open http://localhost:${PORT}/register to set up Store Owner"
 echo "  📲 To connect tablets or secondary cashiers:"
 echo "     Open http://<LAN-IP>:${PORT}/settings/network to scan the on-screen QR Code"
 echo "======================================================================"
 echo "Starting MedStock ERP on ${HOST}:${PORT}..."
 
-exec npx vite dev --host "${HOST}" --port "${PORT}"
+if [ "${NODE_ENV}" = "production" ]; then
+    echo "🏗️ Building MedStock ERP for production appliance..."
+    npm run build
+    exec npx vite preview --host "${HOST}" --port "${PORT}"
+else
+    exec npx vite dev --host "${HOST}" --port "${PORT}"
+fi

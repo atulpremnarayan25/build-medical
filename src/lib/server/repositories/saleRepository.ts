@@ -1,7 +1,7 @@
 import type { SaleRepository } from '$lib/repositories/saleRepository.js';
 import type { Sale, CreateSaleInput, SaleItem } from '$lib/types/index.js';
 import { salesTable, saleItemsTable, productsTable, batchesTable, customersTable } from '$lib/server/db/schema.js';
-import { eq, desc, and, gte, lte } from 'drizzle-orm';
+import { eq, desc, and, gte, lte, inArray } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
 import { logSyncOutbox } from '../db/sync/outbox.js';
@@ -67,7 +67,7 @@ export class DbSaleRepository implements SaleRepository {
 		this._db = database;
 	}
 
-	async getAll(): Promise<Sale[]> {
+	async getAll(limit = 100, offset = 0): Promise<Sale[]> {
 		const salesRows = await this._db
 			.select({
 				sale: salesTable,
@@ -75,9 +75,17 @@ export class DbSaleRepository implements SaleRepository {
 			})
 			.from(salesTable)
 			.leftJoin(customersTable, eq(salesTable.customerId, customersTable.id))
-			.orderBy(desc(salesTable.createdAt));
+			.orderBy(desc(salesTable.createdAt))
+			.limit(limit)
+			.offset(offset);
 
-		const allItems = await this._db
+		if (salesRows.length === 0) {
+			return [];
+		}
+
+		const saleIds = salesRows.map(({ sale }: any) => sale.id);
+
+		const items = await this._db
 			.select({
 				id: saleItemsTable.id,
 				saleId: saleItemsTable.saleId,
@@ -95,12 +103,23 @@ export class DbSaleRepository implements SaleRepository {
 			})
 			.from(saleItemsTable)
 			.leftJoin(productsTable, eq(saleItemsTable.productId, productsTable.id))
-			.leftJoin(batchesTable, eq(saleItemsTable.batchId, batchesTable.id));
+			.leftJoin(batchesTable, eq(saleItemsTable.batchId, batchesTable.id))
+			.where(inArray(saleItemsTable.saleId, saleIds));
+
+		const itemsBySaleId = new Map<string, any[]>();
+		for (const item of items) {
+			const list = itemsBySaleId.get(item.saleId);
+			if (list) {
+				list.push(item);
+			} else {
+				itemsBySaleId.set(item.saleId, [item]);
+			}
+		}
 
 		return salesRows.map(({ sale, customerName }: any) =>
 			mapSaleRow(
 				sale,
-				allItems.filter((i: any) => i.saleId === sale.id),
+				itemsBySaleId.get(sale.id) || [],
 				customerName
 			)
 		);

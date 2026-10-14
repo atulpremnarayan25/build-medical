@@ -6,6 +6,13 @@ export async function POST({ params, locals }) {
 		return new Response('Unauthorized', { status: 401 });
 	}
 
+	if (locals.user.role !== 'owner_admin') {
+		return new Response(JSON.stringify({ error: 'Forbidden: Admin role required' }), {
+			status: 403,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
 	const purchase = await purchaseService.cancelPurchase(params.id);
 	return json(purchase);
 }

@@ -82,8 +82,11 @@ export class DbCustomerRepository implements CustomerRepository {
 
 	async create(input: CreateCustomerInput): Promise<Customer> {
 		const id = uuidv4();
-		const stores = await this._db.select().from(storesTable).limit(1);
-		const storeId = stores[0]?.id;
+		let storeId = (input as any).storeId;
+		if (!storeId) {
+			const stores = await this._db.select().from(storesTable).limit(1);
+			storeId = stores[0]?.id;
+		}
 
 		const values: any = {
 			id,
@@ -121,7 +124,7 @@ export class DbCustomerRepository implements CustomerRepository {
 		};
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.insert(customersTable).values(values);
+			await tx.insert(customersTable).values(values);
 			await logSyncOutbox(tx, 'customers', id, 'insert', values);
 		});
 
@@ -162,9 +165,9 @@ export class DbCustomerRepository implements CustomerRepository {
 		if (input.active !== undefined) updateData.isActive = input.active;
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.update(customersTable).set(updateData).where(eq(customersTable.id, id));
+			await tx.update(customersTable).set(updateData).where(eq(customersTable.id, id));
 
-			const updated = await this._db
+			const updated = await tx
 				.select()
 				.from(customersTable)
 				.where(eq(customersTable.id, id))
@@ -189,9 +192,9 @@ export class DbCustomerRepository implements CustomerRepository {
 		} as any;
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.update(customersTable).set(updateData).where(eq(customersTable.id, id));
+			await tx.update(customersTable).set(updateData).where(eq(customersTable.id, id));
 
-			const updated = await this._db
+			const updated = await tx
 				.select()
 				.from(customersTable)
 				.where(eq(customersTable.id, id))

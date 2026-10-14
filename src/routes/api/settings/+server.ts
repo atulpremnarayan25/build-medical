@@ -10,13 +10,9 @@ export async function GET({ locals }: RequestEvent) {
 			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 		}
 
-		let store = await db.query.storesTable.findFirst({
+		const store = await db.query.storesTable.findFirst({
 			where: eq(storesTable.id, locals.user.storeId)
 		});
-
-		if (!store) {
-			store = await db.query.storesTable.findFirst();
-		}
 
 		if (!store) {
 			return errorResponse('NOT_FOUND', 'Store not found', 404);
@@ -34,16 +30,16 @@ export async function POST({ locals, request }: RequestEvent) {
 			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 		}
 
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can modify store settings', 403);
+		}
+
 		const body = await request.json();
 		const storeId = locals.user.storeId;
 
-		let store = await db.query.storesTable.findFirst({
+		const store = await db.query.storesTable.findFirst({
 			where: eq(storesTable.id, storeId)
 		});
-
-		if (!store) {
-			store = await db.query.storesTable.findFirst();
-		}
 
 		const dl1 = body.drugLicenseNo !== undefined ? body.drugLicenseNo : body.drugLicense;
 		const dl2 = body.drugLicenseNo2 !== undefined ? body.drugLicenseNo2 : body.drugLicense2;
@@ -72,6 +68,7 @@ export async function POST({ locals, request }: RequestEvent) {
 			const [created] = await db
 				.insert(storesTable)
 				.values({
+					id: storeId,
 					name: body.name ? String(body.name).trim() : 'Main Medical Store',
 					...updateData
 				})

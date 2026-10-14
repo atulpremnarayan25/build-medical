@@ -1,8 +1,8 @@
 import { db } from '$lib/server/db/index.js';
 import { usersTable } from '$lib/server/db/schema.js';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils.js';
-import { hashPassword } from '$lib/server/auth/index.js';
-import { eq } from 'drizzle-orm';
+import { hashPassword, invalidateUserSessions } from '$lib/server/auth/index.js';
+import { eq, and } from 'drizzle-orm';
 import type { RequestEvent } from './$types.js';
 
 export async function GET({ locals, params }: RequestEvent) {
@@ -11,8 +11,12 @@ export async function GET({ locals, params }: RequestEvent) {
 			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 		}
 
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can view user details', 403);
+		}
+
 		const user = await db.query.usersTable.findFirst({
-			where: eq(usersTable.id, params.id),
+			where: and(eq(usersTable.id, params.id), eq(usersTable.storeId, locals.user.storeId)),
 			columns: {
 				id: true,
 				storeId: true,
@@ -45,7 +49,7 @@ export async function PATCH({ locals, params, request }: RequestEvent) {
 		}
 
 		const target = await db.query.usersTable.findFirst({
-			where: eq(usersTable.id, params.id)
+			where: and(eq(usersTable.id, params.id), eq(usersTable.storeId, locals.user.storeId))
 		});
 
 		if (!target) {
@@ -64,8 +68,8 @@ export async function PATCH({ locals, params, request }: RequestEvent) {
 		}
 
 		if (body.password && typeof body.password === 'string') {
-			if (body.password.length < 4) {
-				return errorResponse('VALIDATION_ERROR', 'Password must be at least 4 characters', 400);
+			if (body.password.length < 8) {
+				return errorResponse('VALIDATION_ERROR', 'Password must be at least 8 characters', 400);
 			}
 			updateData.passwordHash = await hashPassword(body.password);
 		}
@@ -95,6 +99,10 @@ export async function PATCH({ locals, params, request }: RequestEvent) {
 				isActive: usersTable.isActive,
 				createdAt: usersTable.createdAt
 			});
+
+		if (updateData.passwordHash || updateData.isActive === false) {
+			await invalidateUserSessions(params.id);
+		}
 
 		return jsonResponse(updated);
 	} catch (err: any) {

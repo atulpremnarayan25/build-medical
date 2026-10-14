@@ -11,7 +11,11 @@ export async function GET({ locals }: RequestEvent) {
 			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 		}
 
-		let users = await db
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can view users', 403);
+		}
+
+		const users = await db
 			.select({
 				id: usersTable.id,
 				storeId: usersTable.storeId,
@@ -23,20 +27,6 @@ export async function GET({ locals }: RequestEvent) {
 			})
 			.from(usersTable)
 			.where(eq(usersTable.storeId, locals.user.storeId));
-
-		if (users.length === 0) {
-			users = await db
-				.select({
-					id: usersTable.id,
-					storeId: usersTable.storeId,
-					name: usersTable.name,
-					username: usersTable.username,
-					role: usersTable.role,
-					isActive: usersTable.isActive,
-					createdAt: usersTable.createdAt
-				})
-				.from(usersTable);
-		}
 
 		return jsonResponse(users);
 	} catch (err: any) {
@@ -66,8 +56,8 @@ export async function POST({ locals, request }: RequestEvent) {
 		if (!username) {
 			return errorResponse('VALIDATION_ERROR', 'Username is required', 400);
 		}
-		if (!password || password.length < 4) {
-			return errorResponse('VALIDATION_ERROR', 'Password must be at least 4 characters', 400);
+		if (!password || password.length < 8) {
+			return errorResponse('VALIDATION_ERROR', 'Password must be at least 8 characters', 400);
 		}
 
 		const existing = await db.query.usersTable.findFirst({

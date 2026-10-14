@@ -41,6 +41,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// still logged in. Scope to document requests to keep API responses' own
 	// caching semantics untouched.
 	const response = await resolve(event);
+
+	// Defensive HTTP security headers
+	response.headers.set('X-Frame-Options', 'DENY');
+	response.headers.set('X-Content-Type-Options', 'nosniff');
+	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+	response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
 	const acceptsHtml = event.request.headers.get('accept')?.includes('text/html') ?? false;
 	if (event.locals.user && acceptsHtml) {
 		response.headers.set('cache-control', 'no-store');

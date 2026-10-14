@@ -44,6 +44,10 @@ export async function invalidateSession(sessionId: string) {
 	await db.delete(sessionsTable).where(eq(sessionsTable.id, sessionId));
 }
 
+export async function invalidateUserSessions(userId: string) {
+	await db.delete(sessionsTable).where(eq(sessionsTable.userId, userId));
+}
+
 /** Housekeeping: drop expired sessions (call opportunistically on login). */
 export async function purgeExpiredSessions() {
 	await db.delete(sessionsTable).where(lt(sessionsTable.expiresAt, new Date()));

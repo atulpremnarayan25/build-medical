@@ -79,8 +79,11 @@ export class DbSupplierRepository implements SupplierRepository {
 	async create(input: CreateSupplierInput): Promise<Supplier> {
 		const id = uuidv4();
 		const now = new Date();
-		const stores = await this._db.select().from(storesTable).limit(1);
-		const storeId = stores[0]?.id;
+		let storeId = (input as any).storeId;
+		if (!storeId) {
+			const stores = await this._db.select().from(storesTable).limit(1);
+			storeId = stores[0]?.id;
+		}
 
 		const values = {
 			id,
@@ -112,7 +115,7 @@ export class DbSupplierRepository implements SupplierRepository {
 		};
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.insert(suppliersTable).values(values as any);
+			await tx.insert(suppliersTable).values(values as any);
 			await logSyncOutbox(tx, 'suppliers', id, 'insert', values);
 		});
 
@@ -144,9 +147,9 @@ export class DbSupplierRepository implements SupplierRepository {
 		if (input.active !== undefined) updateData.isActive = input.active;
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.update(suppliersTable).set(updateData).where(eq(suppliersTable.id, id));
+			await tx.update(suppliersTable).set(updateData).where(eq(suppliersTable.id, id));
 
-			const updated = await this._db
+			const updated = await tx
 				.select()
 				.from(suppliersTable)
 				.where(eq(suppliersTable.id, id))
@@ -185,9 +188,9 @@ export class DbSupplierRepository implements SupplierRepository {
 		} as any;
 
 		await pgDb.transaction(async (tx) => {
-			await this._db.update(suppliersTable).set(updateData).where(eq(suppliersTable.id, id));
+			await tx.update(suppliersTable).set(updateData).where(eq(suppliersTable.id, id));
 
-			const updated = await this._db
+			const updated = await tx
 				.select()
 				.from(suppliersTable)
 				.where(eq(suppliersTable.id, id))

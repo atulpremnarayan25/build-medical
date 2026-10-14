@@ -5,6 +5,10 @@ import fs from 'fs';
 import path from 'path';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Access restricted to owner/admin', 403);
+	}
+
 	const requestedFilename = url.searchParams.get('file');
 
 	const backups = listBackups();

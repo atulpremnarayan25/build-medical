@@ -449,7 +449,18 @@ function money(n: number): string {
 }
 
 async function seedDb() {
-	console.log('Clearing database...');
+	const isAllowed =
+		process.env.NODE_ENV === 'test' ||
+		process.env.ALLOW_DB_RESET === 'true' ||
+		process.argv.includes('--force');
+	if (!isAllowed) {
+		console.error(
+			'❌ Safety guard: scripts/seed.ts resets the database with TRUNCATE and can only run with NODE_ENV=test, ALLOW_DB_RESET=true, or --force flag.'
+		);
+		process.exit(1);
+	}
+
+	console.log('Clearing database for test/demo reset...');
 	await db.execute(sql`
         TRUNCATE TABLE batch_stock_events, invoice_sequences, return_items, returns, payments, sale_items, sales, purchase_items, purchases, batches, product_units, products, customers, suppliers, sessions, users, stores CASCADE;
     `);

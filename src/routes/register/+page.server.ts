@@ -50,8 +50,8 @@ export const actions: Actions = {
 			return fail(400, { error: 'Passwords do not match.' });
 		}
 
-		if (password.length < 6) {
-			return fail(400, { error: 'Password must be at least 6 characters long.' });
+		if (password.length < 8) {
+			return fail(400, { error: 'Password must be at least 8 characters long.' });
 		}
 
 		const existingUsers = await db.select({ id: usersTable.id }).from(usersTable).limit(1);

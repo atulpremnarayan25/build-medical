@@ -23,8 +23,8 @@ function formatUptime(seconds: number): string {
 	return `${secs}s`;
 }
 
-export const GET: RequestHandler = async () => {
-	const startTime = performance.now();
+export const GET: RequestHandler = async (event: any = {}) => {
+	const locals = event?.locals;
 	let dbHealthy = false;
 	let dbLatencyMs = -1;
 	let dbError: string | null = null;
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async () => {
 		dbHealthy = true;
 	} catch (err: any) {
 		dbHealthy = false;
-		dbError = err.message || 'Database connection error';
+		dbError = 'Database unavailable';
 	}
 
 	// Storage metrics via fs.statfsSync
@@ -57,7 +57,7 @@ export const GET: RequestHandler = async () => {
 			freeFormatted: formatBytes(freeBytes),
 			usedFormatted: formatBytes(usedBytes)
 		};
-	} catch (e: any) {
+	} catch {
 		storageInfo = { error: 'Failed to inspect filesystem stats' };
 	}
 
@@ -65,31 +65,34 @@ export const GET: RequestHandler = async () => {
 	const status = dbHealthy ? 'healthy' : 'degraded';
 	const statusCode = dbHealthy ? 200 : 503;
 
-	return json(
-		{
-			status,
-			timestamp: new Date().toISOString(),
-			uptime: {
-				seconds: uptimeSeconds,
-				formatted: formatUptime(uptimeSeconds)
-			},
-			database: {
-				status: dbHealthy ? 'connected' : 'disconnected',
-				latencyMs: dbLatencyMs,
-				error: dbError
-			},
-			storage: storageInfo,
-			offlineOperation: {
-				zeroInternetReady: true,
-				localDatabaseAuthoritative: true,
-				mode: 'standalone-lan-appliance'
-			},
-			process: {
-				pid: process.pid,
-				nodeVersion: process.version,
-				memoryUsage: process.memoryUsage()
-			}
+	const payload: Record<string, any> = {
+		status,
+		timestamp: new Date().toISOString(),
+		uptime: {
+			seconds: uptimeSeconds,
+			formatted: formatUptime(uptimeSeconds)
 		},
-		{ status: statusCode }
-	);
+		database: {
+			status: dbHealthy ? 'connected' : 'disconnected',
+			latencyMs: dbLatencyMs,
+			error: dbError
+		},
+		storage: storageInfo,
+		offlineOperation: {
+			zeroInternetReady: true,
+			localDatabaseAuthoritative: true,
+			mode: 'standalone-lan-appliance'
+		}
+	};
+
+	// Detailed process metrics (PID, memory, node version) restricted to owner_admin
+	if (locals?.user?.role === 'owner_admin') {
+		payload.process = {
+			pid: process.pid,
+			nodeVersion: process.version,
+			memoryUsage: process.memoryUsage()
+		};
+	}
+
+	return json(payload, { status: statusCode });
 };

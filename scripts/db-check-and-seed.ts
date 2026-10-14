@@ -1,27 +1,27 @@
 import { db } from '../src/lib/server/db/index.js';
-import { productsTable } from '../src/lib/server/db/schema.js';
+import { productsTable, usersTable } from '../src/lib/server/db/schema.js';
 import { count } from 'drizzle-orm';
-import { execSync } from 'child_process';
-import path from 'path';
 
 async function main() {
 	try {
-		console.log('🔍 Checking database connection and seed status...');
-		const [result] = await db.select({ total: count() }).from(productsTable);
-		const productCount = Number(result?.total || 0);
+		console.log('🔍 Checking database connection and store status...');
+		const [prodResult] = await db.select({ total: count() }).from(productsTable);
+		const productCount = Number(prodResult?.total || 0);
 
-		console.log(`📊 Found ${productCount} existing products in database.`);
-		if (productCount === 0) {
-			console.log('🌱 Database is empty. Seeding essential pharmaceutical dataset...');
-			const seedScript = path.resolve('scripts/seed.ts');
-			execSync(`npx tsx "${seedScript}"`, { stdio: 'inherit' });
-			console.log('✅ Initial seed completed successfully.');
+		const [userResult] = await db.select({ total: count() }).from(usersTable);
+		const userCount = Number(userResult?.total || 0);
+
+		console.log(`📊 Found ${productCount} existing products, ${userCount} registered users.`);
+
+		if (userCount === 0) {
+			console.log('⚠️  No store users found.');
+			console.log('👉 First-run setup: Visit /register to create the initial Store Owner account.');
 		} else {
-			console.log('✅ Database already contains data. Skipping seed.');
+			console.log('✅ Store database is initialized and ready.');
 		}
 		process.exit(0);
 	} catch (err: any) {
-		console.error('❌ Database connection or seed check failed:', err.message);
+		console.error('❌ Database connection or store check failed:', err.message);
 		process.exit(1);
 	}
 }

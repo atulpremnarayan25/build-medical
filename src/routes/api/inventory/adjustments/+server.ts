@@ -61,6 +61,10 @@ export async function POST(event: RequestEvent) {
 		return errorResponse('UNAUTHORIZED', 'Login required', 401);
 	}
 
+	if (event.locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Only owner_admin can perform inventory adjustments', 403);
+	}
+
 	let body: any;
 	try {
 		body = await event.request.json();

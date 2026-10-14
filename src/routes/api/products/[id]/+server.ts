@@ -25,8 +25,16 @@ export async function GET({ params }: RequestEvent) {
 	}
 }
 
-export async function PATCH({ params, request }: RequestEvent) {
+export async function PATCH({ params, request, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can modify products', 403);
+		}
+
 		const { id } = params;
 		const input = await request.json();
 		const product = await productService.getProduct(id);
