@@ -305,91 +305,171 @@
 	{#if data}
 		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
 			<!-- Total Value at Risk -->
-			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-				<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Value At Risk</span>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-danger">
-						{formatCurrency(data.summary.totalCostAtRisk)}
-					</span>
-				</div>
-				<div class="text-[10px] text-text-muted mt-0.5">
-					{data.summary.totalUnitsAtRisk.toLocaleString('en-IN')} units at cost
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3">
+					<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Value At Risk</span>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-danger tabular-nums">
+							{formatCurrency(data.summary.totalCostAtRisk)}
+						</span>
+					</div>
+					<div class="text-[10px] text-text-muted mt-0.5">
+						{data.summary.totalUnitsAtRisk.toLocaleString('en-IN')} units at cost
+					</div>
 				</div>
 			</div>
 
 			<!-- Expired Batches -->
-			<div class="rounded-xl border border-danger/30 bg-danger/5 p-3 shadow-2xs">
-				<div class="flex items-center justify-between">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-danger">Expired Stock</span>
-					<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-black text-danger">EXPIRED</span>
-				</div>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-danger">{data.summary.expiredCount}</span>
-					<span class="text-xs text-danger/80 ml-1">batches</span>
-				</div>
-				<div class="text-[10px] font-mono text-danger font-semibold mt-0.5">
-					{formatCurrency(data.summary.expiredCost)}
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+					<div class="flex items-center justify-between">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-danger">Expired Stock</span>
+						<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-black text-danger">EXPIRED</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-danger tabular-nums">{data.summary.expiredCount}</span>
+						<span class="text-xs text-danger/80 ml-1">batches</span>
+					</div>
+					<div class="text-[10px] font-mono text-danger font-semibold mt-0.5 tabular-nums">
+						{formatCurrency(data.summary.expiredCost)}
+					</div>
 				</div>
 			</div>
 
 			<!-- < 30 Days -->
-			<div class="rounded-xl border border-danger/30 bg-danger/5 p-3 shadow-2xs">
-				<div class="flex items-center justify-between">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-danger">&lt; 30 Days</span>
-					<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-bold text-danger">CRITICAL</span>
-				</div>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-danger">{data.summary.within30Count}</span>
-					<span class="text-xs text-danger/80 ml-1">batches</span>
-				</div>
-				<div class="text-[10px] font-mono text-danger font-semibold mt-0.5">
-					{formatCurrency(data.summary.within30Cost)}
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+					<div class="flex items-center justify-between">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-danger">&lt; 30 Days</span>
+						<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-bold text-danger">CRITICAL</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-danger tabular-nums">{data.summary.within30Count}</span>
+						<span class="text-xs text-danger/80 ml-1">batches</span>
+					</div>
+					<div class="text-[10px] font-mono text-danger font-semibold mt-0.5 tabular-nums">
+						{formatCurrency(data.summary.within30Cost)}
+					</div>
 				</div>
 			</div>
 
 			<!-- 30–60 Days -->
-			<div class="rounded-xl border border-warning/30 bg-warning/5 p-3 shadow-2xs">
-				<div class="flex items-center justify-between">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-warning">30–60 Days</span>
-					<span class="rounded bg-warning-light px-1 py-0.2 text-[9px] font-bold text-warning">HIGH RISK</span>
-				</div>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-warning">{data.summary.within60Count}</span>
-					<span class="text-xs text-warning/80 ml-1">batches</span>
-				</div>
-				<div class="text-[10px] font-mono text-warning font-semibold mt-0.5">
-					{formatCurrency(data.summary.within60Cost)}
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3 border border-warning/30 bg-warning/5">
+					<div class="flex items-center justify-between">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-warning">30–60 Days</span>
+						<span class="rounded bg-warning-light px-1 py-0.2 text-[9px] font-bold text-warning">HIGH RISK</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-warning tabular-nums">{data.summary.within60Count}</span>
+						<span class="text-xs text-warning/80 ml-1">batches</span>
+					</div>
+					<div class="text-[10px] font-mono text-warning font-semibold mt-0.5 tabular-nums">
+						{formatCurrency(data.summary.within60Cost)}
+					</div>
 				</div>
 			</div>
 
 			<!-- 60–90 Days -->
-			<div class="rounded-xl border border-info/30 bg-info/5 p-3 shadow-2xs">
-				<div class="flex items-center justify-between">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-info">60–90 Days</span>
-					<span class="rounded bg-info-light px-1 py-0.2 text-[9px] font-bold text-info">MODERATE</span>
-				</div>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-info">{data.summary.within90Count}</span>
-					<span class="text-xs text-info/80 ml-1">batches</span>
-				</div>
-				<div class="text-[10px] font-mono text-info font-semibold mt-0.5">
-					{formatCurrency(data.summary.within90Cost)}
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3">
+					<div class="flex items-center justify-between">
+						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">60–90 Days</span>
+						<span class="rounded bg-surface-secondary px-1 py-0.2 text-[9px] font-medium text-text-secondary border border-border">EARLY</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{data.summary.within90Count}</span>
+						<span class="text-xs text-text-muted ml-1">batches</span>
+					</div>
+					<div class="text-[10px] font-mono text-text-secondary font-semibold mt-0.5 tabular-nums">
+						{formatCurrency(data.summary.within90Cost)}
+					</div>
 				</div>
 			</div>
 
 			<!-- Total MRP Potential -->
-			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-				<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total MRP Value</span>
-				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-text-primary">
-						{formatCurrency(data.summary.totalMrpAtRisk)}
-					</span>
-				</div>
-				<div class="text-[10px] text-text-muted mt-0.5">
-					Retail liquidation potential
+			<div class="bezel-outer">
+				<div class="bezel-inner p-3">
+					<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total MRP Value</span>
+					<div class="mt-1">
+						<span class="text-xl font-bold font-mono text-text-primary tabular-nums">
+							{formatCurrency(data.summary.totalMrpAtRisk)}
+						</span>
+					</div>
+					<div class="text-[10px] text-text-muted mt-0.5">
+						Retail liquidation potential
+					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- Expiry Capital Risk Distribution Bar -->
+		{#if data && data.summary.totalCostAtRisk > 0}
+			{@const total = data.summary.totalCostAtRisk}
+			{@const expiredPct = Math.round((data.summary.expiredCost / total) * 100)}
+			{@const within30Pct = Math.round((data.summary.within30Cost / total) * 100)}
+			{@const within60Pct = Math.round((data.summary.within60Cost / total) * 100)}
+			{@const within90Pct = Math.max(0, 100 - expiredPct - within30Pct - within60Pct)}
+			<div class="mt-3 rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-2">
+				<div class="flex items-center justify-between text-xs font-semibold text-text-primary">
+					<span class="flex items-center gap-1.5">
+						<Clock size={14} class="text-accent" />
+						<span>Expiry Capital Risk Distribution</span>
+					</span>
+					<span class="font-mono text-text-muted tabular-nums">Total Risk: {formatCurrency(total)}</span>
+				</div>
+				<!-- Multi-segment stacked progress bar -->
+				<div class="flex h-3 w-full overflow-hidden rounded-full bg-surface-secondary">
+					{#if data.summary.expiredCost > 0}
+						<div
+							style="width: {(data.summary.expiredCost / total) * 100}%"
+							class="bg-danger transition-all"
+							title="Expired: {formatCurrency(data.summary.expiredCost)}"
+						></div>
+					{/if}
+					{#if data.summary.within30Cost > 0}
+						<div
+							style="width: {(data.summary.within30Cost / total) * 100}%"
+							class="bg-rose-500 transition-all"
+							title="< 30 Days: {formatCurrency(data.summary.within30Cost)}"
+						></div>
+					{/if}
+					{#if data.summary.within60Cost > 0}
+						<div
+							style="width: {(data.summary.within60Cost / total) * 100}%"
+							class="bg-warning transition-all"
+							title="30-60 Days: {formatCurrency(data.summary.within60Cost)}"
+						></div>
+					{/if}
+					{#if data.summary.within90Cost > 0}
+						<div
+							style="width: {(data.summary.within90Cost / total) * 100}%"
+							class="bg-info transition-all"
+							title="60-90 Days: {formatCurrency(data.summary.within90Cost)}"
+						></div>
+					{/if}
+				</div>
+				<!-- Legend -->
+				<div class="flex flex-wrap items-center gap-4 text-[11px] text-text-muted pt-1 font-mono">
+					<div class="flex items-center gap-1.5">
+						<span class="h-2 w-2 rounded-full bg-danger"></span>
+						<span>Expired ({expiredPct}%)</span>
+					</div>
+					<div class="flex items-center gap-1.5">
+						<span class="h-2 w-2 rounded-full bg-rose-500"></span>
+						<span>&lt;30d Critical ({within30Pct}%)</span>
+					</div>
+					<div class="flex items-center gap-1.5">
+						<span class="h-2 w-2 rounded-full bg-warning"></span>
+						<span>30–60d High Risk ({within60Pct}%)</span>
+					</div>
+					<div class="flex items-center gap-1.5">
+						<span class="h-2 w-2 rounded-full bg-info"></span>
+						<span>60–90d Early ({within90Pct}%)</span>
+					</div>
+				</div>
+			</div>
+		{/if}
 	{/if}
 
 	<!-- Filter Controls & Search -->

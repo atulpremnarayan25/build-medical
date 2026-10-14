@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { X } from '@lucide/svelte';
 
-	type ModalSize = 'sm' | 'md' | 'lg';
+	type ModalSize = 'sm' | 'md' | 'lg' | 'xl';
 
 	interface ModalProps {
 		open?: boolean;
@@ -24,7 +25,8 @@
 	const sizeClasses: Record<ModalSize, string> = {
 		sm: 'max-w-sm',
 		md: 'max-w-lg',
-		lg: 'max-w-2xl'
+		lg: 'max-w-2xl',
+		xl: 'max-w-4xl'
 	};
 
 	function handleClose() {
@@ -48,7 +50,6 @@
 
 	$effect(() => {
 		if (open && dialogEl) {
-			// Focus the dialog container when opened
 			dialogEl.focus();
 		}
 	});
@@ -68,7 +69,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 transition-opacity"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-all duration-150"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -79,44 +80,31 @@
 		<div
 			bind:this={dialogEl}
 			tabindex="-1"
-			class="w-full rounded-lg border border-border bg-surface shadow-lg outline-none {sizeClasses[
+			class="w-full rounded-2xl border border-border bg-surface-overlay shadow-2xl outline-none overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 {sizeClasses[
 				size
 			]}"
 		>
 			<!-- Header -->
-			<div class="flex items-center justify-between border-b border-border px-5 py-3.5">
-				<h2 class="text-base font-semibold text-text-primary">{title}</h2>
+			<div class="flex items-center justify-between border-b border-border/80 px-6 py-4 bg-surface/50">
+				<h2 class="text-base font-semibold text-text-primary tracking-tight">{title}</h2>
 				<button
 					type="button"
-					class="cursor-pointer rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
+					class="pressable cursor-pointer rounded-lg p-1.5 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
 					onclick={handleClose}
-					aria-label="Close"
+					aria-label="Close dialog"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
+					<X class="h-4 w-4" />
 				</button>
 			</div>
 
 			<!-- Body -->
-			<div class="px-5 py-4">
+			<div class="px-6 py-5 max-h-[80vh] overflow-y-auto">
 				{@render children()}
 			</div>
 
 			<!-- Footer -->
 			{#if footer}
-				<div class="flex items-center justify-end gap-2 border-t border-border px-5 py-3.5">
+				<div class="flex items-center justify-end gap-2.5 border-t border-border/80 px-6 py-4 bg-surface/30">
 					{@render footer()}
 				</div>
 			{/if}

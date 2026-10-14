@@ -102,52 +102,58 @@
 <!-- Status Overview Banner -->
 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
 	<!-- Server Status Card -->
-	<div class="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-success-light text-success">
-			<ShieldCheck size={24} />
-		</div>
-		<div>
-			<div class="flex items-center gap-2">
-				<span class="text-xs font-semibold text-text-muted">Store Server Status</span>
-				<span class="inline-block h-2 w-2 rounded-full bg-success animate-pulse"></span>
+	<div class="bezel-outer">
+		<div class="bezel-inner flex items-center gap-4 p-4">
+			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-success-light text-success">
+				<ShieldCheck size={24} />
 			</div>
-			<div class="mt-0.5 text-base font-bold text-text-primary">
-				Local LAN Server Healthy
-			</div>
-			<div class="text-[11px] text-text-muted font-mono">
-				Uptime: {formatUptime(topology.uptimeSeconds)}
+			<div>
+				<div class="flex items-center gap-2">
+					<span class="text-xs font-semibold text-text-muted">Store Server Status</span>
+					<span class="inline-block h-2 w-2 rounded-full bg-success animate-pulse"></span>
+				</div>
+				<div class="mt-0.5 text-base font-bold text-text-primary">
+					Local LAN Server Healthy
+				</div>
+				<div class="text-[11px] text-text-muted font-mono">
+					Uptime: {formatUptime(topology.uptimeSeconds)}
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Connected Devices Card -->
-	<div class="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-light text-accent">
-			<Tablet size={24} />
-		</div>
-		<div>
-			<span class="text-xs font-semibold text-text-muted">Active Counter Devices</span>
-			<div class="mt-0.5 text-base font-bold text-text-primary">
-				{topology.connectedDevicesCount} Connected {topology.connectedDevicesCount === 1 ? 'Terminal' : 'Terminals'}
+	<div class="bezel-outer">
+		<div class="bezel-inner flex items-center gap-4 p-4">
+			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-light text-accent">
+				<Tablet size={24} />
 			</div>
-			<div class="text-[11px] text-text-muted">
-				Primary + secondary wireless sessions
+			<div>
+				<span class="text-xs font-semibold text-text-muted">Active Counter Devices</span>
+				<div class="mt-0.5 text-base font-bold text-text-primary tabular-nums">
+					{topology.connectedDevicesCount} Connected {topology.connectedDevicesCount === 1 ? 'Terminal' : 'Terminals'}
+				</div>
+				<div class="text-[11px] text-text-muted">
+					Primary + secondary wireless sessions
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Offline Architecture Card -->
-	<div class="flex items-center gap-4 rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
-			<Radio size={24} />
-		</div>
-		<div>
-			<span class="text-xs font-semibold text-text-muted">Deployment Topology</span>
-			<div class="mt-0.5 text-base font-bold text-text-primary">
-				Zero-Internet LAN Appliance
+	<div class="bezel-outer">
+		<div class="bezel-inner flex items-center gap-4 p-4">
+			<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
+				<Radio size={24} />
 			</div>
-			<div class="text-[11px] text-text-muted">
-				100% Autonomous local database
+			<div>
+				<span class="text-xs font-semibold text-text-muted">Deployment Topology</span>
+				<div class="mt-0.5 text-base font-bold text-text-primary">
+					Zero-Internet LAN Appliance
+				</div>
+				<div class="text-[11px] text-text-muted">
+					100% Autonomous local database
+				</div>
 			</div>
 		</div>
 	</div>
@@ -156,7 +162,7 @@
 <!-- Main Pairing Grid -->
 <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
 	<!-- Left Col: QR Code & Instant Pairing -->
-	<div class="flex flex-col items-center rounded-xl border border-border bg-surface p-6 text-center shadow-2xs lg:col-span-5">
+	<div class="bezel-outer lg:col-span-5"><div class="bezel-inner flex flex-col items-center p-6 text-center">
 		<div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent">
 			<QrCode size={16} /> Instant Counter Pairing
 		</div>
@@ -213,11 +219,12 @@
 			</span>
 		</div>
 	</div>
+	</div>
 
 	<!-- Right Col: Setup Instructions & Network Interfaces -->
 	<div class="space-y-6 lg:col-span-7">
 		<!-- Step by Step Setup Guide -->
-		<div class="rounded-xl border border-border bg-surface p-6 shadow-2xs">
+		<div class="bezel-outer"><div class="bezel-inner p-6">
 			<h3 class="text-sm font-bold text-text-primary flex items-center gap-2">
 				<Wifi size={16} class="text-accent" />
 				How to Connect Additional Cashier Terminals
@@ -260,9 +267,10 @@
 				</div>
 			</div>
 		</div>
+	</div>
 
 		<!-- Network Interfaces Detected -->
-		<div class="rounded-xl border border-border bg-surface p-6 shadow-2xs">
+		<div class="bezel-outer"><div class="bezel-inner p-6">
 			<div class="flex items-center justify-between">
 				<div>
 					<h3 class="text-sm font-bold text-text-primary flex items-center gap-2">
@@ -319,5 +327,6 @@
 				{/if}
 			</div>
 		</div>
+	</div>
 	</div>
 </div>

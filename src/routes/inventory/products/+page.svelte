@@ -99,33 +99,48 @@
 
 	<!-- Metric summary cards -->
 	<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Formulary Items</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">{totalProducts}</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<Pill size={16} />
-			</div>
-		</div>
-
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-success uppercase">Active SKU Listings</div>
-				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">{activeProducts}</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
-				<CheckCircle2 size={16} />
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Formulary Items</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
+						<Pill size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">{totalProducts}</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Master catalogue entries</div>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-schedule-h1 uppercase">Controlled / Sch H1 & X</div>
-				<div class="mt-1 font-mono text-xl font-bold text-schedule-h1 tabular-nums">{h1Products}</div>
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-success">Active SKU Listings</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+						<CheckCircle2 size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-success tabular-nums">{activeProducts}</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Available for billing</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-schedule-h1-light text-schedule-h1">
-				<ShieldAlert size={16} />
+		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-schedule-h1">Controlled (Sch H1/X)</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-schedule-h1-light text-schedule-h1">
+						<ShieldAlert size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-schedule-h1 tabular-nums">{h1Products}</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Doctor Rx & statutory logged</div>
 			</div>
 		</div>
 	</div>

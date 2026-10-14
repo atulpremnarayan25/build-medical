@@ -334,88 +334,121 @@
 		</span>
 	</div>
 
-	<!-- Header fields -->
-	<div class="space-y-3 border-x border-border bg-surface p-3.5 shadow-2xs">
-		<div class="grid grid-cols-1 gap-3 md:grid-cols-4">
-			<div>
-				<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Supplier / Distributor (F3) *</span>
-				<SupplierSearch
-					onSelect={handleSupplierSelect}
-					bind:selectedSupplier
-					bind:inputRef={supplierInputRef}
+	<!-- 70 / 30 ERGONOMIC SPLIT SCREEN CONTAINER -->
+	<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0 overflow-hidden items-start">
+		<!-- LEFT COLUMN (70% WIDTH = lg:col-span-8) -->
+		<div class="lg:col-span-8 flex flex-col gap-2.5 h-full min-h-0 overflow-hidden">
+			<!-- Header fields -->
+			<div class="space-y-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs shrink-0">
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+					<div>
+						<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Supplier / Distributor (F3) *</span>
+						<SupplierSearch
+							onSelect={handleSupplierSelect}
+							bind:selectedSupplier
+							bind:inputRef={supplierInputRef}
+						/>
+					</div>
+					<div>
+						<label
+							for="sup-inv-input"
+							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+						>Supplier Invoice No *</label>
+						<input
+							id="sup-inv-input"
+							type="text"
+							bind:value={invoiceNumber}
+							class="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+							placeholder="e.g. SUP/2026/9821"
+						/>
+					</div>
+					<div>
+						<label
+							for="p-date-input"
+							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+						>Invoice Date</label>
+						<input
+							id="p-date-input"
+							type="date"
+							bind:value={invoiceDate}
+							class="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label
+							for="p-payment-type"
+							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+						>Payment Terms (F4)</label>
+						<select
+							id="p-payment-type"
+							bind:value={paymentType}
+							class="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none cursor-pointer"
+						>
+							<option value="credit">Credit (Pay Later)</option>
+							<option value="cash">Cash Paid</option>
+							<option value="bank">Bank / NEFT / RTGS</option>
+						</select>
+					</div>
+				</div>
+
+				<PurchaseProductSearch
+					onSelect={handleProductSelect}
+					bind:inputRef={searchInputRef}
+					disabled={!isSupplierSelected}
+					onFocusSupplier={focusSupplier}
 				/>
 			</div>
-			<div>
-				<label
-					for="sup-inv-input"
-					class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-				>Supplier Invoice No *</label>
-				<input
-					id="sup-inv-input"
-					type="text"
-					bind:value={invoiceNumber}
-					class="w-full rounded border border-border bg-surface px-2.5 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-					placeholder="e.g. SUP/2026/9821"
+
+			<!-- Line Items Table (Flex-Scrollable) -->
+			<div class="flex flex-col flex-1 min-h-0 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
+				<div class="flex-1 min-h-0 overflow-y-auto">
+					<PurchaseItemsTable
+						bind:items
+						bind:activeRowIndex
+						onRemoveItem={handleRemoveItem}
+						disabled={!isSupplierSelected}
+						onFocusSupplier={focusSupplier}
+					/>
+				</div>
+
+				<PurchaseHistoryPanel
+					productId={activeItem?.productId}
+					productName={activeItem?.productName}
+					currentRate={Number(activeItem?.purchaseRate) || 0}
 				/>
-			</div>
-			<div>
-				<label
-					for="p-date-input"
-					class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-				>Invoice Date</label>
-				<input
-					id="p-date-input"
-					type="date"
-					bind:value={invoiceDate}
-					class="w-full rounded border border-border bg-surface px-2.5 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				/>
-			</div>
-			<div>
-				<label
-					for="p-payment-type"
-					class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-				>Payment Terms (F4)</label>
-				<select
-					id="p-payment-type"
-					bind:value={paymentType}
-					class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				>
-					<option value="credit">Credit (Pay Later)</option>
-					<option value="cash">Cash Paid</option>
-					<option value="bank">Bank / NEFT / RTGS</option>
-				</select>
 			</div>
 		</div>
 
-		<PurchaseProductSearch
-			onSelect={handleProductSelect}
-			bind:inputRef={searchInputRef}
-			disabled={!isSupplierSelected}
-			onFocusSupplier={focusSupplier}
-		/>
+		<!-- RIGHT COLUMN (30% WIDTH = lg:col-span-4) - Sticky Financial Summary -->
+		<div class="lg:col-span-4 flex flex-col gap-3 h-full overflow-y-auto pr-0.5">
+			<PurchaseSummary
+				itemCount={items.length}
+				{subtotal}
+				{discountTotal}
+				{taxableTotal}
+				{gstTotal}
+				{roundOff}
+				{grandTotal}
+			/>
+
+			<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-3">
+				<div class="flex items-center justify-between text-xs font-semibold text-text-secondary pb-2 border-b border-border/50">
+					<span>Inward Verification</span>
+					<span class="font-mono text-accent">{items.length} items entered</span>
+				</div>
+				<p class="text-[11px] text-text-muted leading-relaxed">
+					Saving this inward shipment automatically updates inventory batch stock, creates supplier Khata balance liability, and records HSN GST input credits.
+				</p>
+				<Button
+					variant="primary"
+					class="w-full justify-center py-2.5 font-bold text-sm shadow-xs"
+					disabled={isSaving || items.length === 0 || !selectedSupplier || !invoiceNumber.trim()}
+					loading={isSaving}
+					onclick={handleSavePurchase}
+				>
+					Confirm & Post Inward (F10)
+				</Button>
+			</div>
+		</div>
 	</div>
-
-	<PurchaseItemsTable
-		bind:items
-		bind:activeRowIndex
-		onRemoveItem={handleRemoveItem}
-		disabled={!isSupplierSelected}
-		onFocusSupplier={focusSupplier}
-	/>
-
-	<PurchaseHistoryPanel
-		productId={activeItem?.productId}
-		productName={activeItem?.productName}
-		currentRate={Number(activeItem?.purchaseRate) || 0}
-	/>
-
-	<PurchaseSummary
-		itemCount={items.length}
-		{subtotal}
-		{discountTotal}
-		{taxableTotal}
-		{gstTotal}
-		{roundOff}
-		{grandTotal}
-	/>
 </div>

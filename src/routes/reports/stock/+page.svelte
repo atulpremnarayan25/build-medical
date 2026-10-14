@@ -175,46 +175,56 @@
 
 	<!-- Valuation Summary Metric Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Stock Valuation (Cost)</div>
-			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
-				{formatCurrency(totalCostValuation)}
-			</div>
-			<div class="text-[10px] text-text-muted">Actual acquisition cost</div>
-		</div>
-
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Retail Valuation (MRP)</div>
-			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
-				{formatCurrency(totalMrpValuation)}
-			</div>
-			<div class="text-[10px] text-text-muted">Retail inventory potential</div>
-		</div>
-
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Gross Margin Potential</div>
-			<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
-				{formatCurrency(marginSpread)}
-			</div>
-			<div class="text-[10px] text-text-muted">
-				{totalCostValuation > 0 ? ((marginSpread / totalCostValuation) * 100).toFixed(1) : 0}% Markup
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Stock Valuation (Cost)</div>
+				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
+					{formatCurrency(totalCostValuation)}
+				</div>
+				<div class="text-[10px] text-text-muted">Actual acquisition cost</div>
 			</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Physical Units in Stock</div>
-			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
-				{totalQuantity.toLocaleString()}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Retail Valuation (MRP)</div>
+				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
+					{formatCurrency(totalMrpValuation)}
+				</div>
+				<div class="text-[10px] text-text-muted">Retail inventory potential</div>
 			</div>
-			<div class="text-[10px] text-text-muted">Across all active batches</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Active SKUs / Batches</div>
-			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
-				{filteredStock.length} / {totalBatches}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Gross Margin Potential</div>
+				<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
+					{formatCurrency(marginSpread)}
+				</div>
+				<div class="text-[10px] text-text-muted">
+					{totalCostValuation > 0 ? ((marginSpread / totalCostValuation) * 100).toFixed(1) : 0}% Markup
+				</div>
 			</div>
-			<div class="text-[10px] text-text-muted">Catalog items / Active batches</div>
+		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Physical Units in Stock</div>
+				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
+					{totalQuantity.toLocaleString()}
+				</div>
+				<div class="text-[10px] text-text-muted">Across all active batches</div>
+			</div>
+		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Active SKUs / Batches</div>
+				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
+					{filteredStock.length} / {totalBatches}
+				</div>
+				<div class="text-[10px] text-text-muted">Catalog items / Active batches</div>
+			</div>
 		</div>
 	</div>
 
@@ -227,9 +237,9 @@
 			No products match the selected filters.
 		</div>
 	{:else}
-		<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+		<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 			<table class="w-full text-left text-xs">
-				<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 					<tr>
 						<th class="px-3 py-2.5">Medicine / Item Details</th>
 						<th class="px-3 py-2.5">Category</th>

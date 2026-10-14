@@ -170,60 +170,119 @@
 
 	<!-- Metric summary cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Batches</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">{totalBatches}</div>
-				<div class="text-[10px] text-text-muted">Inward inventory</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<Layers size={16} />
-			</div>
-		</div>
-
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-success uppercase">Healthy Stock</div>
-				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">{healthyBatches}</div>
-				<div class="text-[10px] text-text-muted">&gt;90d expiry &gt;10 qty</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
-				<CheckCircle2 size={16} />
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Total Batches</span>
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent">
+						<Layers size={14} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-xl font-black text-text-primary tabular-nums">{totalBatches}</span>
+				</div>
+				<div class="mt-1 text-[10px] text-text-muted">Inward stock items</div>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-warning uppercase">Near Expiry</div>
-				<div class="mt-1 font-mono text-xl font-bold text-warning tabular-nums">{nearExpiryBatches}</div>
-				<div class="text-[10px] text-text-muted">&lt;90 days to expiry</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
-				<Clock size={16} />
-			</div>
-		</div>
-
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-danger uppercase">Expired Batches</div>
-				<div class="mt-1 font-mono text-xl font-bold text-danger tabular-nums">{expiredBatches}</div>
-				<div class="text-[10px] text-text-muted">Disposal / Return required</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-danger-light text-danger">
-				<AlertTriangle size={16} />
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-success">Healthy Stock</span>
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-light text-success">
+						<CheckCircle2 size={14} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-xl font-black text-success tabular-nums">{healthyBatches}</span>
+				</div>
+				<div class="mt-1 text-[10px] text-text-muted">&gt;90d expiry &gt;10 qty</div>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs col-span-2 sm:col-span-1">
-			<div>
-				<div class="text-[11px] font-semibold text-accent uppercase">Stock Valuation</div>
-				<div class="mt-1 font-mono text-xl font-bold text-accent tabular-nums">₹{totalStockValuation.toFixed(0)}</div>
-				<div class="text-[10px] text-text-muted">MRP: ₹{totalMrpValuation.toFixed(0)}</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<DollarSign size={16} />
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-warning">Near Expiry</span>
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-warning-light text-warning">
+						<Clock size={14} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-xl font-black text-warning tabular-nums">{nearExpiryBatches}</span>
+				</div>
+				<div class="mt-1 text-[10px] text-text-muted">&lt;90 days to expiry</div>
 			</div>
 		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-danger">Expired Batches</span>
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-danger-light text-danger">
+						<AlertTriangle size={14} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-xl font-black text-danger tabular-nums">{expiredBatches}</span>
+				</div>
+				<div class="mt-1 text-[10px] text-text-muted">Return/disposal needed</div>
+			</div>
+		</div>
+
+		<div class="bezel-outer col-span-2 sm:col-span-1">
+			<div class="bezel-inner p-3.5">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-accent">Stock Valuation</span>
+					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent">
+						<DollarSign size={14} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-xl font-black text-accent tabular-nums">₹{totalStockValuation.toFixed(0)}</span>
+				</div>
+				<div class="mt-1 text-[10px] text-text-muted">MRP: ₹{totalMrpValuation.toFixed(0)}</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Quick Status Filter Chips Bar -->
+	<div class="flex flex-wrap items-center gap-1.5 pt-1">
+		<button
+			type="button"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'all' ? 'bg-accent text-white shadow-2xs' : 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
+			onclick={() => (statusFilter = 'all')}
+		>
+			All Batches ({totalBatches})
+		</button>
+		<button
+			type="button"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'healthy' ? 'bg-success text-white shadow-2xs' : 'border border-border bg-surface text-success hover:bg-success-light/30'}"
+			onclick={() => (statusFilter = 'healthy')}
+		>
+			Healthy ({healthyBatches})
+		</button>
+		<button
+			type="button"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'near-expiry' ? 'bg-warning text-white shadow-2xs' : 'border border-border bg-surface text-warning hover:bg-warning-light/30'}"
+			onclick={() => (statusFilter = 'near-expiry')}
+		>
+			Near Expiry &lt;90d ({nearExpiryBatches})
+		</button>
+		<button
+			type="button"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'expired' ? 'bg-danger text-white shadow-2xs' : 'border border-border bg-surface text-danger hover:bg-danger-light/30'}"
+			onclick={() => (statusFilter = 'expired')}
+		>
+			Expired ({expiredBatches})
+		</button>
+		<button
+			type="button"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'low-stock' ? 'bg-warning text-white shadow-2xs' : 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
+			onclick={() => (statusFilter = 'low-stock')}
+		>
+			Low Stock &le;10 ({lowStockBatches})
+		</button>
 	</div>
 
 	<!-- Toolbar & Filters -->

@@ -103,47 +103,71 @@
 
 	<!-- Metric summary cards -->
 	<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Inward Bills</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">{totalPurchasesCount}</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-info-light text-info">
-				<ShoppingCart size={16} />
-			</div>
-		</div>
-
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Volume (₹)</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">
-					₹{totalPurchasesAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+		<!-- Total Inward Bills -->
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Total Inward Bills</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-info-light text-info">
+						<ShoppingCart size={16} />
+					</div>
 				</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
-				<FileText size={16} />
-			</div>
-		</div>
-
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Pending Payables (₹)</div>
-				<div class="mt-1 font-mono text-xl font-bold text-warning tabular-nums">
-					₹{totalPayablesDue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">{totalPurchasesCount}</span>
 				</div>
-			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
-				<CreditCard size={16} />
+				<div class="mt-1 text-[11px] text-text-muted">Verified goods received notes</div>
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Stocked GRNs</div>
-				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">{confirmedCount}</div>
+		<!-- Total Volume -->
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Total Inward Volume</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
+						<FileText size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">
+						₹{totalPurchasesAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+					</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Gross inventory procurement</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
-				<CheckCircle2 size={16} />
+		</div>
+
+		<!-- Pending Payables -->
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Pending Payables</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
+						<CreditCard size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-warning tabular-nums">
+						₹{totalPayablesDue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+					</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Khata balance owed to suppliers</div>
+			</div>
+		</div>
+
+		<!-- Stocked GRNs -->
+		<div class="bezel-outer">
+			<div class="bezel-inner p-4">
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-semibold text-text-muted">Confirmed GRNs</span>
+					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+						<CheckCircle2 size={16} />
+					</div>
+				</div>
+				<div class="mt-2 flex items-baseline gap-2">
+					<span class="font-mono text-2xl font-black text-success tabular-nums">{confirmedCount}</span>
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Batches active in stock</div>
 			</div>
 		</div>
 	</div>

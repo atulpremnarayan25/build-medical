@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { PageHeader, Button, Badge, Modal } from '$lib/components/common';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import {
 		Building2,
@@ -20,7 +22,21 @@
 
 	let { data } = $props();
 
-	let activeTab = $state('profile');
+	let activeTab = $state(page.url.searchParams.get('tab') || 'profile');
+
+	function setTab(tab: string) {
+		activeTab = tab;
+		const url = new URL(page.url);
+		url.searchParams.set('tab', tab);
+		goto(url.toString(), { replaceState: true, noScroll: true, keepFocus: true });
+	}
+
+	$effect(() => {
+		const param = page.url.searchParams.get('tab');
+		if (param && ['profile', 'users', 'invoice', 'backups'].includes(param) && activeTab !== param) {
+			activeTab = param;
+		}
+	});
 
 	// Store profile state
 	let storeProfile = $state({
@@ -285,37 +301,37 @@
 	<!-- Sidebar Tabs -->
 	<div class="w-full shrink-0 space-y-1 lg:w-64">
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
 			'profile'
 				? 'bg-accent-light text-accent'
 				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
-			onclick={() => (activeTab = 'profile')}
+			onclick={() => setTab('profile')}
 		>
 			<Building2 size={16} />
 			Store Profile
 		</button>
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
 			'users'
 				? 'bg-accent-light text-accent'
 				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
-			onclick={() => (activeTab = 'users')}
+			onclick={() => setTab('users')}
 		>
 			<Users size={16} />
 			User Management
 		</button>
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
 			'invoice'
 				? 'bg-accent-light text-accent'
 				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
-			onclick={() => (activeTab = 'invoice')}
+			onclick={() => setTab('invoice')}
 		>
 			<FileText size={16} />
 			Invoice Settings
 		</button>
 		<button
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors {activeTab ===
 			'backups'
 				? 'bg-accent-light text-accent'
 				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
@@ -329,7 +345,7 @@
 		</button>
 		<a
 			href="/settings/network"
-			class="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 		>
 			<Wifi size={16} />
 			Network & LAN Terminals
@@ -337,7 +353,7 @@
 	</div>
 
 	<!-- Content -->
-	<div class="flex-1 rounded-xl border border-border bg-surface p-6 shadow-2xs">
+	<div class="flex-1 bezel-outer"><div class="bezel-inner p-6">
 		{#if activeTab === 'profile'}
 			<div>
 				<h2 class="text-base font-bold text-text-primary">Store Profile</h2>
@@ -753,6 +769,7 @@
 				</div>
 			</div>
 		{/if}
+		</div>
 	</div>
 </div>
 

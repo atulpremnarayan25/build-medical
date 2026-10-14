@@ -1,44 +1,37 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { PackageSearch } from '@lucide/svelte';
 
 	interface EmptyStateProps {
 		title?: string;
 		message?: string;
 		icon?: Snippet;
 		action?: Snippet;
+		class?: string;
 	}
 
-	let { title = 'No data found', message, icon, action }: EmptyStateProps = $props();
+	let {
+		title = 'No records found',
+		message,
+		icon,
+		action,
+		class: className = ''
+	}: EmptyStateProps = $props();
 </script>
 
-<div class="flex flex-col items-center justify-center px-4 py-12 text-center">
-	{#if icon}
-		<div class="mb-3 text-text-muted">
+<div class="flex flex-col items-center justify-center px-4 py-12 text-center {className}">
+	<div class="mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-secondary border border-border/80 text-text-muted shadow-xs">
+		{#if icon}
 			{@render icon()}
-		</div>
-	{:else}
-		<div class="mb-3 text-text-muted">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="40"
-				height="40"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.5"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-			>
-				<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-				<polyline points="13 2 13 9 20 9"></polyline>
-			</svg>
-		</div>
-	{/if}
+		{:else}
+			<PackageSearch class="h-6 w-6 stroke-[1.5]" />
+		{/if}
+	</div>
 
-	<h3 class="text-sm font-medium text-text-secondary">{title}</h3>
+	<h3 class="text-sm font-semibold text-text-primary tracking-tight">{title}</h3>
 
 	{#if message}
-		<p class="mt-1 max-w-sm text-sm text-text-muted">{message}</p>
+		<p class="mt-1 max-w-sm text-xs text-text-muted leading-relaxed">{message}</p>
 	{/if}
 
 	{#if action}

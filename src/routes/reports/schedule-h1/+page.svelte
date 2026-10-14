@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PageHeader, LoadingState, Button } from '$lib/components/common/index.js';
+	import { PageHeader, LoadingState, Button, DateRangePicker } from '$lib/components/common/index.js';
 	import { formatCurrency, formatDate, formatDateTime } from '$lib/utils/formatters.js';
 	import {
 		FileSpreadsheet,
@@ -364,110 +364,87 @@
 
 	<!-- Metric Summary Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<span class="text-[11px] font-semibold text-text-muted">Total Dispatches</span>
-			<div class="mt-1 flex items-baseline justify-between">
-				<span class="text-xl font-bold font-mono text-text-primary">{summary.totalEntries}</span>
-				<span class="text-[10px] text-text-muted">{summary.distinctInvoices} Bills</span>
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<span class="text-[11px] font-semibold text-text-muted">Total Dispatches</span>
+				<div class="mt-1 flex items-baseline justify-between">
+					<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{summary.totalEntries}</span>
+					<span class="text-[10px] text-text-muted">{summary.distinctInvoices} Bills</span>
+				</div>
 			</div>
 		</div>
 
-		<div class="rounded-xl border border-danger/30 bg-danger/5 p-3 shadow-2xs">
-			<div class="flex items-center justify-between">
-				<span class="text-[11px] font-bold text-danger">Schedule H1</span>
-				<span class="rounded bg-danger-light px-1.5 py-0.5 text-[9px] font-black text-danger">RULE 65</span>
-			</div>
-			<div class="mt-1">
-				<span class="text-xl font-bold font-mono text-danger">{summary.h1Count}</span>
-				<span class="ml-1 text-[10px] text-danger/80">lines</span>
-			</div>
-		</div>
-
-		<div class="rounded-xl border border-warning/30 bg-warning/5 p-3 shadow-2xs">
-			<div class="flex items-center justify-between">
-				<span class="text-[11px] font-bold text-warning">Schedule H</span>
-				<span class="rounded bg-warning-light px-1.5 py-0.5 text-[9px] font-bold text-warning">RX ONLY</span>
-			</div>
-			<div class="mt-1">
-				<span class="text-xl font-bold font-mono text-warning">{summary.hCount}</span>
-				<span class="ml-1 text-[10px] text-warning/80">lines</span>
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+				<div class="flex items-center justify-between">
+					<span class="text-[11px] font-bold text-danger">Schedule H1</span>
+					<span class="rounded bg-danger-light px-1.5 py-0.5 text-[9px] font-black text-danger">RULE 65</span>
+				</div>
+				<div class="mt-1">
+					<span class="text-xl font-bold font-mono text-danger tabular-nums">{summary.h1Count}</span>
+					<span class="ml-1 text-[10px] text-danger/80">lines</span>
+				</div>
 			</div>
 		</div>
 
-		<div class="rounded-xl border border-schedule-h1/30 bg-schedule-h1/5 p-3 shadow-2xs">
-			<div class="flex items-center justify-between">
-				<span class="text-[11px] font-bold text-schedule-h1">Schedule X</span>
-				<span class="rounded bg-schedule-h1-light px-1.5 py-0.5 text-[9px] font-black text-schedule-h1">NARCOTIC</span>
-			</div>
-			<div class="mt-1">
-				<span class="text-xl font-bold font-mono text-schedule-h1">{summary.xCount}</span>
-				<span class="ml-1 text-[10px] text-schedule-h1/80">lines</span>
-			</div>
-		</div>
-
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<span class="text-[11px] font-semibold text-text-muted">Total Units Dispensed</span>
-			<div class="mt-1">
-				<span class="text-xl font-bold font-mono text-text-primary">{summary.totalQuantity.toLocaleString('en-IN')}</span>
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3 border border-warning/30 bg-warning/5">
+				<div class="flex items-center justify-between">
+					<span class="text-[11px] font-bold text-warning">Schedule H</span>
+					<span class="rounded bg-warning-light px-1.5 py-0.5 text-[9px] font-bold text-warning">RX ONLY</span>
+				</div>
+				<div class="mt-1">
+					<span class="text-xl font-bold font-mono text-warning tabular-nums">{summary.hCount}</span>
+					<span class="ml-1 text-[10px] text-warning/80">lines</span>
+				</div>
 			</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<span class="text-[11px] font-semibold text-text-muted">Regulated Turnover</span>
-			<div class="mt-1">
-				<span class="text-xl font-bold font-mono text-success">
-					{formatCurrency(summary.totalValue)}
-				</span>
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3 border border-schedule-h1/30 bg-schedule-h1/5">
+				<div class="flex items-center justify-between">
+					<span class="text-[11px] font-bold text-schedule-h1">Schedule X</span>
+					<span class="rounded bg-schedule-h1-light px-1.5 py-0.5 text-[9px] font-black text-schedule-h1">NARCOTIC</span>
+				</div>
+				<div class="mt-1">
+					<span class="text-xl font-bold font-mono text-schedule-h1 tabular-nums">{summary.xCount}</span>
+					<span class="ml-1 text-[10px] text-schedule-h1/80">lines</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<span class="text-[11px] font-semibold text-text-muted">Total Units Dispensed</span>
+				<div class="mt-1">
+					<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{summary.totalQuantity.toLocaleString('en-IN')}</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<span class="text-[11px] font-semibold text-text-muted">Regulated Turnover</span>
+				<div class="mt-1">
+					<span class="text-xl font-bold font-mono text-success tabular-nums">
+						{formatCurrency(summary.totalValue)}
+					</span>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Date Filter Presets & Controls -->
+	<!-- Date Filter Presets & Controls -->
 	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
-		<!-- Date presets: Today, This Week, This Month, Custom Date Range -->
-		<div class="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs">
-			<button
-				type="button"
-				class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'today'
-					? 'bg-surface font-semibold text-accent shadow-2xs'
-					: 'text-text-secondary hover:text-text-primary'}"
-				onclick={() => setDateRange('today')}
-			>
-				Today
-			</button>
-			<button
-				type="button"
-				class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'week'
-					? 'bg-surface font-semibold text-accent shadow-2xs'
-					: 'text-text-secondary hover:text-text-primary'}"
-				onclick={() => setDateRange('week')}
-			>
-				This Week
-			</button>
-			<button
-				type="button"
-				class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'month'
-					? 'bg-surface font-semibold text-accent shadow-2xs'
-					: 'text-text-secondary hover:text-text-primary'}"
-				onclick={() => setDateRange('month')}
-			>
-				This Month
-			</button>
-			<button
-				type="button"
-				class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'custom'
-					? 'bg-surface font-semibold text-accent shadow-2xs'
-					: 'text-text-secondary hover:text-text-primary'}"
-				onclick={() => {
-					datePreset = 'custom';
-					loadReport();
-				}}
-			>
-				Custom Date Range
-			</button>
-		</div>
+		<!-- Date Range Picker Component -->
+		<DateRangePicker
+			bind:from={fromDate}
+			bind:to={toDate}
+			onchange={loadReport}
+		/>
 
-		<!-- Schedule selector & Date picker -->
+		<!-- Schedule selector & Search input -->
 		<div class="flex flex-wrap items-center gap-3 text-xs">
 			<!-- Schedule dropdown -->
 			<div class="flex items-center gap-1.5">
@@ -483,33 +460,6 @@
 					<option value="X">Schedule X Only (Narcotic)</option>
 				</select>
 			</div>
-
-			<!-- Custom date inputs -->
-			<div class="flex items-center gap-1.5">
-				<span class="text-text-muted">From:</span>
-				<input
-					type="date"
-					bind:value={fromDate}
-					onchange={() => {
-						datePreset = 'custom';
-						loadReport();
-					}}
-					class="rounded-md border border-border bg-surface px-2 py-1 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				/>
-			</div>
-			<div class="flex items-center gap-1.5">
-				<span class="text-text-muted">To:</span>
-				<input
-					type="date"
-					bind:value={toDate}
-					onchange={() => {
-						datePreset = 'custom';
-						loadReport();
-					}}
-					class="rounded-md border border-border bg-surface px-2 py-1 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-				/>
-			</div>
-
 			<!-- Search input -->
 			<div class="relative w-48 sm:w-64">
 				<Search class="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={13} />
@@ -545,10 +495,10 @@
 				</p>
 			</div>
 		{:else}
-			<div class="overflow-x-auto">
+			<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto">
 				<table class="w-full text-left text-xs border-collapse">
 					<thead>
-						<tr class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<tr class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 							<th class="py-2.5 px-3 whitespace-nowrap">Date</th>
 							<th class="py-2.5 px-3">Patient Name &amp; Address</th>
 							<th class="py-2.5 px-3">Prescribing Doctor Name</th>

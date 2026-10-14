@@ -214,42 +214,50 @@
 
 	<!-- Ledger Summary Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">
-				{ledgerType === 'receivable' ? 'Net Outstanding Receivable' : 'Net Outstanding Payable'}
-			</div>
-			<div class="mt-1 font-mono text-lg font-bold tabular-nums {totalBalance > 0 ? (ledgerType === 'receivable' ? 'text-danger' : 'text-danger') : 'text-success'}">
-				{formatCurrency(totalBalance)}
-			</div>
-			<div class="text-[10px] text-text-muted">
-				{filteredSummaries.filter(p => (ledgerType === 'receivable' ? (p.balanceDue || 0) : (p.balancePayable || 0)) > 0).length} parties with open balance
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="text-[11px] font-semibold text-text-muted">
+					{ledgerType === 'receivable' ? 'Net Outstanding Receivable' : 'Net Outstanding Payable'}
+				</div>
+				<div class="mt-2 font-mono text-xl font-black tabular-nums {totalBalance > 0 ? 'text-danger' : 'text-success'}">
+					{formatCurrency(totalBalance)}
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">
+					{filteredSummaries.filter(p => (ledgerType === 'receivable' ? (p.balanceDue || 0) : (p.balancePayable || 0)) > 0).length} parties with open balance
+				</div>
 			</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">
-				{ledgerType === 'receivable' ? 'Total Cumulative Sales Billed' : 'Total Cumulative Purchases'}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="text-[11px] font-semibold text-text-muted">
+					{ledgerType === 'receivable' ? 'Total Billed Turnover' : 'Total Inward Purchases'}
+				</div>
+				<div class="mt-2 font-mono text-xl font-black text-text-primary tabular-nums">
+					{formatCurrency(totalBilledOrPurchased)}
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Lifetime transaction volume</div>
 			</div>
-			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
-				{formatCurrency(totalBilledOrPurchased)}
-			</div>
-			<div class="text-[10px] text-text-muted">Lifetime transaction volume</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Remittances / Receipts</div>
-			<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
-				{formatCurrency(totalPaidSum)}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="text-[11px] font-semibold text-success">Total Remittances / Receipts</div>
+				<div class="mt-2 font-mono text-xl font-black text-success tabular-nums">
+					{formatCurrency(totalPaidSum)}
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Realized voucher settlements</div>
 			</div>
-			<div class="text-[10px] text-text-muted">Realized voucher settlements</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Realization / Settlement Rate</div>
-			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
-				{totalBilledOrPurchased > 0 ? ((totalPaidSum / totalBilledOrPurchased) * 100).toFixed(1) : 100}%
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3.5">
+				<div class="text-[11px] font-semibold text-accent">Turnover Realization Rate</div>
+				<div class="mt-2 font-mono text-xl font-black text-accent tabular-nums">
+					{totalBilledOrPurchased > 0 ? ((totalPaidSum / totalBilledOrPurchased) * 100).toFixed(1) : 100}%
+				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Collection / payment efficiency</div>
 			</div>
-			<div class="text-[10px] text-text-muted">Turnover collection efficiency</div>
 		</div>
 	</div>
 
@@ -264,7 +272,7 @@
 	{:else}
 		<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
 			<table class="w-full text-left text-xs">
-				<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 					<tr>
 						<th class="px-3 py-2.5">Party / Account Name</th>
 						<th class="px-3 py-2.5">Contact Details</th>

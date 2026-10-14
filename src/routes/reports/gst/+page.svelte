@@ -454,40 +454,44 @@
 
 	<!-- Top GST Summary Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Sales Taxable</div>
-			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
-				{formatCurrency(totalSalesTaxable)}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Sales Taxable</div>
+				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
+					{formatCurrency(totalSalesTaxable)}
+				</div>
+				<div class="text-[10px] text-text-muted">{data?.totals.invoiceCount || 0} Total Invoices</div>
 			</div>
-			<div class="text-[10px] text-text-muted">{data?.totals.invoiceCount || 0} Total Invoices</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Output GST</div>
-			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
-				{formatCurrency(totalOutputGst)}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Output GST</div>
+				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
+					{formatCurrency(totalOutputGst)}
+				</div>
+				<div class="text-[10px] text-text-muted">CGST + SGST + IGST Collected</div>
 			</div>
-			<div class="text-[10px] text-text-muted">CGST + SGST + IGST Collected</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Eligible Input Tax Credit (ITC)</div>
-			<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
-				{formatCurrency(totalInputTaxCredit)}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Eligible Input Tax Credit (ITC)</div>
+				<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
+					{formatCurrency(totalInputTaxCredit)}
+				</div>
+				<div class="text-[10px] text-text-muted">GST Paid on Purchases (Inward)</div>
 			</div>
-			<div class="text-[10px] text-text-muted">GST Paid on Purchases (Inward)</div>
 		</div>
 
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Net GST Payable (GSTR-3B)</div>
-			<div
-				class="mt-1 font-mono text-lg font-bold tabular-nums {netGstLiability > 0
-					? 'text-danger'
-					: 'text-success'}"
-			>
-				{formatCurrency(netGstLiability)}
+		<div class="bezel-outer">
+			<div class="bezel-inner p-3">
+				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Net GST Payable (GSTR-3B)</div>
+				<div class="mt-1 font-mono text-lg font-bold tabular-nums {netGstLiability > 0 ? 'text-danger' : 'text-success'}">
+					{formatCurrency(netGstLiability)}
+				</div>
+				<div class="text-[10px] text-text-muted">Output GST minus eligible ITC</div>
 			</div>
-			<div class="text-[10px] text-text-muted">Output GST minus eligible ITC</div>
 		</div>
 	</div>
 
@@ -697,6 +701,58 @@
 					</div>
 				</div>
 
+				<!-- GST Slab Distribution Stacked Progress Bar -->
+				{#if totalSalesTaxable > 0}
+					<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-2">
+						<div class="flex items-center justify-between text-xs font-semibold text-text-primary">
+							<span class="flex items-center gap-1.5">
+								<Layers size={14} class="text-accent" />
+								<span>GST Rate Turnover Distribution</span>
+							</span>
+							<span class="font-mono text-text-muted tabular-nums">Taxable: {formatCurrency(totalSalesTaxable)}</span>
+						</div>
+						<div class="flex h-3 w-full overflow-hidden rounded-full bg-surface-secondary">
+							{#each data.sales as slab}
+								{@const pct = (slab.taxableAmount / totalSalesTaxable) * 100}
+								{#if pct > 0}
+									<div
+										style="width: {pct}%"
+										class="transition-all {slab.gstRate === 0
+											? "bg-slate-400"
+											: slab.gstRate === 5
+												? "bg-accent"
+												: slab.gstRate === 12
+													? "bg-info"
+													: slab.gstRate === 18
+														? "bg-warning"
+														: "bg-danger"}"
+										title="{slab.gstRate}% GST: {formatCurrency(slab.taxableAmount)} ({pct.toFixed(1)}%)"
+									></div>
+								{/if}
+							{/each}
+						</div>
+						<div class="flex flex-wrap items-center gap-4 text-[11px] text-text-muted pt-1 font-mono">
+							{#each data.sales as slab}
+								{@const pct = (slab.taxableAmount / totalSalesTaxable) * 100}
+								{#if pct > 0}
+									<div class="flex items-center gap-1.5">
+										<span class="h-2 w-2 rounded-full {slab.gstRate === 0
+											? "bg-slate-400"
+											: slab.gstRate === 5
+												? "bg-accent"
+												: slab.gstRate === 12
+													? "bg-info"
+													: slab.gstRate === 18
+														? "bg-warning"
+														: "bg-danger"}"></span>
+										<span>{slab.gstRate}% ({pct.toFixed(1)}% &bull; {formatCurrency(slab.taxableAmount)})</span>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</div>
+				{/if}
+
 				<!-- Combined Sales Tax Slabs -->
 				<div class="space-y-2">
 					<div class="flex items-center justify-between">
@@ -704,9 +760,9 @@
 							Outward Supplies — Combined Rate Slabs
 						</h3>
 					</div>
-					<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+					<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 						<table class="w-full text-left text-xs">
-							<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+							<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 								<tr>
 									<th class="px-3 py-2.5">GST Rate Slab</th>
 									<th class="px-3 py-2.5 text-right">Taxable Value (₹)</th>
@@ -768,9 +824,9 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 							<tr>
 								<th class="px-3 py-2.5 whitespace-nowrap">Invoice No</th>
 								<th class="px-3 py-2.5 whitespace-nowrap">Date</th>
@@ -873,9 +929,9 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 							<tr>
 								<th class="px-3 py-2.5">Rate Slab</th>
 								<th class="px-3 py-2.5">Place of Supply</th>
@@ -950,9 +1006,9 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 							<tr>
 								<th class="px-3 py-2.5 whitespace-nowrap">HSN Code</th>
 								<th class="px-3 py-2.5">Description</th>
@@ -1022,9 +1078,9 @@
 					</p>
 				</div>
 
-				<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
 							<tr>
 								<th class="px-3 py-2.5">GST Rate Slab</th>
 								<th class="px-3 py-2.5 text-center">Items Received</th>

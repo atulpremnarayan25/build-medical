@@ -4,6 +4,8 @@
 	/* Semantic surfaces & borders mapped to CSS variables for instant live theming */
 	--color-surface: var(--surface);
 	--color-surface-secondary: var(--surface-secondary);
+	--color-surface-elevated: var(--surface-elevated);
+	--color-surface-overlay: var(--surface-overlay);
 	--color-surface-hover: var(--surface-hover);
 	--color-border: var(--border);
 	--color-border-subtle: var(--border-subtle);
@@ -67,6 +69,8 @@
 :root {
 	--surface: #ffffff;
 	--surface-secondary: #f8fafc;
+	--surface-elevated: #ffffff;
+	--surface-overlay: #ffffff;
 	--surface-hover: #f1f5f9;
 	--border: #e2e8f0;
 	--border-subtle: #f1f5f9;
@@ -103,6 +107,8 @@
 .dark {
 	--surface: #1e293b;
 	--surface-secondary: #0f172a;
+	--surface-elevated: #243248;
+	--surface-overlay: #334155;
 	--surface-hover: #334155;
 	--border: #334155;
 	--border-subtle: #1e293b;
@@ -139,6 +145,8 @@
 	:root:not([data-theme="light"]) {
 		--surface: #1e293b;
 		--surface-secondary: #0f172a;
+		--surface-elevated: #243248;
+		--surface-overlay: #334155;
 		--surface-hover: #334155;
 		--border: #334155;
 		--border-subtle: #1e293b;
@@ -235,3 +243,45 @@ body {
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--text-muted);
 }
+
+/* Double-Bezel (Doppelrand) Architecture */
+.bezel-outer {
+	border-radius: 1rem;
+	background-color: var(--surface-secondary);
+	padding: 0.375rem;
+	border: 1px solid var(--border);
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.bezel-inner {
+	border-radius: 0.75rem;
+	background-color: var(--surface);
+	padding: 1.25rem;
+	border: 1px solid var(--border-subtle);
+}
+
+/* Haptic Tactile Micro-Interactions */
+.pressable {
+	transition: transform 75ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, border-color 150ms ease;
+}
+
+.pressable:active:not(:disabled) {
+	transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pressable {
+		transition: none !important;
+		transform: none !important;
+	}
+}
+
+/* Sticky High-Density Table Headers */
+.sticky-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background-color: var(--surface);
+	box-shadow: 0 1px 0 var(--border);
+}
+

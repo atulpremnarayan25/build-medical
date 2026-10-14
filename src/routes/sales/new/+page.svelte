@@ -56,6 +56,7 @@
 	let customerInputRef = $state<HTMLInputElement | undefined>();
 	let isSaving = $state(false);
 	let shortcutsOpen = $state(false);
+	let showSalesHistory = $state(false);
 
 	// Parked / Held Bills State
 	let heldBills = $state<HeldBill[]>([]);
@@ -565,26 +566,26 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
-<!-- POS SCREEN LAYOUT: 65/35 Ergonomic Split Screen -->
-<div class="pos-screen-layout flex flex-col gap-2.5 min-h-[calc(100vh-80px)]">
+<!-- POS SCREEN LAYOUT: 65/35 Ergonomic Split Screen (Viewport Constrained for 1366x768) -->
+<div class="pos-screen-layout flex flex-col gap-2 h-[calc(100dvh-4.25rem)] overflow-hidden">
 	<!-- Top Bar / Terminal Navigation -->
-	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface px-4 py-2.5 shadow-2xs">
+	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface px-4 py-2 shadow-2xs shrink-0">
 		<div class="flex items-center gap-3">
 			<a
 				href="/sales"
-				class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
+				class="pressable flex h-7 w-7 items-center justify-center rounded-lg border border-border text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
 				title="Back to Sales Hub"
 			>
-				<ArrowLeft size={16} />
+				<ArrowLeft size={15} />
 			</a>
 			<div>
 				<div class="flex items-center gap-2">
-					<h1 class="text-sm font-bold text-text-primary">High-Speed Billing Terminal</h1>
+					<h1 class="text-xs sm:text-sm font-bold text-text-primary">POS Terminal</h1>
 					<div class="flex items-center gap-1">
 						<select
 							bind:value={billSeries}
 							onchange={() => generateInvoiceNumber(billSeries)}
-							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-xs font-bold text-primary focus:border-accent focus:outline-none"
+							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-xs font-bold text-accent focus:border-accent focus:outline-none cursor-pointer"
 							title="Bill Series: T (Tax Invoice / B2B) or R (Retail Cash Memo)"
 						>
 							<option value="T">T (Tax)</option>
@@ -596,11 +597,11 @@
 					</div>
 					{#if customerType === 'wholesale'}
 						<span class="rounded bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent border border-accent/30">
-							Rate in P.T.R.
+							PTR
 						</span>
 					{:else}
 						<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
-							Rate in MRP
+							MRP
 						</span>
 					{/if}
 					<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
@@ -742,11 +743,11 @@
 	</div>
 
 	<!-- 65 / 35 ERGONOMIC SPLIT SCREEN CONTAINER -->
-	<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 items-start">
+	<div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 flex-1 min-h-0 overflow-hidden items-start">
 		<!-- LEFT COLUMN (65% WIDTH = lg:col-span-8 approx 66.6% or flex-[65]) -->
-		<div class="lg:col-span-8 flex flex-col gap-2.5 h-full">
+		<div class="lg:col-span-8 flex flex-col gap-2 h-full min-h-0 overflow-hidden">
 			<!-- Anchored Medicine Search Bar (Hero on Load) -->
-			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
+			<div class="rounded-xl border border-border bg-surface p-2.5 shadow-2xs shrink-0">
 				<ProductSearch
 					onSelectBatch={handleInlineBatchSelect}
 					bind:inputRef={searchInputRef}
@@ -758,42 +759,68 @@
 				/>
 			</div>
 
-			<!-- Line Items Grid (28px Row Height) -->
-			<div class="flex flex-col flex-1 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs min-h-[380px]">
-				<InvoiceItemsTable
-					bind:items
-					bind:activeIndex={activeItemIndex}
-					onRemoveItem={handleRemoveItem}
-					onFocusSearch={() => {
-						if (!isCustomerSelected) {
-							customerInputRef?.focus();
-							customerInputRef?.select();
-						} else {
-							searchInputRef?.focus();
-						}
-					}}
-					disabled={!isCustomerSelected}
-					onSelectWalkIn={() => handleCustomerSelect(null, true)}
-				/>
+			<!-- Line Items Grid (Flex-Scrollable Viewport) -->
+			<div class="flex flex-col flex-1 min-h-0 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
+				<div class="flex-1 min-h-0 overflow-y-auto">
+					<InvoiceItemsTable
+						bind:items
+						bind:activeIndex={activeItemIndex}
+						onRemoveItem={handleRemoveItem}
+						onFocusSearch={() => {
+							if (!isCustomerSelected) {
+								customerInputRef?.focus();
+								customerInputRef?.select();
+							} else {
+								searchInputRef?.focus();
+							}
+						}}
+						disabled={!isCustomerSelected}
+						onSelectWalkIn={() => handleCustomerSelect(null, true)}
+					/>
+				</div>
 
 				{#if quoteError}
-					<div class="border-t border-danger/30 bg-danger-light/50 px-3 py-1.5 text-xs font-semibold text-danger">
+					<div class="border-t border-danger/30 bg-danger-light/50 px-3 py-1.5 text-xs font-semibold text-danger shrink-0">
 						⚠️ {quoteError}
 					</div>
 				{/if}
 
-				<SalesHistoryPanel
-					productId={activeItem?.productId}
-					productName={activeItem?.productName}
-					batchNo={activeItem?.batchNumber}
-					packSize={activeItem?.packSize || 10}
-					customerId={selectedCustomer?.id}
-					saleType={customerType}
-				/>
+				<!-- Collapsible Sales History Radar -->
+				<div class="border-t border-border/60 bg-surface-secondary/40 px-3 py-1.5 flex items-center justify-between text-xs shrink-0">
+					<button
+						type="button"
+						class="pressable flex items-center gap-1.5 text-[11px] font-semibold text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+						onclick={() => (showSalesHistory = !showSalesHistory)}
+					>
+						<Clock size={12} class="text-accent" />
+						<span>Sales History & Rates</span>
+						<span class="rounded bg-surface border border-border px-1.5 py-0.2 text-[10px] font-mono">
+							{showSalesHistory ? 'Hide ▲' : 'Show ▼'}
+						</span>
+					</button>
+					{#if activeItem}
+						<span class="text-[10px] font-mono text-text-muted truncate max-w-xs">
+							Active: {activeItem.productName} ({activeItem.batchNumber})
+						</span>
+					{/if}
+				</div>
+
+				{#if showSalesHistory}
+					<div class="max-h-40 overflow-y-auto border-t border-border/50 shrink-0">
+						<SalesHistoryPanel
+							productId={activeItem?.productId}
+							productName={activeItem?.productName}
+							batchNo={activeItem?.batchNumber}
+							packSize={activeItem?.packSize || 10}
+							customerId={selectedCustomer?.id}
+							saleType={customerType}
+						/>
+					</div>
+				{/if}
 			</div>
 
 			<!-- ACTIVE ITEM INSPECTOR STRIP AT BOTTOM -->
-			<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
+			<div class="rounded-xl border border-border bg-surface p-2.5 shadow-2xs shrink-0">
 				<div class="flex items-center justify-between pb-1.5 mb-2 border-b border-border text-xs">
 					<div class="flex items-center gap-2">
 						<span class="flex h-2 w-2 rounded-full {activeItem ? 'bg-success animate-pulse' : 'bg-text-muted'}"></span>
@@ -869,7 +896,7 @@
 		</div>
 
 		<!-- RIGHT COLUMN (35% WIDTH = lg:col-span-4) -->
-		<div class="lg:col-span-4 flex flex-col gap-2.5">
+		<div class="lg:col-span-4 flex flex-col gap-2.5 h-full overflow-y-auto pr-0.5">
 			<!-- CUSTOMER & DOCTOR COMPLIANCE PANEL (F3) -->
 			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-3">
 				<div class="flex items-center justify-between pb-1 border-b border-border">
