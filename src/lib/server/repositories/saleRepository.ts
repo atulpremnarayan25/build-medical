@@ -1,6 +1,12 @@
 import type { SaleRepository } from '$lib/repositories/saleRepository.js';
 import type { Sale, CreateSaleInput, SaleItem } from '$lib/types/index.js';
-import { salesTable, saleItemsTable, productsTable, batchesTable, customersTable } from '$lib/server/db/schema.js';
+import {
+	salesTable,
+	saleItemsTable,
+	productsTable,
+	batchesTable,
+	customersTable
+} from '$lib/server/db/schema.js';
 import { eq, desc, and, gte, lte, inArray } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
@@ -36,7 +42,7 @@ function mapSaleRow(sale: any, items: any[], customerName?: string | null) {
 			const qty = Number(item.quantity) || 0;
 			const rate = Number(item.rate) || 0;
 			const gstRate = Number(item.gstRate) || 0;
-			const lineTotal = Number(item.lineTotal) || (qty * rate);
+			const lineTotal = Number(item.lineTotal) || qty * rate;
 			const taxableAmount = qty * rate;
 			const gstAmount = (taxableAmount * gstRate) / 100;
 
@@ -117,11 +123,7 @@ export class DbSaleRepository implements SaleRepository {
 		}
 
 		return salesRows.map(({ sale, customerName }: any) =>
-			mapSaleRow(
-				sale,
-				itemsBySaleId.get(sale.id) || [],
-				customerName
-			)
+			mapSaleRow(sale, itemsBySaleId.get(sale.id) || [], customerName)
 		);
 	}
 

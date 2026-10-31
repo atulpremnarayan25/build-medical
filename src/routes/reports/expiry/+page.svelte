@@ -132,9 +132,10 @@
 	function openReturnModal(item: ExpiryItem) {
 		selectedBatchForReturn = item;
 		returnQuantity = item.remainingStock;
-		returnReason = item.daysToExpiry <= 0
-			? `Expired stock return for credit (Expired on ${item.expiryDate})`
-			: `Near-expiry return before cutoff (Expires in ${item.daysToExpiry} days on ${item.expiryDate})`;
+		returnReason =
+			item.daysToExpiry <= 0
+				? `Expired stock return for credit (Expired on ${item.expiryDate})`
+				: `Near-expiry return before cutoff (Expires in ${item.daysToExpiry} days on ${item.expiryDate})`;
 		returnSuccessNote = null;
 	}
 
@@ -247,7 +248,10 @@
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
-		link.setAttribute('download', `Near_Expiry_Stock_Risk_Report_${new Date().toISOString().split('T')[0]}.csv`);
+		link.setAttribute(
+			'download',
+			`Near_Expiry_Stock_Risk_Report_${new Date().toISOString().split('T')[0]}.csv`
+		);
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
@@ -287,16 +291,20 @@
 	</PageHeader>
 
 	<!-- Regulatory & Financial Notice -->
-	<div class="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-3 text-text-primary text-xs leading-relaxed">
+	<div
+		class="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs leading-relaxed text-text-primary"
+	>
 		<AlertTriangle class="mt-0.5 h-5 w-5 shrink-0 text-warning" />
 		<div>
-			<span class="font-bold uppercase tracking-wider text-warning">
+			<span class="font-bold tracking-wider text-warning uppercase">
 				FEFO Stock Return Protocol &amp; Vendor Cutoff Thresholds
 			</span>
 			<p class="mt-0.5 text-text-secondary">
-				Most pharmaceutical distributors accept near-expiry returns with 100% credit notes only if returned at least
-				<strong>60 to 90 days prior to the expiration date</strong>. Once expired, disposal is statutory and subject to total capital loss.
-				Initiate "Supplier Expiry Return Notes" below to reverse inventory and debit vendor accounts.
+				Most pharmaceutical distributors accept near-expiry returns with 100% credit notes only if
+				returned at least
+				<strong>60 to 90 days prior to the expiration date</strong>. Once expired, disposal is
+				statutory and subject to total capital loss. Initiate "Supplier Expiry Return Notes" below
+				to reverse inventory and debit vendor accounts.
 			</p>
 		</div>
 	</div>
@@ -307,13 +315,15 @@
 			<!-- Total Value at Risk -->
 			<div class="bezel-outer">
 				<div class="bezel-inner p-3">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Value At Risk</span>
+					<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+						>Total Value At Risk</span
+					>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-danger tabular-nums">
+						<span class="font-mono text-xl font-bold text-danger tabular-nums">
 							{formatCurrency(data.summary.totalCostAtRisk)}
 						</span>
 					</div>
-					<div class="text-[10px] text-text-muted mt-0.5">
+					<div class="mt-0.5 text-[10px] text-text-muted">
 						{data.summary.totalUnitsAtRisk.toLocaleString('en-IN')} units at cost
 					</div>
 				</div>
@@ -321,16 +331,22 @@
 
 			<!-- Expired Batches -->
 			<div class="bezel-outer">
-				<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+				<div class="bezel-inner border border-danger/30 bg-danger/5 p-3">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-danger">Expired Stock</span>
-						<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-black text-danger">EXPIRED</span>
+						<span class="text-[10px] font-bold tracking-wider text-danger uppercase"
+							>Expired Stock</span
+						>
+						<span class="py-0.2 rounded bg-danger-light px-1 text-[9px] font-black text-danger"
+							>EXPIRED</span
+						>
 					</div>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-danger tabular-nums">{data.summary.expiredCount}</span>
-						<span class="text-xs text-danger/80 ml-1">batches</span>
+						<span class="font-mono text-xl font-bold text-danger tabular-nums"
+							>{data.summary.expiredCount}</span
+						>
+						<span class="ml-1 text-xs text-danger/80">batches</span>
 					</div>
-					<div class="text-[10px] font-mono text-danger font-semibold mt-0.5 tabular-nums">
+					<div class="mt-0.5 font-mono text-[10px] font-semibold text-danger tabular-nums">
 						{formatCurrency(data.summary.expiredCost)}
 					</div>
 				</div>
@@ -338,16 +354,22 @@
 
 			<!-- < 30 Days -->
 			<div class="bezel-outer">
-				<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+				<div class="bezel-inner border border-danger/30 bg-danger/5 p-3">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-danger">&lt; 30 Days</span>
-						<span class="rounded bg-danger-light px-1 py-0.2 text-[9px] font-bold text-danger">CRITICAL</span>
+						<span class="text-[10px] font-bold tracking-wider text-danger uppercase"
+							>&lt; 30 Days</span
+						>
+						<span class="py-0.2 rounded bg-danger-light px-1 text-[9px] font-bold text-danger"
+							>CRITICAL</span
+						>
 					</div>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-danger tabular-nums">{data.summary.within30Count}</span>
-						<span class="text-xs text-danger/80 ml-1">batches</span>
+						<span class="font-mono text-xl font-bold text-danger tabular-nums"
+							>{data.summary.within30Count}</span
+						>
+						<span class="ml-1 text-xs text-danger/80">batches</span>
 					</div>
-					<div class="text-[10px] font-mono text-danger font-semibold mt-0.5 tabular-nums">
+					<div class="mt-0.5 font-mono text-[10px] font-semibold text-danger tabular-nums">
 						{formatCurrency(data.summary.within30Cost)}
 					</div>
 				</div>
@@ -355,16 +377,22 @@
 
 			<!-- 30–60 Days -->
 			<div class="bezel-outer">
-				<div class="bezel-inner p-3 border border-warning/30 bg-warning/5">
+				<div class="bezel-inner border border-warning/30 bg-warning/5 p-3">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-warning">30–60 Days</span>
-						<span class="rounded bg-warning-light px-1 py-0.2 text-[9px] font-bold text-warning">HIGH RISK</span>
+						<span class="text-[10px] font-bold tracking-wider text-warning uppercase"
+							>30–60 Days</span
+						>
+						<span class="py-0.2 rounded bg-warning-light px-1 text-[9px] font-bold text-warning"
+							>HIGH RISK</span
+						>
 					</div>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-warning tabular-nums">{data.summary.within60Count}</span>
-						<span class="text-xs text-warning/80 ml-1">batches</span>
+						<span class="font-mono text-xl font-bold text-warning tabular-nums"
+							>{data.summary.within60Count}</span
+						>
+						<span class="ml-1 text-xs text-warning/80">batches</span>
 					</div>
-					<div class="text-[10px] font-mono text-warning font-semibold mt-0.5 tabular-nums">
+					<div class="mt-0.5 font-mono text-[10px] font-semibold text-warning tabular-nums">
 						{formatCurrency(data.summary.within60Cost)}
 					</div>
 				</div>
@@ -374,14 +402,21 @@
 			<div class="bezel-outer">
 				<div class="bezel-inner p-3">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">60–90 Days</span>
-						<span class="rounded bg-surface-secondary px-1 py-0.2 text-[9px] font-medium text-text-secondary border border-border">EARLY</span>
+						<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+							>60–90 Days</span
+						>
+						<span
+							class="py-0.2 rounded border border-border bg-surface-secondary px-1 text-[9px] font-medium text-text-secondary"
+							>EARLY</span
+						>
 					</div>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{data.summary.within90Count}</span>
-						<span class="text-xs text-text-muted ml-1">batches</span>
+						<span class="font-mono text-xl font-bold text-text-primary tabular-nums"
+							>{data.summary.within90Count}</span
+						>
+						<span class="ml-1 text-xs text-text-muted">batches</span>
 					</div>
-					<div class="text-[10px] font-mono text-text-secondary font-semibold mt-0.5 tabular-nums">
+					<div class="mt-0.5 font-mono text-[10px] font-semibold text-text-secondary tabular-nums">
 						{formatCurrency(data.summary.within90Cost)}
 					</div>
 				</div>
@@ -390,15 +425,15 @@
 			<!-- Total MRP Potential -->
 			<div class="bezel-outer">
 				<div class="bezel-inner p-3">
-					<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total MRP Value</span>
+					<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+						>Total MRP Value</span
+					>
 					<div class="mt-1">
-						<span class="text-xl font-bold font-mono text-text-primary tabular-nums">
+						<span class="font-mono text-xl font-bold text-text-primary tabular-nums">
 							{formatCurrency(data.summary.totalMrpAtRisk)}
 						</span>
 					</div>
-					<div class="text-[10px] text-text-muted mt-0.5">
-						Retail liquidation potential
-					</div>
+					<div class="mt-0.5 text-[10px] text-text-muted">Retail liquidation potential</div>
 				</div>
 			</div>
 		</div>
@@ -410,13 +445,15 @@
 			{@const within30Pct = Math.round((data.summary.within30Cost / total) * 100)}
 			{@const within60Pct = Math.round((data.summary.within60Cost / total) * 100)}
 			{@const within90Pct = Math.max(0, 100 - expiredPct - within30Pct - within60Pct)}
-			<div class="mt-3 rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-2">
+			<div class="mt-3 space-y-2 rounded-xl border border-border bg-surface p-4 shadow-2xs">
 				<div class="flex items-center justify-between text-xs font-semibold text-text-primary">
 					<span class="flex items-center gap-1.5">
 						<Clock size={14} class="text-accent" />
 						<span>Expiry Capital Risk Distribution</span>
 					</span>
-					<span class="font-mono text-text-muted tabular-nums">Total Risk: {formatCurrency(total)}</span>
+					<span class="font-mono text-text-muted tabular-nums"
+						>Total Risk: {formatCurrency(total)}</span
+					>
 				</div>
 				<!-- Multi-segment stacked progress bar -->
 				<div class="flex h-3 w-full overflow-hidden rounded-full bg-surface-secondary">
@@ -450,7 +487,7 @@
 					{/if}
 				</div>
 				<!-- Legend -->
-				<div class="flex flex-wrap items-center gap-4 text-[11px] text-text-muted pt-1 font-mono">
+				<div class="flex flex-wrap items-center gap-4 pt-1 font-mono text-[11px] text-text-muted">
 					<div class="flex items-center gap-1.5">
 						<span class="h-2 w-2 rounded-full bg-danger"></span>
 						<span>Expired ({expiredPct}%)</span>
@@ -473,9 +510,13 @@
 	{/if}
 
 	<!-- Filter Controls & Search -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs text-xs">
+	<div
+		class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 text-xs shadow-2xs"
+	>
 		<!-- Expiry Window Buttons -->
-		<div class="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1">
+		<div
+			class="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1"
+		>
 			<button
 				type="button"
 				class="rounded-md px-2.5 py-1 font-medium transition-all {windowFilter === 'all'
@@ -540,39 +581,44 @@
 
 		<!-- Search Input -->
 		<div class="relative w-full sm:w-72">
-			<Search class="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={13} />
+			<Search class="absolute top-1/2 left-2.5 -translate-y-1/2 text-text-muted" size={13} />
 			<input
 				type="text"
 				placeholder="Search Medicine, Batch, Supplier..."
 				bind:value={searchQuery}
 				oninput={handleSearchInput}
-				class="w-full rounded-md border border-border bg-surface py-1 pl-8 pr-2.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="w-full rounded-md border border-border bg-surface py-1 pr-2.5 pl-8 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 			/>
 		</div>
 	</div>
 
 	<!-- Supplier Risk Aggregations (Top Vendors with Return Risk) -->
 	{#if data && data.suppliersAtRisk.length > 0}
-		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs space-y-2">
+		<div class="space-y-2 rounded-xl border border-border bg-surface p-3 shadow-2xs">
 			<div class="flex items-center justify-between">
-				<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
+				<h3
+					class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-text-muted uppercase"
+				>
 					<Truck size={14} class="text-accent" />
 					<span>Suppliers with Stock At Risk (Return Candidates)</span>
 				</h3>
 				<span class="text-[10px] text-text-muted">Grouped by Vendor</span>
 			</div>
 
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+			<div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
 				{#each data.suppliersAtRisk.slice(0, 4) as sup}
-					<div class="rounded-lg border border-border bg-surface-secondary p-2.5 text-xs flex flex-col justify-between">
+					<div
+						class="flex flex-col justify-between rounded-lg border border-border bg-surface-secondary p-2.5 text-xs"
+					>
 						<div>
-							<div class="font-bold text-text-primary line-clamp-1">{sup.supplierName}</div>
-							<div class="text-[10px] text-text-muted mt-0.5">
-								{sup.batchCount} near-expiry {sup.batchCount === 1 ? 'batch' : 'batches'} • {sup.totalUnits} units
+							<div class="line-clamp-1 font-bold text-text-primary">{sup.supplierName}</div>
+							<div class="mt-0.5 text-[10px] text-text-muted">
+								{sup.batchCount} near-expiry {sup.batchCount === 1 ? 'batch' : 'batches'} • {sup.totalUnits}
+								units
 							</div>
 						</div>
 						<div class="mt-2 flex items-baseline justify-between border-t border-border pt-2">
-							<span class="text-[10px] text-text-muted font-medium">Value:</span>
+							<span class="text-[10px] font-medium text-text-muted">Value:</span>
 							<span class="font-mono font-bold text-danger">{formatCurrency(sup.totalValue)}</span>
 						</div>
 					</div>
@@ -589,117 +635,145 @@
 			</div>
 		{:else if !data || data.items.length === 0}
 			<div class="flex flex-col items-center justify-center p-12 text-center">
-				<div class="flex h-12 w-12 items-center justify-center rounded-full bg-success-light text-success">
+				<div
+					class="flex h-12 w-12 items-center justify-center rounded-full bg-success-light text-success"
+				>
 					<CheckCircle2 size={24} />
 				</div>
 				<h3 class="mt-3 text-sm font-semibold text-text-primary">No Batches in Risk Window</h3>
-				<p class="mt-1 text-xs text-text-muted max-w-sm">
-					All active warehouse batches have safe expiration horizons exceeding the selected cutoff window.
+				<p class="mt-1 max-w-sm text-xs text-text-muted">
+					All active warehouse batches have safe expiration horizons exceeding the selected cutoff
+					window.
 				</p>
 			</div>
 		{:else}
 			<div class="overflow-x-auto">
-				<table class="w-full text-left text-xs border-collapse">
+				<table class="w-full border-collapse text-left text-xs">
 					<thead>
-						<tr class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
-							<th class="py-2.5 px-3">Medicine Name &amp; Strength</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Batch No</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Expiry Date</th>
-							<th class="py-2.5 px-3 text-center whitespace-nowrap">Risk Window</th>
-							<th class="py-2.5 px-3 text-right whitespace-nowrap">Remaining Stock</th>
-							<th class="py-2.5 px-3 text-right whitespace-nowrap">Unit Purchase Cost</th>
-							<th class="py-2.5 px-3 text-right whitespace-nowrap">Total Value At Risk</th>
-							<th class="py-2.5 px-3">Supplier Name</th>
-							<th class="py-2.5 px-3 text-center whitespace-nowrap">Statutory Action</th>
+						<tr
+							class="border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase"
+						>
+							<th class="px-3 py-2.5">Medicine Name &amp; Strength</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Batch No</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Expiry Date</th>
+							<th class="px-3 py-2.5 text-center whitespace-nowrap">Risk Window</th>
+							<th class="px-3 py-2.5 text-right whitespace-nowrap">Remaining Stock</th>
+							<th class="px-3 py-2.5 text-right whitespace-nowrap">Unit Purchase Cost</th>
+							<th class="px-3 py-2.5 text-right whitespace-nowrap">Total Value At Risk</th>
+							<th class="px-3 py-2.5">Supplier Name</th>
+							<th class="px-3 py-2.5 text-center whitespace-nowrap">Statutory Action</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border font-sans">
 						{#each data.items as item}
-							<tr class="hover:bg-surface-hover transition-colors">
+							<tr class="transition-colors hover:bg-surface-hover">
 								<!-- 1. Medicine Name & Strength -->
-								<td class="py-2.5 px-3 max-w-[220px]">
+								<td class="max-w-[220px] px-3 py-2.5">
 									<div class="flex items-center gap-1.5">
-										<span class="font-semibold text-text-primary line-clamp-1">{item.productName}</span>
+										<span class="line-clamp-1 font-semibold text-text-primary"
+											>{item.productName}</span
+										>
 										{#if item.drugSchedule === 'H1'}
-											<span class="inline-block rounded bg-danger-light px-1 text-[9px] font-black text-danger shrink-0">
+											<span
+												class="inline-block shrink-0 rounded bg-danger-light px-1 text-[9px] font-black text-danger"
+											>
 												H1
 											</span>
 										{:else if item.drugSchedule === 'X'}
-											<span class="inline-block rounded bg-schedule-h1-light px-1 text-[9px] font-black text-schedule-h1 shrink-0">
+											<span
+												class="inline-block shrink-0 rounded bg-schedule-h1-light px-1 text-[9px] font-black text-schedule-h1"
+											>
 												X
 											</span>
 										{/if}
 									</div>
 									{#if item.genericName}
-										<div class="text-[10px] text-text-muted italic line-clamp-1">{item.genericName}</div>
+										<div class="line-clamp-1 text-[10px] text-text-muted italic">
+											{item.genericName}
+										</div>
 									{/if}
 								</td>
 
 								<!-- 2. Batch No -->
-								<td class="py-2.5 px-3 font-mono font-bold text-text-primary whitespace-nowrap">
+								<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-text-primary">
 									{item.batchNo}
 								</td>
 
 								<!-- 3. Expiry Date -->
-								<td class="py-2.5 px-3 whitespace-nowrap font-mono text-[11px] text-text-primary">
+								<td class="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-text-primary">
 									{item.expiryDate}
 								</td>
 
 								<!-- 4. Risk Window Badge -->
-								<td class="py-2.5 px-3 text-center whitespace-nowrap">
+								<td class="px-3 py-2.5 text-center whitespace-nowrap">
 									{#if item.category === 'expired'}
-										<span class="inline-flex items-center rounded-md bg-danger-light px-2 py-0.5 text-[10px] font-black text-danger border border-danger/30">
+										<span
+											class="inline-flex items-center rounded-md border border-danger/30 bg-danger-light px-2 py-0.5 text-[10px] font-black text-danger"
+										>
 											{item.riskLabel}
 										</span>
 									{:else if item.category === '30_days'}
-										<span class="inline-flex items-center rounded-md bg-danger-light px-2 py-0.5 text-[10px] font-bold text-danger border border-danger/30">
+										<span
+											class="inline-flex items-center rounded-md border border-danger/30 bg-danger-light px-2 py-0.5 text-[10px] font-bold text-danger"
+										>
 											{item.riskLabel}
 										</span>
 									{:else if item.category === '60_days'}
-										<span class="inline-flex items-center rounded-md bg-warning-light px-2 py-0.5 text-[10px] font-bold text-warning border border-warning/30">
+										<span
+											class="inline-flex items-center rounded-md border border-warning/30 bg-warning-light px-2 py-0.5 text-[10px] font-bold text-warning"
+										>
 											{item.riskLabel}
 										</span>
 									{:else if item.category === '90_days'}
-										<span class="inline-flex items-center rounded-md bg-info-light px-2 py-0.5 text-[10px] font-bold text-info border border-info/30">
+										<span
+											class="inline-flex items-center rounded-md border border-info/30 bg-info-light px-2 py-0.5 text-[10px] font-bold text-info"
+										>
 											{item.riskLabel}
 										</span>
 									{:else}
-										<span class="inline-flex items-center rounded-md bg-surface-secondary px-2 py-0.5 text-[10px] text-text-muted">
+										<span
+											class="inline-flex items-center rounded-md bg-surface-secondary px-2 py-0.5 text-[10px] text-text-muted"
+										>
 											{item.riskLabel}
 										</span>
 									{/if}
 								</td>
 
 								<!-- 5. Remaining Stock -->
-								<td class="py-2.5 px-3 text-right font-mono font-bold text-text-primary whitespace-nowrap">
-									{item.remainingStock} <span class="text-[10px] font-normal text-text-muted">{item.baseUnit}</span>
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-text-primary"
+								>
+									{item.remainingStock}
+									<span class="text-[10px] font-normal text-text-muted">{item.baseUnit}</span>
 								</td>
 
 								<!-- 6. Unit Purchase Cost -->
-								<td class="py-2.5 px-3 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+								<td
+									class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+								>
 									{formatCurrency(item.unitPurchaseCost)}
 								</td>
 
 								<!-- 7. Total Value At Risk -->
-								<td class="py-2.5 px-3 text-right font-mono font-bold tabular-nums text-danger whitespace-nowrap">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-danger tabular-nums"
+								>
 									{formatCurrency(item.totalValueAtRisk)}
 								</td>
 
 								<!-- 8. Supplier Name -->
-								<td class="py-2.5 px-3 max-w-[160px] text-text-primary">
+								<td class="max-w-[160px] px-3 py-2.5 text-text-primary">
 									<div class="line-clamp-1 font-medium">{item.supplierName}</div>
 									{#if item.purchaseInvoiceNo}
-										<div class="text-[10px] font-mono text-text-muted">GRN: {item.purchaseInvoiceNo}</div>
+										<div class="font-mono text-[10px] text-text-muted">
+											GRN: {item.purchaseInvoiceNo}
+										</div>
 									{/if}
 								</td>
 
 								<!-- 9. Statutory Action -->
-								<td class="py-2.5 px-3 text-center whitespace-nowrap">
-									<Button
-										variant="secondary"
-										size="sm"
-										onclick={() => openReturnModal(item)}
-									>
+								<td class="px-3 py-2.5 text-center whitespace-nowrap">
+									<Button variant="secondary" size="sm" onclick={() => openReturnModal(item)}>
 										<RotateCcw size={12} class="mr-1 text-danger" />
 										<span>Return to Supplier</span>
 									</Button>
@@ -716,7 +790,9 @@
 <!-- SUPPLIER EXPIRY RETURN NOTE (DEBIT NOTE) MODAL -->
 {#if selectedBatchForReturn}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-		<div class="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-xl space-y-4">
+		<div
+			class="w-full max-w-lg space-y-4 rounded-2xl border border-border bg-surface p-5 shadow-xl"
+		>
 			{#if !returnSuccessNote}
 				<!-- Return Initiation Form -->
 				<div class="flex items-center justify-between border-b border-border pb-3">
@@ -739,25 +815,44 @@
 
 				<div class="space-y-3 text-xs">
 					<!-- Batch summary card -->
-					<div class="rounded-xl border border-border bg-surface-secondary p-3 space-y-1.5">
+					<div class="space-y-1.5 rounded-xl border border-border bg-surface-secondary p-3">
 						<div class="flex items-center justify-between">
-							<span class="font-bold text-text-primary text-sm">{selectedBatchForReturn.productName}</span>
-							<span class="rounded bg-danger-light px-1.5 py-0.5 font-bold text-danger text-[10px]">
+							<span class="text-sm font-bold text-text-primary"
+								>{selectedBatchForReturn.productName}</span
+							>
+							<span class="rounded bg-danger-light px-1.5 py-0.5 text-[10px] font-bold text-danger">
 								{selectedBatchForReturn.riskLabel}
 							</span>
 						</div>
-						<div class="grid grid-cols-2 gap-2 text-text-secondary pt-1">
-							<div>Batch: <strong class="font-mono text-text-primary">{selectedBatchForReturn.batchNo}</strong></div>
-							<div>Expiry: <strong class="font-mono text-text-primary">{selectedBatchForReturn.expiryDate}</strong></div>
-							<div>Supplier: <strong class="text-text-primary">{selectedBatchForReturn.supplierName}</strong></div>
-							<div>Unit Cost: <strong class="font-mono text-text-primary">{formatCurrency(selectedBatchForReturn.unitPurchaseCost)}</strong></div>
+						<div class="grid grid-cols-2 gap-2 pt-1 text-text-secondary">
+							<div>
+								Batch: <strong class="font-mono text-text-primary"
+									>{selectedBatchForReturn.batchNo}</strong
+								>
+							</div>
+							<div>
+								Expiry: <strong class="font-mono text-text-primary"
+									>{selectedBatchForReturn.expiryDate}</strong
+								>
+							</div>
+							<div>
+								Supplier: <strong class="text-text-primary"
+									>{selectedBatchForReturn.supplierName}</strong
+								>
+							</div>
+							<div>
+								Unit Cost: <strong class="font-mono text-text-primary"
+									>{formatCurrency(selectedBatchForReturn.unitPurchaseCost)}</strong
+								>
+							</div>
 						</div>
 					</div>
 
 					<!-- Return quantity input -->
 					<div>
-						<label for="return-quantity-input" class="block font-semibold text-text-primary mb-1">
-							Return Quantity (Max: {selectedBatchForReturn.remainingStock} {selectedBatchForReturn.baseUnit})
+						<label for="return-quantity-input" class="mb-1 block font-semibold text-text-primary">
+							Return Quantity (Max: {selectedBatchForReturn.remainingStock}
+							{selectedBatchForReturn.baseUnit})
 						</label>
 						<input
 							id="return-quantity-input"
@@ -769,7 +864,7 @@
 						/>
 						<div class="mt-1 flex justify-between text-[11px] text-text-muted">
 							<span>Calculated Debit Note Value:</span>
-							<strong class="font-mono text-danger text-xs">
+							<strong class="font-mono text-xs text-danger">
 								{formatCurrency(returnQuantity * selectedBatchForReturn.unitPurchaseCost)}
 							</strong>
 						</div>
@@ -777,7 +872,9 @@
 
 					<!-- Reason text -->
 					<div>
-						<label for="return-reason-input" class="block font-semibold text-text-primary mb-1">Return Reason / Regulatory Justification</label>
+						<label for="return-reason-input" class="mb-1 block font-semibold text-text-primary"
+							>Return Reason / Regulatory Justification</label
+						>
 						<input
 							id="return-reason-input"
 							type="text"
@@ -788,9 +885,7 @@
 				</div>
 
 				<div class="flex items-center justify-end gap-2 border-t border-border pt-3">
-					<Button variant="secondary" size="sm" onclick={closeReturnModal}>
-						Cancel
-					</Button>
+					<Button variant="secondary" size="sm" onclick={closeReturnModal}>Cancel</Button>
 					<Button
 						variant="danger"
 						size="sm"
@@ -806,33 +901,40 @@
 				</div>
 			{:else}
 				<!-- Debit Note Generated Confirmation & Print View -->
-				<div class="text-center space-y-2 py-2">
-					<div class="flex h-12 w-12 mx-auto items-center justify-center rounded-full bg-success-light text-success">
+				<div class="space-y-2 py-2 text-center">
+					<div
+						class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success-light text-success"
+					>
 						<CheckCircle2 size={24} />
 					</div>
 					<h3 class="text-base font-bold text-text-primary">
 						Supplier Expiry Return Note Created!
 					</h3>
 					<p class="text-xs text-text-muted">
-						Stock of <strong>{returnSuccessNote.quantity} units</strong> reversed from batch <strong>{returnSuccessNote.batchNo}</strong>.
-						Supplier debit ledger updated.
+						Stock of <strong>{returnSuccessNote.quantity} units</strong> reversed from batch
+						<strong>{returnSuccessNote.batchNo}</strong>. Supplier debit ledger updated.
 					</p>
 				</div>
 
 				<!-- Official Debit Note Card -->
-				<div class="rounded-xl border-2 border-dashed border-border p-4 bg-surface-secondary space-y-3 text-xs font-mono">
-					<div class="text-center border-b border-border pb-2">
-						<div class="font-bold text-sm text-text-primary">DEBIT NOTE / EXPIRY RETURN MEMO</div>
+				<div
+					class="space-y-3 rounded-xl border-2 border-dashed border-border bg-surface-secondary p-4 font-mono text-xs"
+				>
+					<div class="border-b border-border pb-2 text-center">
+						<div class="text-sm font-bold text-text-primary">DEBIT NOTE / EXPIRY RETURN MEMO</div>
 						<div class="text-[10px] text-text-muted">DN Ref: {returnSuccessNote.debitNoteId}</div>
 					</div>
 
 					<div class="space-y-1 text-[11px]">
 						<div>To Distributor: <strong>{returnSuccessNote.supplierName}</strong></div>
 						<div>Medicine: <strong>{returnSuccessNote.productName}</strong></div>
-						<div>Batch: <strong>{returnSuccessNote.batchNo}</strong> | Expiry: <strong>{returnSuccessNote.expiryDate}</strong></div>
+						<div>
+							Batch: <strong>{returnSuccessNote.batchNo}</strong> | Expiry:
+							<strong>{returnSuccessNote.expiryDate}</strong>
+						</div>
 						<div>Quantity Returned: <strong>{returnSuccessNote.quantity}</strong></div>
 						<div>Debit Rate: <strong>{formatCurrency(returnSuccessNote.rate)}</strong></div>
-						<div class="text-sm font-bold text-danger pt-1 border-t border-border mt-2">
+						<div class="mt-2 border-t border-border pt-1 text-sm font-bold text-danger">
 							Total Debit Amount: {formatCurrency(returnSuccessNote.totalDebitValue)}
 						</div>
 					</div>

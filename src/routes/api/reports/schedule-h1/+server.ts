@@ -40,12 +40,7 @@ export async function GET(event: RequestEvent) {
 		filters.push(eq(productsTable.drugSchedule, schedule));
 	} else {
 		// All scheduled drugs (H, H1, X, etc. — exclude 'none' and empty string)
-		filters.push(
-			and(
-				ne(productsTable.drugSchedule, 'none'),
-				ne(productsTable.drugSchedule, '')
-			)!
-		);
+		filters.push(and(ne(productsTable.drugSchedule, 'none'), ne(productsTable.drugSchedule, ''))!);
 	}
 
 	if (search) {
@@ -119,7 +114,8 @@ export async function GET(event: RequestEvent) {
 
 	const formattedRows = rows.map((r) => {
 		const patientDisplayName = r.patientName || r.customerName || 'Walk-in Customer';
-		const patientFullAddress = r.customerAddress || (r.customerPhone ? `Contact: ${r.customerPhone}` : 'Local Resident');
+		const patientFullAddress =
+			r.customerAddress || (r.customerPhone ? `Contact: ${r.customerPhone}` : 'Local Resident');
 		return {
 			...r,
 			patientDisplayName,

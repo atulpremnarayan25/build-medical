@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { extractPanFromGstin, extractStateCode, getStateNameByCode, checkLicenseExpiry } from './gstin.js';
+import {
+	extractPanFromGstin,
+	extractStateCode,
+	getStateNameByCode,
+	checkLicenseExpiry
+} from './gstin.js';
 
 describe('gstin utilities', () => {
 	it('extracts PAN and State code accurately from GSTIN', () => {

@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { saleService, purchaseService, batchService, customerService, supplierService } from '$lib/services';
+	import {
+		saleService,
+		purchaseService,
+		batchService,
+		customerService,
+		supplierService
+	} from '$lib/services';
 	import type { Sale, Purchase } from '$lib/types';
 	import { LoadingState, EmptyState, Badge, Button } from '$lib/components/common';
 	import {
@@ -115,7 +121,9 @@
 		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 			<div>
 				<h1 class="text-xl font-bold text-text-primary">Executive Dashboard</h1>
-				<p class="text-xs text-text-muted">Real-time pharmacy sales, inventory health, and cash flow</p>
+				<p class="text-xs text-text-muted">
+					Real-time pharmacy sales, inventory health, and cash flow
+				</p>
 			</div>
 			<div class="flex flex-wrap items-center gap-2 text-xs">
 				<Button variant="primary" size="sm" onclick={() => goto('/sales/new')}>
@@ -139,7 +147,9 @@
 			<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Today's Revenue</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent"
+					>
 						<TrendingUp size={16} />
 					</div>
 				</div>
@@ -181,7 +191,9 @@
 			<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Customer Receivables</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success"
+					>
 						<ArrowDownRight size={16} />
 					</div>
 				</div>
@@ -193,16 +205,16 @@
 						})}
 					</span>
 				</div>
-				<div class="mt-1 text-[11px] text-text-muted">
-					Pending customer credit collection
-				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Pending customer credit collection</div>
 			</div>
 
 			<!-- Total Payables -->
 			<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Supplier Payables</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning"
+					>
 						<ArrowUpRight size={16} />
 					</div>
 				</div>
@@ -214,9 +226,7 @@
 						})}
 					</span>
 				</div>
-				<div class="mt-1 text-[11px] text-text-muted">
-					Outstanding dues to distributors
-				</div>
+				<div class="mt-1 text-[11px] text-text-muted">Outstanding dues to distributors</div>
 			</div>
 		</div>
 
@@ -227,9 +237,14 @@
 				<div class="flex items-center justify-between border-b border-border px-4 py-3">
 					<div class="flex items-center gap-2">
 						<AlertTriangle size={16} class="text-warning" />
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">Stock & Compliance Radar</h3>
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
+							Stock & Compliance Radar
+						</h3>
 					</div>
-					<a href="/inventory/batches" class="flex items-center gap-1 text-xs font-semibold text-accent hover:underline">
+					<a
+						href="/inventory/batches"
+						class="flex items-center gap-1 text-xs font-semibold text-accent hover:underline"
+					>
 						<span>Batches View</span>
 						<ArrowRight size={12} />
 					</a>
@@ -296,7 +311,9 @@
 			<!-- Quick Actions Panel -->
 			<div class="rounded-xl border border-border bg-surface shadow-2xs">
 				<div class="border-b border-border px-4 py-3">
-					<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">Operational Shortcuts</h3>
+					<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
+						Operational Shortcuts
+					</h3>
 				</div>
 				<div class="grid grid-cols-2 gap-2 p-3">
 					<a
@@ -345,13 +362,17 @@
 				<div class="flex items-center justify-between border-b border-border px-4 py-3">
 					<div class="flex items-center gap-2">
 						<Receipt size={16} class="text-accent" />
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">Recent Invoices</h3>
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
+							Recent Invoices
+						</h3>
 					</div>
 					<a href="/sales" class="text-xs font-semibold text-accent hover:underline">View All</a>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase">
+						<thead
+							class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase"
+						>
 							<tr>
 								<th class="px-3 py-2.5">Invoice No</th>
 								<th class="px-3 py-2.5">Customer</th>
@@ -362,21 +383,34 @@
 						<tbody class="divide-y divide-border-subtle">
 							{#if recentSales.length === 0}
 								<tr>
-									<td colspan="4" class="px-4 py-6 text-center text-text-muted">No recent sales recorded.</td>
+									<td colspan="4" class="px-4 py-6 text-center text-text-muted"
+										>No recent sales recorded.</td
+									>
 								</tr>
 							{:else}
 								{#each recentSales as sale (sale.id)}
-									<tr class="transition-colors hover:bg-surface-hover cursor-pointer" onclick={() => goto(`/sales/${sale.id}`)}>
-										<td class="px-3 py-2.5 font-mono font-bold text-accent whitespace-nowrap">{sale.invoiceNumber}</td>
-										<td class="px-3 py-2.5 font-medium text-text-primary max-w-[140px] truncate">
+									<tr
+										class="cursor-pointer transition-colors hover:bg-surface-hover"
+										onclick={() => goto(`/sales/${sale.id}`)}
+									>
+										<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-accent"
+											>{sale.invoiceNumber}</td
+										>
+										<td class="max-w-[140px] truncate px-3 py-2.5 font-medium text-text-primary">
 											{sale.customerName || sale.customerId || 'Walk-in'}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+										>
 											₹{sale.grandTotal.toFixed(2)}
 										</td>
 										<td class="px-3 py-2.5 text-center">
 											<Badge
-												variant={sale.paymentStatus === 'paid' ? 'success' : sale.paymentStatus === 'partial' ? 'warning' : 'danger'}
+												variant={sale.paymentStatus === 'paid'
+													? 'success'
+													: sale.paymentStatus === 'partial'
+														? 'warning'
+														: 'danger'}
 												size="sm"
 											>
 												{sale.paymentStatus}
@@ -395,13 +429,18 @@
 				<div class="flex items-center justify-between border-b border-border px-4 py-3">
 					<div class="flex items-center gap-2">
 						<ShoppingCart size={16} class="text-info" />
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">Recent Inward Purchases</h3>
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
+							Recent Inward Purchases
+						</h3>
 					</div>
-					<a href="/purchases" class="text-xs font-semibold text-accent hover:underline">View All</a>
+					<a href="/purchases" class="text-xs font-semibold text-accent hover:underline">View All</a
+					>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase">
+						<thead
+							class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase"
+						>
 							<tr>
 								<th class="px-3 py-2.5">GRN / Inv No</th>
 								<th class="px-3 py-2.5">Supplier</th>
@@ -412,21 +451,34 @@
 						<tbody class="divide-y divide-border-subtle">
 							{#if recentPurchases.length === 0}
 								<tr>
-									<td colspan="4" class="px-4 py-6 text-center text-text-muted">No recent inward purchases.</td>
+									<td colspan="4" class="px-4 py-6 text-center text-text-muted"
+										>No recent inward purchases.</td
+									>
 								</tr>
 							{:else}
 								{#each recentPurchases as purchase (purchase.id)}
-									<tr class="transition-colors hover:bg-surface-hover cursor-pointer" onclick={() => goto(`/purchases/${purchase.id}`)}>
-										<td class="px-3 py-2.5 font-mono font-bold text-info whitespace-nowrap">{purchase.invoiceNumber}</td>
-										<td class="px-3 py-2.5 font-medium text-text-primary max-w-[140px] truncate">
+									<tr
+										class="cursor-pointer transition-colors hover:bg-surface-hover"
+										onclick={() => goto(`/purchases/${purchase.id}`)}
+									>
+										<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-info"
+											>{purchase.invoiceNumber}</td
+										>
+										<td class="max-w-[140px] truncate px-3 py-2.5 font-medium text-text-primary">
 											{purchase.supplierName || purchase.supplierId || 'Supplier'}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+										>
 											₹{purchase.grandTotal.toFixed(2)}
 										</td>
 										<td class="px-3 py-2.5 text-center">
 											<Badge
-												variant={purchase.paymentStatus === 'paid' ? 'success' : purchase.paymentStatus === 'partial' ? 'warning' : 'danger'}
+												variant={purchase.paymentStatus === 'paid'
+													? 'success'
+													: purchase.paymentStatus === 'partial'
+														? 'warning'
+														: 'danger'}
 												size="sm"
 											>
 												{purchase.paymentStatus}

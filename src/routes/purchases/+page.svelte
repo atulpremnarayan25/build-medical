@@ -91,7 +91,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Inward Purchases & GRN Hub</h1>
-			<p class="text-xs text-text-muted">Supplier bills, goods received notes, tax credits, and payables ledger</p>
+			<p class="text-xs text-text-muted">
+				Supplier bills, goods received notes, tax credits, and payables ledger
+			</p>
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="primary" size="sm" onclick={() => goto('/purchases/new')}>
@@ -113,7 +115,9 @@
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">{totalPurchasesCount}</span>
+					<span class="font-mono text-2xl font-black text-text-primary tabular-nums"
+						>{totalPurchasesCount}</span
+					>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Verified goods received notes</div>
 			</div>
@@ -124,13 +128,18 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Total Inward Volume</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent"
+					>
 						<FileText size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
 					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">
-						₹{totalPurchasesAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+						₹{totalPurchasesAmount.toLocaleString('en-IN', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
 					</span>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Gross inventory procurement</div>
@@ -142,13 +151,18 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Pending Payables</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning"
+					>
 						<CreditCard size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
 					<span class="font-mono text-2xl font-black text-warning tabular-nums">
-						₹{totalPayablesDue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+						₹{totalPayablesDue.toLocaleString('en-IN', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}
 					</span>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Khata balance owed to suppliers</div>
@@ -160,12 +174,16 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Confirmed GRNs</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success"
+					>
 						<CheckCircle2 size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-2xl font-black text-success tabular-nums">{confirmedCount}</span>
+					<span class="font-mono text-2xl font-black text-success tabular-nums"
+						>{confirmedCount}</span
+					>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Batches active in stock</div>
 			</div>
@@ -173,9 +191,13 @@
 	</div>
 
 	<!-- Toolbar & Filters -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+			<div
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+			>
 				<Search size={15} />
 			</div>
 			<input
@@ -217,13 +239,19 @@
 	{:else if error}
 		<EmptyState title="Error Loading Purchases" message={error} />
 	{:else if purchases.length === 0}
-		<EmptyState title="No Purchase Entries" message="Log your first supplier bill to receive batches into inventory.">
+		<EmptyState
+			title="No Purchase Entries"
+			message="Log your first supplier bill to receive batches into inventory."
+		>
 			{#snippet action()}
 				<Button variant="primary" onclick={() => goto('/purchases/new')}>+ New Purchase</Button>
 			{/snippet}
 		</EmptyState>
 	{:else if filteredPurchases.length === 0}
-		<EmptyState title="No Matching Purchases" message="No purchases match your search and filter criteria." />
+		<EmptyState
+			title="No Matching Purchases"
+			message="No purchases match your search and filter criteria."
+		/>
 	{:else}
 		<DataTable
 			items={paginatedPurchases}
@@ -242,15 +270,18 @@
 				<td class="px-4 py-2.5 font-medium whitespace-nowrap">
 					<a
 						href="/purchases/{purchase.id}"
-						class="flex items-center gap-1.5 font-mono font-bold text-accent hover:underline group"
+						class="group flex items-center gap-1.5 font-mono font-bold text-accent hover:underline"
 					>
 						<span>{purchase.invoiceNumber}</span>
-						<ArrowUpRight size={12} class="opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
+						<ArrowUpRight
+							size={12}
+							class="text-accent opacity-0 transition-opacity group-hover:opacity-100"
+						/>
 					</a>
 				</td>
 
 				<!-- Date -->
-				<td class="px-4 py-2.5 text-xs text-text-secondary whitespace-nowrap">
+				<td class="px-4 py-2.5 text-xs whitespace-nowrap text-text-secondary">
 					{new Date(purchase.invoiceDate).toLocaleDateString('en-IN', {
 						day: '2-digit',
 						month: 'short',
@@ -259,12 +290,14 @@
 				</td>
 
 				<!-- Supplier -->
-				<td class="max-w-[200px] truncate px-4 py-2.5 font-medium text-xs text-text-primary">
+				<td class="max-w-[200px] truncate px-4 py-2.5 text-xs font-medium text-text-primary">
 					{purchase.supplierName || purchase.supplierId || 'Supplier'}
 				</td>
 
 				<!-- Grand Total -->
-				<td class="px-4 py-2.5 text-right font-mono text-xs font-bold text-text-primary tabular-nums">
+				<td
+					class="px-4 py-2.5 text-right font-mono text-xs font-bold text-text-primary tabular-nums"
+				>
 					₹{purchase.grandTotal.toFixed(2)}
 				</td>
 

@@ -57,12 +57,7 @@ describe('Phase 5: Statutory Compliance Reports (Schedule H1 Form 35, GSTR-1 & E
 		const existingAlprazolam = await db
 			.select()
 			.from(productsTable)
-			.where(
-				and(
-					eq(productsTable.storeId, storeId),
-					eq(productsTable.name, 'Alprazolam 0.25mg')
-				)
-			)
+			.where(and(eq(productsTable.storeId, storeId), eq(productsTable.name, 'Alprazolam 0.25mg')))
 			.limit(1);
 
 		if (existingAlprazolam.length > 0) {
@@ -168,10 +163,7 @@ describe('Phase 5: Statutory Compliance Reports (Schedule H1 Form 35, GSTR-1 & E
 			.select()
 			.from(customersTable)
 			.where(
-				and(
-					eq(customersTable.storeId, storeId),
-					eq(customersTable.name, 'Apollo Hospital Clinic')
-				)
+				and(eq(customersTable.storeId, storeId), eq(customersTable.name, 'Apollo Hospital Clinic'))
 			)
 			.limit(1);
 

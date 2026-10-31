@@ -44,13 +44,15 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <!-- ERP Command Menus matching PKS Images 3, 4, 5 -->
-<div class="relative hidden lg:flex items-center gap-1 font-mono text-xs select-none">
+<div class="relative hidden items-center gap-1 font-mono text-xs select-none lg:flex">
 	<!-- File Menu -->
 	<div class="relative">
 		<button
 			type="button"
 			class="flex items-center gap-1 rounded px-2 py-1 font-bold transition-colors
-				{openMenu === 'file' ? 'bg-surface-hover text-accent' : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				{openMenu === 'file'
+				? 'bg-surface-hover text-accent'
+				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
 			onclick={() => toggleMenu('file')}
 			aria-expanded={openMenu === 'file'}
 		>
@@ -67,9 +69,11 @@
 				aria-label="Close menu"
 			></button>
 
-			<div class="absolute left-0 top-full z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 shadow-lg font-sans text-xs ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95">
+			<div
+				class="animate-in fade-in-50 zoom-in-95 absolute top-full left-0 z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 font-sans text-xs shadow-lg ring-1 ring-black/5"
+			>
 				<!-- Sales section -->
-				<div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
 					Billing & Outward
 				</div>
 				<a
@@ -93,7 +97,7 @@
 				<div class="my-1 border-t border-border"></div>
 
 				<!-- Purchasing section -->
-				<div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
 					Inward & GRN
 				</div>
 				<a
@@ -117,7 +121,7 @@
 				<div class="my-1 border-t border-border"></div>
 
 				<!-- Masters section -->
-				<div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
 					Pharma Masters
 				</div>
 				<a
@@ -153,7 +157,9 @@
 		<button
 			type="button"
 			class="flex items-center gap-1 rounded px-2 py-1 font-bold transition-colors
-				{openMenu === 'report' ? 'bg-surface-hover text-accent' : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				{openMenu === 'report'
+				? 'bg-surface-hover text-accent'
+				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
 			onclick={() => toggleMenu('report')}
 			aria-expanded={openMenu === 'report'}
 		>
@@ -169,8 +175,10 @@
 				aria-label="Close menu"
 			></button>
 
-			<div class="absolute left-0 top-full z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 shadow-lg font-sans text-xs ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95">
-				<div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+			<div
+				class="animate-in fade-in-50 zoom-in-95 absolute top-full left-0 z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 font-sans text-xs shadow-lg ring-1 ring-black/5"
+			>
+				<div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
 					Statutory & Compliance
 				</div>
 				<a
@@ -206,7 +214,9 @@
 		<button
 			type="button"
 			class="flex items-center gap-1 rounded px-2 py-1 font-bold transition-colors
-				{openMenu === 'account' ? 'bg-surface-hover text-accent' : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
+				{openMenu === 'account'
+				? 'bg-surface-hover text-accent'
+				: 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'}"
 			onclick={() => toggleMenu('account')}
 			aria-expanded={openMenu === 'account'}
 		>
@@ -222,8 +232,10 @@
 				aria-label="Close menu"
 			></button>
 
-			<div class="absolute left-0 top-full z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 shadow-lg font-sans text-xs ring-1 ring-black/5 animate-in fade-in-50 zoom-in-95">
-				<div class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+			<div
+				class="animate-in fade-in-50 zoom-in-95 absolute top-full left-0 z-50 mt-1 w-56 rounded-md border border-border bg-surface py-1 font-sans text-xs shadow-lg ring-1 ring-black/5"
+			>
+				<div class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-text-muted uppercase">
 					Khata & Double-Entry Ledgers
 				</div>
 				<a

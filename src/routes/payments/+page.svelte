@@ -12,7 +12,14 @@
 	} from '$lib/components/common/index.js';
 	import DataTable from '$lib/components/tables/DataTable.svelte';
 	import Pagination from '$lib/components/tables/Pagination.svelte';
-	import { Search, ArrowDownLeft, ArrowUpRight, CreditCard, Banknote, ArrowRightLeft } from '@lucide/svelte';
+	import {
+		Search,
+		ArrowDownLeft,
+		ArrowUpRight,
+		CreditCard,
+		Banknote,
+		ArrowRightLeft
+	} from '@lucide/svelte';
 	import { formatCurrency, formatDate } from '$lib/utils/formatters.js';
 
 	let loading = $state(true);
@@ -62,7 +69,8 @@
 		try {
 			const result = await paymentService.getPayments();
 			payments = result.sort(
-				(a, b) => new Date(b.date || b.createdAt).getTime() - new Date(a.date || a.createdAt).getTime()
+				(a, b) =>
+					new Date(b.date || b.createdAt).getTime() - new Date(a.date || a.createdAt).getTime()
 			);
 		} catch (e) {
 			console.error(e);
@@ -80,7 +88,10 @@
 </script>
 
 <div class="space-y-4">
-	<PageHeader title="Payment & Receipt Vouchers" subtitle="Track all incoming receipts, outgoing supplier disbursements, and bank settlements">
+	<PageHeader
+		title="Payment & Receipt Vouchers"
+		subtitle="Track all incoming receipts, outgoing supplier disbursements, and bank settlements"
+	>
 		{#snippet actions()}
 			<div class="flex gap-2">
 				<Button variant="secondary" size="sm" onclick={() => goto('/payments/pay')}>
@@ -97,22 +108,32 @@
 
 	<!-- Quick Voucher Metrics -->
 	<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Customer Receipts</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums text-success">
+				<p class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
+					Total Customer Receipts
+				</p>
+				<h3 class="mt-0.5 font-mono text-xl font-bold text-success tabular-nums">
 					{formatCurrency(totalReceived)}
 				</h3>
 			</div>
-			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-success-light text-success">
+			<div
+				class="flex h-9 w-9 items-center justify-center rounded-lg bg-success-light text-success"
+			>
 				<ArrowDownLeft size={18} />
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Supplier Disbursements</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums text-danger">
+				<p class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
+					Total Supplier Disbursements
+				</p>
+				<h3 class="mt-0.5 font-mono text-xl font-bold text-danger tabular-nums">
 					{formatCurrency(totalPaid)}
 				</h3>
 			</div>
@@ -121,10 +142,18 @@
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
-				<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Net Cash / Bank Movement</p>
-				<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums {totalReceived >= totalPaid ? 'text-accent' : 'text-warning'}">
+				<p class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
+					Net Cash / Bank Movement
+				</p>
+				<h3
+					class="mt-0.5 font-mono text-xl font-bold tabular-nums {totalReceived >= totalPaid
+						? 'text-accent'
+						: 'text-warning'}"
+				>
 					{formatCurrency(totalReceived - totalPaid)}
 				</h3>
 			</div>
@@ -135,7 +164,9 @@
 	</div>
 
 	<!-- Search and Filter Bar -->
-	<div class="flex flex-col items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row">
+	<div
+		class="flex flex-col items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row"
+	>
 		<div class="relative w-full max-w-md">
 			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
 				<Search size={15} class="text-text-muted" />
@@ -144,18 +175,24 @@
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search by party, voucher ref, or invoice number..."
-				class="block w-full rounded-md border border-border bg-surface py-1.5 pr-3 pl-9 text-xs text-text-accent placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="text-text-accent block w-full rounded-md border border-border bg-surface py-1.5 pr-3 pl-9 text-xs placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 			/>
 		</div>
 		<div class="flex w-full items-center gap-2 sm:w-auto">
-			<span class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Voucher Type:</span>
+			<span class="text-[11px] font-bold tracking-wider text-text-muted uppercase"
+				>Voucher Type:</span
+			>
 			<select
 				bind:value={typeFilter}
-				class="rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs text-text-accent focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+				class="text-text-accent rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 			>
 				<option value="all">All Vouchers ({payments.length})</option>
-				<option value="received">Receipts In ({payments.filter(p => p.type === 'received').length})</option>
-				<option value="made">Payments Out ({payments.filter(p => p.type === 'made').length})</option>
+				<option value="received"
+					>Receipts In ({payments.filter((p) => p.type === 'received').length})</option
+				>
+				<option value="made"
+					>Payments Out ({payments.filter((p) => p.type === 'made').length})</option
+				>
 			</select>
 		</div>
 	</div>
@@ -165,9 +202,15 @@
 	{:else if error}
 		<EmptyState title="Error" message={error} />
 	{:else if payments.length === 0}
-		<EmptyState title="No vouchers recorded" message="Record your first receipt or supplier payment voucher to start the audit ledger." />
+		<EmptyState
+			title="No vouchers recorded"
+			message="Record your first receipt or supplier payment voucher to start the audit ledger."
+		/>
 	{:else if filteredPayments.length === 0}
-		<EmptyState title="No matching vouchers" message="No vouchers match your active search and filter criteria." />
+		<EmptyState
+			title="No matching vouchers"
+			message="No vouchers match your active search and filter criteria."
+		/>
 	{:else}
 		<DataTable
 			items={paginatedPayments}
@@ -184,19 +227,23 @@
 			{#snippet row(payment)}
 				<td class="px-3.5 py-2 text-center">
 					{#if payment.type === 'received'}
-						<span class="inline-flex items-center gap-1 rounded bg-success-light px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-success">
+						<span
+							class="inline-flex items-center gap-1 rounded bg-success-light px-2 py-0.5 text-[10px] font-bold tracking-wider text-success uppercase"
+						>
 							<ArrowDownLeft size={12} /> Receipt
 						</span>
 					{:else}
-						<span class="inline-flex items-center gap-1 rounded bg-danger-light px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-danger">
+						<span
+							class="inline-flex items-center gap-1 rounded bg-danger-light px-2 py-0.5 text-[10px] font-bold tracking-wider text-danger uppercase"
+						>
 							<ArrowUpRight size={12} /> Payment
 						</span>
 					{/if}
 				</td>
-				<td class="px-3.5 py-2 text-xs whitespace-nowrap font-mono text-text-secondary">
+				<td class="px-3.5 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">
 					{formatDate(payment.date || payment.createdAt)}
 				</td>
-				<td class="max-w-[220px] truncate px-3.5 py-2 text-xs font-semibold text-text-accent">
+				<td class="text-text-accent max-w-[220px] truncate px-3.5 py-2 text-xs font-semibold">
 					<a
 						href={payment.partyType === 'customer'
 							? `/customers/${payment.partyId}`
@@ -208,15 +255,19 @@
 				</td>
 				<td class="px-3.5 py-2 text-xs text-text-muted">
 					{#if payment.invoiceNumber}
-						<span class="inline-flex rounded border border-border bg-surface-alt px-1.5 py-0.5 font-mono text-[11px] font-semibold text-text-secondary">
+						<span
+							class="bg-surface-alt inline-flex rounded border border-border px-1.5 py-0.5 font-mono text-[11px] font-semibold text-text-secondary"
+						>
 							{payment.invoiceNumber}
 						</span>
 					{:else}
-						<span class="text-[11px] italic text-text-muted">On Account</span>
+						<span class="text-[11px] text-text-muted italic">On Account</span>
 					{/if}
 				</td>
 				<td class="px-3.5 py-2 text-center">
-					<span class="inline-flex rounded bg-surface-alt px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+					<span
+						class="bg-surface-alt inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-text-secondary uppercase"
+					>
 						{payment.paymentMethod}
 					</span>
 				</td>
@@ -224,7 +275,8 @@
 					{payment.reference || '-'}
 				</td>
 				<td
-					class="px-3.5 py-2 text-right font-mono text-xs font-bold tabular-nums {payment.type === 'received'
+					class="px-3.5 py-2 text-right font-mono text-xs font-bold tabular-nums {payment.type ===
+					'received'
 						? 'text-success'
 						: 'text-danger'}"
 				>

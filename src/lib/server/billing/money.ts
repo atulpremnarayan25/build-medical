@@ -6,10 +6,4 @@
  * total math exact — no floating-point drift in financial results.
  */
 
-export {
-	toPaise,
-	fromPaise,
-	paiseToRupees,
-	roundToRupee,
-	percentOf
-} from '$lib/utils/money.js';
+export { toPaise, fromPaise, paiseToRupees, roundToRupee, percentOf } from '$lib/utils/money.js';

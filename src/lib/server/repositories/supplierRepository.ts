@@ -137,11 +137,13 @@ export class DbSupplierRepository implements SupplierRepository {
 		if (input.panNo !== undefined) updateData.panNo = input.panNo;
 		if (input.drugLicenseNo1 !== undefined) updateData.drugLicenseNo1 = input.drugLicenseNo1;
 		if (input.drugLicenseNo2 !== undefined) updateData.drugLicenseNo2 = input.drugLicenseNo2;
-		if (input.drugLicenseExpiry !== undefined) updateData.drugLicenseExpiry = input.drugLicenseExpiry;
+		if (input.drugLicenseExpiry !== undefined)
+			updateData.drugLicenseExpiry = input.drugLicenseExpiry;
 		if (input.fssaiLicenseNo !== undefined) updateData.fssaiLicenseNo = input.fssaiLicenseNo;
 		if (input.tdsApplicable !== undefined) updateData.tdsApplicable = input.tdsApplicable;
 		if (input.creditDays !== undefined) updateData.creditDays = input.creditDays;
-		if (input.openingBalance !== undefined) updateData.openingBalance = String(input.openingBalance);
+		if (input.openingBalance !== undefined)
+			updateData.openingBalance = String(input.openingBalance);
 		if (input.contactPerson !== undefined) updateData.contactPerson = input.contactPerson;
 		if (input.remarks !== undefined) updateData.remarks = input.remarks;
 		if (input.active !== undefined) updateData.isActive = input.active;

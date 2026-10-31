@@ -479,7 +479,8 @@ async function seedDb() {
 		drugLicenseNo: 'DL-MAIN-001',
 		drugLicenseNo2: 'DL-MAIN-002',
 		invoicePrefix: 'INV',
-		invoiceTerms: '1. Goods once sold will not be taken back.\n2. Consult doctor before using scheduled drugs.'
+		invoiceTerms:
+			'1. Goods once sold will not be taken back.\n2. Consult doctor before using scheduled drugs.'
 	});
 
 	// 2. Users — admin, a biller for role testing, plus agent QA accounts

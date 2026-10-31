@@ -298,7 +298,9 @@
 	>
 		<button
 			type="button"
-			class="flex items-center gap-1.5 transition-colors {!isSupplierSelected ? 'text-text-muted opacity-60' : 'text-accent-hover'}"
+			class="flex items-center gap-1.5 transition-colors {!isSupplierSelected
+				? 'text-text-muted opacity-60'
+				: 'text-accent-hover'}"
 			onclick={() => {
 				if (!isSupplierSelected) {
 					focusSupplier();
@@ -307,7 +309,10 @@
 				}
 			}}
 		>
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F2</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>F2</kbd
+			>
 			<span>{!isSupplierSelected ? 'Product Search (Locked)' : 'Product Search'}</span>
 		</button>
 		<button
@@ -317,32 +322,46 @@
 				supplierInputRef?.focus();
 			}}
 		>
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F3</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>F3</kbd
+			>
 			<span>Supplier / Distributor</span>
 		</button>
 		<span class="flex items-center gap-1.5 text-schedule-h1">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F4</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>F4</kbd
+			>
 			<span>Payment Terms</span>
 		</span>
 		<span class="flex items-center gap-1.5 text-warning">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Enter</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>Enter</kbd
+			>
 			<span>Grid Traversal</span>
 		</span>
 		<span class="ml-auto flex items-center gap-1.5 text-accent">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Ctrl+S / F10</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>Ctrl+S / F10</kbd
+			>
 			<span>Save Purchase</span>
 		</span>
 	</div>
 
 	<!-- 70 / 30 ERGONOMIC SPLIT SCREEN CONTAINER -->
-	<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 flex-1 min-h-0 overflow-hidden items-start">
+	<div class="grid min-h-0 flex-1 grid-cols-1 items-start gap-3 overflow-hidden lg:grid-cols-12">
 		<!-- LEFT COLUMN (70% WIDTH = lg:col-span-8) -->
-		<div class="lg:col-span-8 flex flex-col gap-2.5 h-full min-h-0 overflow-hidden">
+		<div class="flex h-full min-h-0 flex-col gap-2.5 overflow-hidden lg:col-span-8">
 			<!-- Header fields -->
-			<div class="space-y-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs shrink-0">
+			<div class="shrink-0 space-y-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
 				<div class="grid grid-cols-1 gap-3 md:grid-cols-4">
 					<div>
-						<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Supplier / Distributor (F3) *</span>
+						<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+							>Supplier / Distributor (F3) *</span
+						>
 						<SupplierSearch
 							onSelect={handleSupplierSelect}
 							bind:selectedSupplier
@@ -353,7 +372,8 @@
 						<label
 							for="sup-inv-input"
 							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-						>Supplier Invoice No *</label>
+							>Supplier Invoice No *</label
+						>
 						<input
 							id="sup-inv-input"
 							type="text"
@@ -366,7 +386,8 @@
 						<label
 							for="p-date-input"
 							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-						>Invoice Date</label>
+							>Invoice Date</label
+						>
 						<input
 							id="p-date-input"
 							type="date"
@@ -378,11 +399,12 @@
 						<label
 							for="p-payment-type"
 							class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
-						>Payment Terms (F4)</label>
+							>Payment Terms (F4)</label
+						>
 						<select
 							id="p-payment-type"
 							bind:value={paymentType}
-							class="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none cursor-pointer"
+							class="w-full cursor-pointer rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-semibold text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 						>
 							<option value="credit">Credit (Pay Later)</option>
 							<option value="cash">Cash Paid</option>
@@ -400,8 +422,10 @@
 			</div>
 
 			<!-- Line Items Table (Flex-Scrollable) -->
-			<div class="flex flex-col flex-1 min-h-0 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
-				<div class="flex-1 min-h-0 overflow-y-auto">
+			<div
+				class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xs"
+			>
+				<div class="min-h-0 flex-1 overflow-y-auto">
 					<PurchaseItemsTable
 						bind:items
 						bind:activeRowIndex
@@ -420,7 +444,7 @@
 		</div>
 
 		<!-- RIGHT COLUMN (30% WIDTH = lg:col-span-4) - Sticky Financial Summary -->
-		<div class="lg:col-span-4 flex flex-col gap-3 h-full overflow-y-auto pr-0.5">
+		<div class="flex h-full flex-col gap-3 overflow-y-auto pr-0.5 lg:col-span-4">
 			<PurchaseSummary
 				itemCount={items.length}
 				{subtotal}
@@ -431,17 +455,20 @@
 				{grandTotal}
 			/>
 
-			<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-3">
-				<div class="flex items-center justify-between text-xs font-semibold text-text-secondary pb-2 border-b border-border/50">
+			<div class="space-y-3 rounded-xl border border-border bg-surface p-4 shadow-2xs">
+				<div
+					class="flex items-center justify-between border-b border-border/50 pb-2 text-xs font-semibold text-text-secondary"
+				>
 					<span>Inward Verification</span>
 					<span class="font-mono text-accent">{items.length} items entered</span>
 				</div>
-				<p class="text-[11px] text-text-muted leading-relaxed">
-					Saving this inward shipment automatically updates inventory batch stock, creates supplier Khata balance liability, and records HSN GST input credits.
+				<p class="text-[11px] leading-relaxed text-text-muted">
+					Saving this inward shipment automatically updates inventory batch stock, creates supplier
+					Khata balance liability, and records HSN GST input credits.
 				</p>
 				<Button
 					variant="primary"
-					class="w-full justify-center py-2.5 font-bold text-sm shadow-xs"
+					class="w-full justify-center py-2.5 text-sm font-bold shadow-xs"
 					disabled={isSaving || items.length === 0 || !selectedSupplier || !invoiceNumber.trim()}
 					loading={isSaving}
 					onclick={handleSavePurchase}

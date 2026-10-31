@@ -32,7 +32,9 @@
 
 	let searchQuery = $state('');
 	let statusFilter = $state<string>('all');
-	let sortBy = $state<'expiry_asc' | 'expiry_desc' | 'stock_asc' | 'stock_desc' | 'val_desc'>('expiry_asc');
+	let sortBy = $state<'expiry_asc' | 'expiry_desc' | 'stock_asc' | 'stock_desc' | 'val_desc'>(
+		'expiry_asc'
+	);
 
 	// Pagination
 	let currentPage = $state(1);
@@ -42,25 +44,29 @@
 	let totalBatches = $derived(batches.length);
 	let healthyBatches = $derived(
 		batches.filter((b) => {
-			const diffDays = Math.ceil((new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+			const diffDays = Math.ceil(
+				(new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+			);
 			return diffDays > 90 && b.quantity > 10;
 		}).length
 	);
 	let nearExpiryBatches = $derived(
 		batches.filter((b) => {
-			const diffDays = Math.ceil((new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+			const diffDays = Math.ceil(
+				(new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+			);
 			return diffDays >= 0 && diffDays <= 90;
 		}).length
 	);
 	let expiredBatches = $derived(
 		batches.filter((b) => {
-			const diffDays = Math.ceil((new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+			const diffDays = Math.ceil(
+				(new Date(b.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+			);
 			return diffDays < 0;
 		}).length
 	);
-	let lowStockBatches = $derived(
-		batches.filter((b) => b.quantity > 0 && b.quantity <= 10).length
-	);
+	let lowStockBatches = $derived(batches.filter((b) => b.quantity > 0 && b.quantity <= 10).length);
 
 	let totalStockValuation = $derived(
 		batches.reduce((sum, b) => sum + (b.quantity || 0) * (b.purchaseRate || 0), 0)
@@ -84,7 +90,9 @@
 		if (statusFilter !== 'all') {
 			const now = Date.now();
 			list = list.filter((b) => {
-				const diffDays = Math.ceil((new Date(b.expiryDate).getTime() - now) / (1000 * 60 * 60 * 24));
+				const diffDays = Math.ceil(
+					(new Date(b.expiryDate).getTime() - now) / (1000 * 60 * 60 * 24)
+				);
 				if (statusFilter === 'expired') return diffDays < 0;
 				if (statusFilter === 'near-expiry') return diffDays >= 0 && diffDays <= 90;
 				if (statusFilter === 'low-stock') return b.quantity > 0 && b.quantity <= 10;
@@ -105,7 +113,7 @@
 			} else if (sortBy === 'stock_desc') {
 				return b.quantity - a.quantity;
 			} else if (sortBy === 'val_desc') {
-				return (b.quantity * b.purchaseRate) - (a.quantity * a.purchaseRate);
+				return b.quantity * b.purchaseRate - a.quantity * a.purchaseRate;
 			}
 			return 0;
 		});
@@ -150,7 +158,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Batch Inventory & Expiry Tracking</h1>
-			<p class="text-xs text-text-muted">FEFO-driven stock control, shelf-life monitoring, and supplier traceability</p>
+			<p class="text-xs text-text-muted">
+				FEFO-driven stock control, shelf-life monitoring, and supplier traceability
+			</p>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
 			<Button variant="secondary" size="sm" onclick={loadBatches}>
@@ -174,12 +184,16 @@
 			<div class="bezel-inner p-3.5">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Total Batches</span>
-					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent">
+					<div
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent"
+					>
 						<Layers size={14} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-xl font-black text-text-primary tabular-nums">{totalBatches}</span>
+					<span class="font-mono text-xl font-black text-text-primary tabular-nums"
+						>{totalBatches}</span
+					>
 				</div>
 				<div class="mt-1 text-[10px] text-text-muted">Inward stock items</div>
 			</div>
@@ -189,12 +203,16 @@
 			<div class="bezel-inner p-3.5">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-success">Healthy Stock</span>
-					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-light text-success">
+					<div
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-light text-success"
+					>
 						<CheckCircle2 size={14} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-xl font-black text-success tabular-nums">{healthyBatches}</span>
+					<span class="font-mono text-xl font-black text-success tabular-nums"
+						>{healthyBatches}</span
+					>
 				</div>
 				<div class="mt-1 text-[10px] text-text-muted">&gt;90d expiry &gt;10 qty</div>
 			</div>
@@ -204,12 +222,16 @@
 			<div class="bezel-inner p-3.5">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-warning">Near Expiry</span>
-					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-warning-light text-warning">
+					<div
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-warning-light text-warning"
+					>
 						<Clock size={14} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-xl font-black text-warning tabular-nums">{nearExpiryBatches}</span>
+					<span class="font-mono text-xl font-black text-warning tabular-nums"
+						>{nearExpiryBatches}</span
+					>
 				</div>
 				<div class="mt-1 text-[10px] text-text-muted">&lt;90 days to expiry</div>
 			</div>
@@ -219,12 +241,15 @@
 			<div class="bezel-inner p-3.5">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-danger">Expired Batches</span>
-					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-danger-light text-danger">
+					<div
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-danger-light text-danger"
+					>
 						<AlertTriangle size={14} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-xl font-black text-danger tabular-nums">{expiredBatches}</span>
+					<span class="font-mono text-xl font-black text-danger tabular-nums">{expiredBatches}</span
+					>
 				</div>
 				<div class="mt-1 text-[10px] text-text-muted">Return/disposal needed</div>
 			</div>
@@ -234,12 +259,16 @@
 			<div class="bezel-inner p-3.5">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-accent">Stock Valuation</span>
-					<div class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent">
+					<div
+						class="flex h-7 w-7 items-center justify-center rounded-lg bg-accent-light text-accent"
+					>
 						<DollarSign size={14} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-xl font-black text-accent tabular-nums">₹{totalStockValuation.toFixed(0)}</span>
+					<span class="font-mono text-xl font-black text-accent tabular-nums"
+						>₹{totalStockValuation.toFixed(0)}</span
+					>
 				</div>
 				<div class="mt-1 text-[10px] text-text-muted">MRP: ₹{totalMrpValuation.toFixed(0)}</div>
 			</div>
@@ -250,35 +279,50 @@
 	<div class="flex flex-wrap items-center gap-1.5 pt-1">
 		<button
 			type="button"
-			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'all' ? 'bg-accent text-white shadow-2xs' : 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter ===
+			'all'
+				? 'bg-accent text-white shadow-2xs'
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
 			onclick={() => (statusFilter = 'all')}
 		>
 			All Batches ({totalBatches})
 		</button>
 		<button
 			type="button"
-			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'healthy' ? 'bg-success text-white shadow-2xs' : 'border border-border bg-surface text-success hover:bg-success-light/30'}"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter ===
+			'healthy'
+				? 'bg-success text-white shadow-2xs'
+				: 'border border-border bg-surface text-success hover:bg-success-light/30'}"
 			onclick={() => (statusFilter = 'healthy')}
 		>
 			Healthy ({healthyBatches})
 		</button>
 		<button
 			type="button"
-			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'near-expiry' ? 'bg-warning text-white shadow-2xs' : 'border border-border bg-surface text-warning hover:bg-warning-light/30'}"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter ===
+			'near-expiry'
+				? 'bg-warning text-white shadow-2xs'
+				: 'border border-border bg-surface text-warning hover:bg-warning-light/30'}"
 			onclick={() => (statusFilter = 'near-expiry')}
 		>
 			Near Expiry &lt;90d ({nearExpiryBatches})
 		</button>
 		<button
 			type="button"
-			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'expired' ? 'bg-danger text-white shadow-2xs' : 'border border-border bg-surface text-danger hover:bg-danger-light/30'}"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter ===
+			'expired'
+				? 'bg-danger text-white shadow-2xs'
+				: 'border border-border bg-surface text-danger hover:bg-danger-light/30'}"
 			onclick={() => (statusFilter = 'expired')}
 		>
 			Expired ({expiredBatches})
 		</button>
 		<button
 			type="button"
-			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter === 'low-stock' ? 'bg-warning text-white shadow-2xs' : 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
+			class="pressable rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors {statusFilter ===
+			'low-stock'
+				? 'bg-warning text-white shadow-2xs'
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
 			onclick={() => (statusFilter = 'low-stock')}
 		>
 			Low Stock &le;10 ({lowStockBatches})
@@ -286,9 +330,13 @@
 	</div>
 
 	<!-- Toolbar & Filters -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+			<div
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+			>
 				<Search size={15} />
 			</div>
 			<input
@@ -333,9 +381,15 @@
 	{:else if error}
 		<EmptyState title="Error Loading Batches" message={error} />
 	{:else if batches.length === 0}
-		<EmptyState title="No Batches Found" message="Batches will be automatically logged when you record inward purchases." />
+		<EmptyState
+			title="No Batches Found"
+			message="Batches will be automatically logged when you record inward purchases."
+		/>
 	{:else if filteredBatches.length === 0}
-		<EmptyState title="No Matching Batches" message="No batches match your search and filter criteria." />
+		<EmptyState
+			title="No Matching Batches"
+			message="No batches match your search and filter criteria."
+		/>
 	{:else}
 		<DataTable
 			items={paginatedBatches}
@@ -356,15 +410,18 @@
 				<td class="px-4 py-2.5 font-medium whitespace-nowrap">
 					<a
 						href="/inventory/products/{batch.productId}"
-						class="flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent group"
+						class="group flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent"
 					>
 						<span>{batch.productName}</span>
-						<ArrowUpRight size={12} class="opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
+						<ArrowUpRight
+							size={12}
+							class="text-accent opacity-0 transition-opacity group-hover:opacity-100"
+						/>
 					</a>
 				</td>
 
 				<!-- Batch No -->
-				<td class="px-4 py-2.5 font-mono text-xs font-bold text-text-primary whitespace-nowrap">
+				<td class="px-4 py-2.5 font-mono text-xs font-bold whitespace-nowrap text-text-primary">
 					{batch.batchNumber}
 				</td>
 
@@ -396,7 +453,9 @@
 				</td>
 
 				<!-- Purchase Rate -->
-				<td class="px-4 py-2.5 text-right font-mono text-xs font-bold text-text-primary tabular-nums">
+				<td
+					class="px-4 py-2.5 text-right font-mono text-xs font-bold text-text-primary tabular-nums"
+				>
 					₹{batch.purchaseRate?.toFixed(2) || '0.00'}
 				</td>
 
@@ -415,8 +474,11 @@
 					<div class="flex items-center justify-end gap-1">
 						<button
 							type="button"
-							onclick={() => goto(`/inventory/stock-adjustments/new?productId=${batch.productId}&batchId=${batch.id}`)}
-							class="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-accent transition-colors"
+							onclick={() =>
+								goto(
+									`/inventory/stock-adjustments/new?productId=${batch.productId}&batchId=${batch.id}`
+								)}
+							class="rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-accent"
 							title="Adjust Stock / Count Variance"
 						>
 							<SlidersHorizontal size={14} />
@@ -424,7 +486,7 @@
 						<button
 							type="button"
 							onclick={() => goto('/returns/new')}
-							class="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-danger transition-colors"
+							class="rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-danger"
 							title="Return to Supplier (Debit Note)"
 						>
 							<Undo2 size={14} />
@@ -432,7 +494,7 @@
 						<button
 							type="button"
 							onclick={() => goto(`/inventory/products/${batch.productId}`)}
-							class="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-text-primary transition-colors"
+							class="rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
 							title="View parent product"
 						>
 							<Eye size={14} />

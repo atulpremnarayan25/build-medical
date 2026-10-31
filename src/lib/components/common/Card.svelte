@@ -48,7 +48,11 @@
 </script>
 
 {#if variant === 'double-bezel'}
-	<div class="{variantClasses[variant]} {className}" role={onclick ? 'button' : undefined} {onclick}>
+	<div
+		class="{variantClasses[variant]} {className}"
+		role={onclick ? 'button' : undefined}
+		{onclick}
+	>
 		<div class="bezel-inner {paddingClasses[padding]}">
 			{#if title || header || badge}
 				<div class="mb-3.5 flex items-start justify-between gap-3 border-b border-border/50 pb-3">
@@ -58,7 +62,7 @@
 						{:else if title}
 							<h3 class="text-sm font-semibold text-text-primary">{title}</h3>
 							{#if subtitle}
-								<p class="text-xs text-text-muted mt-0.5">{subtitle}</p>
+								<p class="mt-0.5 text-xs text-text-muted">{subtitle}</p>
 							{/if}
 						{/if}
 					</div>
@@ -95,7 +99,7 @@
 					{:else if title}
 						<h3 class="text-sm font-semibold text-text-primary">{title}</h3>
 						{#if subtitle}
-							<p class="text-xs text-text-muted mt-0.5">{subtitle}</p>
+							<p class="mt-0.5 text-xs text-text-muted">{subtitle}</p>
 						{/if}
 					{/if}
 				</div>

@@ -75,7 +75,9 @@
 <form onsubmit={handleSubmit} class="space-y-4">
 	<!-- Basic Information -->
 	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-text-muted">Basic & Clinical Information</h3>
+		<h3 class="mb-3 text-xs font-bold tracking-wider text-text-muted uppercase">
+			Basic & Clinical Information
+		</h3>
 		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 			<div>
 				<label for="p-name" class="mb-1 block text-xs font-medium text-text-secondary"
@@ -143,7 +145,7 @@
 					type="number"
 					min="1"
 					bind:value={formData.packSize}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary tabular-nums placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 			</div>
 
@@ -154,7 +156,10 @@
 				<select
 					id="p-sched"
 					bind:value={formData.drugSchedule}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none {formData.drugSchedule === 'H1' || formData.drugSchedule === 'X' ? 'border-schedule-h1/50 bg-schedule-h1-light/30 font-semibold text-schedule-h1' : ''}"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none {formData.drugSchedule ===
+						'H1' || formData.drugSchedule === 'X'
+						? 'border-schedule-h1/50 bg-schedule-h1-light/30 font-semibold text-schedule-h1'
+						: ''}"
 				>
 					<option value="none">None (General OTC / Non-Regulated)</option>
 					<option value="H">Schedule H (Prescription Required)</option>
@@ -167,7 +172,9 @@
 
 	<!-- Pricing & Tax -->
 	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
-		<h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-text-muted">Pricing, GST & Accounting</h3>
+		<h3 class="mb-3 text-xs font-bold tracking-wider text-text-muted uppercase">
+			Pricing, GST & Accounting
+		</h3>
 		<div class="grid grid-cols-1 gap-3 md:grid-cols-3">
 			<div>
 				<label for="p-mrp" class="mb-1 block text-xs font-medium text-text-secondary"
@@ -179,7 +186,7 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.mrp}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary tabular-nums placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 				{#if errors.mrp}<p class="mt-1 text-[11px] text-danger">{errors.mrp}</p>{/if}
 			</div>
@@ -193,7 +200,7 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.sellingRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary tabular-nums placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 			</div>
 			<div>
@@ -206,7 +213,7 @@
 					step="0.01"
 					min="0"
 					bind:value={formData.purchaseRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary tabular-nums placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 			</div>
 
@@ -220,7 +227,7 @@
 					step="0.1"
 					min="0"
 					bind:value={formData.gstRate}
-					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs tabular-nums text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface px-3 py-1.5 font-mono text-xs text-text-primary tabular-nums placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 			</div>
 			<div>
@@ -237,7 +244,7 @@
 			</div>
 
 			<div class="flex items-center pt-5">
-				<label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-text-primary">
+				<label class="flex cursor-pointer items-center gap-2 text-xs font-medium text-text-primary">
 					<input
 						id="p-active"
 						type="checkbox"

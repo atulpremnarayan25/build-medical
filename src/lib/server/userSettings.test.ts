@@ -89,7 +89,9 @@ describe('Phase 1: Settings & User Management', () => {
 		expect(dbStore?.drugLicenseNo).toBe('UP-BALLIA-20B-9988');
 		expect(dbStore?.drugLicenseNo2).toBe('UP-BALLIA-21B-9988');
 		expect(dbStore?.invoicePrefix).toBe('CMH');
-		expect(dbStore?.invoiceTerms).toBe('1. No returns without bill.\n2. Consult registered doctor.');
+		expect(dbStore?.invoiceTerms).toBe(
+			'1. No returns without bill.\n2. Consult registered doctor.'
+		);
 	});
 
 	it('should allow owner_admin to create user rajesh with role biller', async () => {

@@ -91,7 +91,9 @@
 
 <div class="relative w-full">
 	<div class="relative flex items-center">
-		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-text-muted">
+		<div
+			class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-text-muted"
+		>
 			{#if selectedSupplier}
 				<CheckCircle2 size={15} class="text-accent" />
 			{:else}
@@ -112,9 +114,9 @@
 			onblur={() => setTimeout(() => (isFocused = false), 250)}
 			onkeydown={handleKeyDown}
 			placeholder="Search distributor / supplier (F3)..."
-			class="w-full rounded border border-border bg-surface py-1.5 pr-14 pl-8 text-xs text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+			class="w-full rounded border border-border bg-surface py-1.5 pr-14 pl-8 text-xs text-text-primary transition-colors placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 		/>
-		<div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
+		<div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-2">
 			{#if selectedSupplier}
 				<button
 					type="button"
@@ -126,14 +128,18 @@
 					<X size={13} />
 				</button>
 			{/if}
-			<kbd class="pointer-events-none rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted">
+			<kbd
+				class="pointer-events-none rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] text-text-muted"
+			>
 				F3
 			</kbd>
 		</div>
 	</div>
 
 	{#if selectedSupplier}
-		<div class="mt-1 flex flex-wrap items-center justify-between rounded bg-accent/10 border border-accent/20 px-2 py-0.5 text-[11px] text-accent">
+		<div
+			class="mt-1 flex flex-wrap items-center justify-between rounded border border-accent/20 bg-accent/10 px-2 py-0.5 text-[11px] text-accent"
+		>
 			<span class="truncate font-semibold">{selectedSupplier.name}</span>
 			{#if selectedSupplier.gstNumber}
 				<span class="font-mono text-[10px] text-text-muted">GST: {selectedSupplier.gstNumber}</span>
@@ -144,14 +150,14 @@
 	{#if isFocused && results.length > 0}
 		<ul
 			bind:this={listRef}
-			class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl divide-y divide-border/60 focus:outline-none"
+			class="absolute z-50 mt-1 max-h-60 w-full divide-y divide-border/60 overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl focus:outline-none"
 		>
 			{#each results as supplier, i (supplier.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 				<li
 					class="relative cursor-pointer px-3 py-2 select-none {i === selectedIndex
-						? 'bg-accent/15 text-accent-hover font-medium'
+						? 'bg-accent/15 font-medium text-accent-hover'
 						: 'text-text-primary hover:bg-surface-hover'}"
 					onclick={() => handleSelect(supplier)}
 				>
@@ -160,7 +166,9 @@
 						<div class="text-[11px] text-text-muted">
 							{supplier.phone || 'No phone'} • {supplier.address || 'No location'}
 							{#if supplier.gstNumber}
-								<span class="ml-1 font-mono text-[10px] text-text-muted">GSTIN: {supplier.gstNumber}</span>
+								<span class="ml-1 font-mono text-[10px] text-text-muted"
+									>GSTIN: {supplier.gstNumber}</span
+								>
 							{/if}
 						</div>
 					</div>

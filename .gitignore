@@ -52,6 +52,10 @@ Thumbs.db
 .playwright-cli/
 .impeccable/
 .opencode/
+/shannon/
+/graphify-out/
+/build-med-plans/
+/screenshots/
 /palace/
 /roster-backups/
 /files/

@@ -1,5 +1,10 @@
 import type { PurchaseRepository } from '$lib/repositories/purchaseRepository.js';
-import type { Purchase, CreatePurchaseInput, PaymentStatus, PaymentMethod } from '$lib/types/index.js';
+import type {
+	Purchase,
+	CreatePurchaseInput,
+	PaymentStatus,
+	PaymentMethod
+} from '$lib/types/index.js';
 import {
 	purchasesTable,
 	purchaseItemsTable,
@@ -29,12 +34,14 @@ function mapPurchaseRow(purchase: any, items: any[], supplierName = 'Unknown') {
 			: isCredit
 				? totalAmount
 				: 0;
-	const paymentStatus = (purchase.paymentStatus || (dueAmount > 0 ? 'credit' : 'paid')) as PaymentStatus;
+	const paymentStatus = (purchase.paymentStatus ||
+		(dueAmount > 0 ? 'credit' : 'paid')) as PaymentStatus;
 	const paymentMethod = (purchase.paymentMethod || (isCredit ? 'credit' : 'cash')) as PaymentMethod;
 
 	return {
 		id: purchase.id,
-		invoiceNumber: purchase.supplierInvoiceRef || purchase.invoiceNumber || 'PUR-' + purchase.id.slice(0, 8),
+		invoiceNumber:
+			purchase.supplierInvoiceRef || purchase.invoiceNumber || 'PUR-' + purchase.id.slice(0, 8),
 		date: purchase.supplierInvoiceDate
 			? new Date(purchase.supplierInvoiceDate).toISOString().split('T')[0]
 			: purchase.createdAt
@@ -288,17 +295,9 @@ export class DbPurchaseRepository implements PurchaseRepository {
 		const isCredit = _input.paymentStatus === 'credit' || paymentMethod === 'credit';
 		const paymentStatus = (_input.paymentStatus || (isCredit ? 'credit' : 'paid')) as PaymentStatus;
 		const paidAmountNum =
-			_input.paidAmount !== undefined
-				? Number(_input.paidAmount)
-				: isCredit
-					? 0
-					: totalAmountNum;
+			_input.paidAmount !== undefined ? Number(_input.paidAmount) : isCredit ? 0 : totalAmountNum;
 		const dueAmountNum =
-			_input.dueAmount !== undefined
-				? Number(_input.dueAmount)
-				: isCredit
-					? totalAmountNum
-					: 0;
+			_input.dueAmount !== undefined ? Number(_input.dueAmount) : isCredit ? totalAmountNum : 0;
 
 		const purchaseValues = {
 			id,
@@ -340,7 +339,9 @@ export class DbPurchaseRepository implements PurchaseRepository {
 				const totalLineCost =
 					item.totalAmount !== undefined && Number(item.totalAmount) > 0
 						? Number(item.totalAmount)
-						: purchasedQty * Number(item.purchaseRate || 0) * (1 - (Number(item.discount) || 0) / 100);
+						: purchasedQty *
+							Number(item.purchaseRate || 0) *
+							(1 - (Number(item.discount) || 0) / 100);
 
 				const calculatedEffectiveCost =
 					totalBaseQty > 0 ? totalLineCost / totalBaseQty : Number(item.purchaseRate || 0);
@@ -366,7 +367,8 @@ export class DbPurchaseRepository implements PurchaseRepository {
 					if (existingBatches.length > 0) {
 						batchId = existingBatches[0].id;
 						const newQtyReceived = Number(existingBatches[0].quantityReceived || 0) + totalBaseQty;
-						const newQtyRemaining = Number(existingBatches[0].quantityRemaining || 0) + totalBaseQty;
+						const newQtyRemaining =
+							Number(existingBatches[0].quantityRemaining || 0) + totalBaseQty;
 
 						await tx
 							.update(batchesTable)

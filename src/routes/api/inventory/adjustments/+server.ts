@@ -92,8 +92,7 @@ export async function POST(event: RequestEvent) {
 				}
 
 				const combinedReason = (
-					reason ||
-					[reasonCode, notes?.trim()].filter(Boolean).join(' — ')
+					reason || [reasonCode, notes?.trim()].filter(Boolean).join(' — ')
 				).trim();
 
 				if (!combinedReason) {
@@ -150,6 +149,10 @@ export async function POST(event: RequestEvent) {
 		return jsonResponse(result, 201);
 	} catch (err: any) {
 		console.error('Failed to post stock adjustment:', err);
-		return errorResponse('INTERNAL_ERROR', err.message || 'Failed to process stock adjustment', 500);
+		return errorResponse(
+			'INTERNAL_ERROR',
+			err.message || 'Failed to process stock adjustment',
+			500
+		);
 	}
 }

@@ -37,7 +37,9 @@
 	<div class="print:hidden">
 		<PageHeader
 			title={purchase ? `Inward Voucher: ${purchase.invoiceNumber}` : 'Inward Purchase Details'}
-			subtitle={purchase ? `Distributor: ${purchase.supplierName} • Received on ${new Date(purchase.invoiceDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
+			subtitle={purchase
+				? `Distributor: ${purchase.supplierName} • Received on ${new Date(purchase.invoiceDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`
+				: ''}
 			backHref="/purchases"
 		>
 			{#snippet actions()}
@@ -67,7 +69,10 @@
 	{#if loading}
 		<LoadingState message="Loading purchase voucher details..." />
 	{:else if !purchase}
-		<EmptyState title="Purchase Voucher Not Found" message="The requested goods received note could not be located." />
+		<EmptyState
+			title="Purchase Voucher Not Found"
+			message="The requested goods received note could not be located."
+		/>
 	{:else}
 		<!-- Main Voucher Container -->
 		<div
@@ -79,7 +84,9 @@
 			>
 				<div>
 					<div class="flex items-center gap-2">
-						<span class="rounded bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent uppercase">
+						<span
+							class="rounded bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent uppercase"
+						>
 							GRN Stock Voucher
 						</span>
 						<Badge variant={purchase.status === 'confirmed' ? 'success' : 'neutral'} size="sm">
@@ -97,13 +104,19 @@
 						</Badge>
 					</div>
 
-					<h1 class="mt-2 text-xl font-black text-text-primary tracking-tight">
+					<h1 class="mt-2 text-xl font-black tracking-tight text-text-primary">
 						INWARD PURCHASE #{purchase.invoiceNumber}
 					</h1>
 
 					<div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-muted">
 						<div>
-							Invoice Date: <span class="font-medium text-text-primary">{new Date(purchase.invoiceDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+							Invoice Date: <span class="font-medium text-text-primary"
+								>{new Date(purchase.invoiceDate).toLocaleDateString('en-IN', {
+									day: '2-digit',
+									month: 'long',
+									year: 'numeric'
+								})}</span
+							>
 						</div>
 						{#if purchase.notes}
 							<div>• {purchase.notes}</div>
@@ -118,12 +131,14 @@
 					</div>
 					<a
 						href="/suppliers/{purchase.supplierId}"
-						class="mt-1 font-bold text-sm text-accent hover:underline"
+						class="mt-1 text-sm font-bold text-accent hover:underline"
 					>
 						{purchase.supplierName}
 					</a>
 					<div class="mt-0.5 text-xs text-text-muted">
-						Payment Terms: <span class="font-semibold uppercase text-text-primary">{purchase.paymentMethod}</span>
+						Payment Terms: <span class="font-semibold text-text-primary uppercase"
+							>{purchase.paymentMethod}</span
+						>
 					</div>
 				</div>
 			</div>
@@ -131,7 +146,9 @@
 			<!-- Inward Batch Line Items Table -->
 			<div class="mt-5 overflow-x-auto rounded-lg border border-border print:border-gray-300">
 				<table class="w-full text-left text-xs">
-					<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase print:bg-gray-100">
+					<thead
+						class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase print:bg-gray-100"
+					>
 						<tr>
 							<th class="w-10 px-3 py-2.5 text-center">#</th>
 							<th class="px-3 py-2.5">Product Description</th>
@@ -147,15 +164,23 @@
 					<tbody class="divide-y divide-border/60 print:divide-gray-300">
 						{#each purchase.items as item, index (item.id)}
 							<tr class="hover:bg-surface-hover/50 print:hover:bg-transparent">
-								<td class="px-3 py-2.5 text-center font-mono text-text-muted tabular-nums">{index + 1}</td>
+								<td class="px-3 py-2.5 text-center font-mono text-text-muted tabular-nums"
+									>{index + 1}</td
+								>
 								<td class="px-3 py-2.5 font-semibold text-text-primary">
 									<div>{item.productName}</div>
 								</td>
 								<td class="px-3 py-2.5">
-									<div class="font-mono font-bold text-text-primary uppercase">{item.batchNumber}</div>
-									<div class="font-mono text-[11px] text-text-muted">EXP: {item.expiryDate.substring(0, 7)}</div>
+									<div class="font-mono font-bold text-text-primary uppercase">
+										{item.batchNumber}
+									</div>
+									<div class="font-mono text-[11px] text-text-muted">
+										EXP: {item.expiryDate.substring(0, 7)}
+									</div>
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+								>
 									{item.quantity}
 								</td>
 								<td class="px-3 py-2.5 text-right font-mono text-text-muted tabular-nums">
@@ -178,7 +203,9 @@
 								<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums">
 									{item.gstRate}%
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+								>
 									₹{(item.quantity * item.purchaseRate * (1 - item.discount / 100)).toFixed(2)}
 								</td>
 							</tr>
@@ -189,22 +216,32 @@
 
 			<!-- Summary and Payables Grid -->
 			<div class="mt-6 flex flex-col justify-end gap-6 sm:flex-row">
-				<div class="w-full sm:max-w-xs space-y-2 rounded-lg border border-border bg-surface-secondary p-4 text-xs">
+				<div
+					class="w-full space-y-2 rounded-lg border border-border bg-surface-secondary p-4 text-xs sm:max-w-xs"
+				>
 					<div class="flex justify-between text-text-secondary">
 						<span>Gross Subtotal:</span>
-						<span class="font-mono font-medium text-text-primary tabular-nums">₹{purchase.subtotal.toFixed(2)}</span>
+						<span class="font-mono font-medium text-text-primary tabular-nums"
+							>₹{purchase.subtotal.toFixed(2)}</span
+						>
 					</div>
 					<div class="flex justify-between text-text-secondary">
 						<span>Trade Discount:</span>
-						<span class="font-mono font-medium text-danger tabular-nums">-₹{purchase.discountTotal.toFixed(2)}</span>
+						<span class="font-mono font-medium text-danger tabular-nums"
+							>-₹{purchase.discountTotal.toFixed(2)}</span
+						>
 					</div>
 					<div class="flex justify-between text-text-secondary">
 						<span>Taxable Value:</span>
-						<span class="font-mono font-medium text-text-primary tabular-nums">₹{purchase.taxableTotal.toFixed(2)}</span>
+						<span class="font-mono font-medium text-text-primary tabular-nums"
+							>₹{purchase.taxableTotal.toFixed(2)}</span
+						>
 					</div>
 					<div class="flex justify-between text-text-secondary">
 						<span>Total GST (Inward Tax Credit):</span>
-						<span class="font-mono font-medium text-accent tabular-nums">+₹{purchase.gstTotal.toFixed(2)}</span>
+						<span class="font-mono font-medium text-accent tabular-nums"
+							>+₹{purchase.gstTotal.toFixed(2)}</span
+						>
 					</div>
 					<div class="flex justify-between text-text-secondary">
 						<span>Round Off:</span>
@@ -213,20 +250,26 @@
 						</span>
 					</div>
 
-					<div class="border-t border-border pt-2 flex justify-between items-baseline font-bold text-text-primary">
-						<span class="text-xs uppercase tracking-wider">Grand Total:</span>
-						<span class="font-mono text-xl text-accent tabular-nums">₹{purchase.grandTotal.toFixed(2)}</span>
+					<div
+						class="flex items-baseline justify-between border-t border-border pt-2 font-bold text-text-primary"
+					>
+						<span class="text-xs tracking-wider uppercase">Grand Total:</span>
+						<span class="font-mono text-xl text-accent tabular-nums"
+							>₹{purchase.grandTotal.toFixed(2)}</span
+						>
 					</div>
 
 					{#if purchase.paidAmount > 0}
-						<div class="flex justify-between border-t border-border/60 pt-1 text-success font-semibold">
+						<div
+							class="flex justify-between border-t border-border/60 pt-1 font-semibold text-success"
+						>
 							<span>Paid Outflow:</span>
 							<span class="font-mono tabular-nums">₹{purchase.paidAmount.toFixed(2)}</span>
 						</div>
 					{/if}
 
 					{#if purchase.dueAmount > 0}
-						<div class="flex justify-between text-warning font-bold">
+						<div class="flex justify-between font-bold text-warning">
 							<span>Payable Balance:</span>
 							<span class="font-mono tabular-nums">₹{purchase.dueAmount.toFixed(2)}</span>
 						</div>

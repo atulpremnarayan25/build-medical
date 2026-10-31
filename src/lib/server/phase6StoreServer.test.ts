@@ -204,7 +204,9 @@ describe('Phase 6: Standalone Store Server, Local LAN Pairing & Automated Backup
 	it('should generate a timestamped, gzip-compressed PostgreSQL database dump in ./backups (Task 3)', async () => {
 		const backupResult = await createBackup();
 		expect(backupResult.success).toBe(true);
-		expect(backupResult.backup.filename).toMatch(/^medstock_backup_\d{4}-\d{2}-\d{2}_\d{4}\.sql\.gz$/);
+		expect(backupResult.backup.filename).toMatch(
+			/^medstock_backup_\d{4}-\d{2}-\d{2}_\d{4}\.sql\.gz$/
+		);
 		expect(backupResult.backup.sizeBytes).toBeGreaterThan(1000); // Substantial SQL dump
 		expect(fs.existsSync(backupResult.backup.path)).toBe(true);
 
@@ -235,10 +237,7 @@ describe('Phase 6: Standalone Store Server, Local LAN Pairing & Automated Backup
 			.select()
 			.from(batchesTable)
 			.where(eq(batchesTable.productId, paracetamolProduct.id));
-		const totalStockBefore = batchesBefore.reduce(
-			(sum, b) => sum + Number(b.quantityRemaining),
-			0
-		);
+		const totalStockBefore = batchesBefore.reduce((sum, b) => sum + Number(b.quantityRemaining), 0);
 
 		const saleQuantity = 2;
 
@@ -275,10 +274,7 @@ describe('Phase 6: Standalone Store Server, Local LAN Pairing & Automated Backup
 			.select()
 			.from(batchesTable)
 			.where(eq(batchesTable.productId, paracetamolProduct.id));
-		const totalStockAfter = batchesAfter.reduce(
-			(sum, b) => sum + Number(b.quantityRemaining),
-			0
-		);
+		const totalStockAfter = batchesAfter.reduce((sum, b) => sum + Number(b.quantityRemaining), 0);
 
 		expect(totalStockAfter).toBe(totalStockBefore - saleQuantity);
 	});

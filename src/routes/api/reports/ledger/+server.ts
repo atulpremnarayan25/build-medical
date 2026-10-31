@@ -28,7 +28,9 @@ export async function GET(event: RequestEvent) {
 			const customer = await db
 				.select()
 				.from(customersTable)
-				.where(and(eq(customersTable.id, partyId), eq(customersTable.storeId, event.locals.user.storeId)))
+				.where(
+					and(eq(customersTable.id, partyId), eq(customersTable.storeId, event.locals.user.storeId))
+				)
 				.then((rows) => rows[0]);
 
 			if (!customer) {
@@ -47,7 +49,9 @@ export async function GET(event: RequestEvent) {
 					particulars: sql`'Sales Invoice #' || ${salesTable.invoiceNumber}`
 				})
 				.from(salesTable)
-				.where(and(eq(salesTable.customerId, partyId), eq(salesTable.storeId, event.locals.user.storeId)));
+				.where(
+					and(eq(salesTable.customerId, partyId), eq(salesTable.storeId, event.locals.user.storeId))
+				);
 
 			// Payments (Cr: Customer payment reduces debt)
 			const payments = await db
@@ -83,12 +87,7 @@ export async function GET(event: RequestEvent) {
 				.from(returnsTable)
 				.innerJoin(salesTable, eq(returnsTable.originalSaleId, salesTable.id))
 				.leftJoin(returnItemsTable, eq(returnsTable.id, returnItemsTable.returnId))
-				.where(
-					and(
-						eq(salesTable.customerId, partyId),
-						eq(returnsTable.returnType, 'sales_return')
-					)
-				)
+				.where(and(eq(salesTable.customerId, partyId), eq(returnsTable.returnType, 'sales_return')))
 				.groupBy(returnsTable.id, returnsTable.createdAt, salesTable.invoiceNumber);
 
 			const combined = [...sales, ...payments, ...returns]
@@ -168,7 +167,9 @@ export async function GET(event: RequestEvent) {
 			const supplier = await db
 				.select()
 				.from(suppliersTable)
-				.where(and(eq(suppliersTable.id, partyId), eq(suppliersTable.storeId, event.locals.user.storeId)))
+				.where(
+					and(eq(suppliersTable.id, partyId), eq(suppliersTable.storeId, event.locals.user.storeId))
+				)
 				.then((rows) => rows[0]);
 
 			if (!supplier) {
@@ -187,7 +188,12 @@ export async function GET(event: RequestEvent) {
 					particulars: sql`'Purchase Bill #' || ${purchasesTable.supplierInvoiceRef}`
 				})
 				.from(purchasesTable)
-				.where(and(eq(purchasesTable.supplierId, partyId), eq(purchasesTable.storeId, event.locals.user.storeId)));
+				.where(
+					and(
+						eq(purchasesTable.supplierId, partyId),
+						eq(purchasesTable.storeId, event.locals.user.storeId)
+					)
+				);
 
 			// Disbursements (Dr: Outflow payment reduces payable debt)
 			const payments = await db

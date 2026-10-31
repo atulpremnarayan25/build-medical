@@ -8,15 +8,15 @@
 
 Before writing new code, we must understand why real pharmacy owners and wholesale stockists would reject the current build:
 
-| Area | Current Defect / Gap | Real Pharmacy Reality & Business Impact |
-| :--- | :--- | :--- |
-| **1. Billing Flow Friction** | Clicking "Finalize & Print" merely resets the form and shows a toast. Multiple batches trigger an intrusive modal dialog. | Cashiers bill 40–80 customers per hour during rush periods. Every modal popup and mouse click adds 4–8 seconds per bill. Lack of immediate physical print makes it unusable at a counter. |
-| **2. Printing & Hardware** | Only standard browser `window.print()` exists on a sub-route. No 80mm/3-inch thermal POS receipt format, no A4/A5 half-page GST invoice print layout, and no ESC/POS raw hardware support. | 95% of retail chemists use 3-inch thermal printers; wholesalers use dot-matrix or laser A4/A5 half-sheet pre-printed invoices. Without formatted receipts, no store can operate. |
-| **3. Purchase (GRN) Disconnect** | `purchaseRepository.ts` hardcodes purchases as `paidAmount = totalAmount, dueAmount = 0, paymentStatus = 'paid'`. Multi-unit conversions (Boxes → Strips) are missing. | Pharma stockists buy 90% of stock on 21-to-45 day credit. If supplier invoices don't feed into payables and multi-unit conversions don't calculate strip cost, inventory and money tracking break immediately. |
-| **4. Fake Settings & Mock Access** | `saveProfile()` in Settings only runs `console.log()`. User management uses hardcoded mock arrays. Store name, GSTIN, DL numbers never save to DB. | A buyer cannot even enter their store name or drug licenses. |
-| **5. Artificial "Subscription Lockout"** | `+layout.svelte` gates access using an arbitrary localStorage subscription check (`ShieldAlert: Subscription Payment Required`) with dummy plans and mock payment triggers. | It gives the illusion of a SaaS paywall while the core ERP cannot save settings or print bills. A real customer will see a lockout screen and abandon the product. |
-| **6. Customer On-The-Fly Creation** | During billing, if a new customer or clinic arrives, the cashier must leave the POS screen or deal with an incomplete search component. | Counter staff must be able to type a new phone number and customer name directly in the billing bar and hit `Enter` to create them without leaving the invoice. |
-| **7. Multi-Unit Pricing (Box vs Strip vs Tablet)** | Line items in billing don't allow selecting packaging units with dynamic price adjustment (e.g., ₹120/Box vs ₹13/Strip). | Chemist stores sell in strips and loose tablets while buying in boxes. Without packaging conversions, stock counts and prices are always incorrect. |
+| Area                                               | Current Defect / Gap                                                                                                                                                                       | Real Pharmacy Reality & Business Impact                                                                                                                                                                        |
+| :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Billing Flow Friction**                       | Clicking "Finalize & Print" merely resets the form and shows a toast. Multiple batches trigger an intrusive modal dialog.                                                                  | Cashiers bill 40–80 customers per hour during rush periods. Every modal popup and mouse click adds 4–8 seconds per bill. Lack of immediate physical print makes it unusable at a counter.                      |
+| **2. Printing & Hardware**                         | Only standard browser `window.print()` exists on a sub-route. No 80mm/3-inch thermal POS receipt format, no A4/A5 half-page GST invoice print layout, and no ESC/POS raw hardware support. | 95% of retail chemists use 3-inch thermal printers; wholesalers use dot-matrix or laser A4/A5 half-sheet pre-printed invoices. Without formatted receipts, no store can operate.                               |
+| **3. Purchase (GRN) Disconnect**                   | `purchaseRepository.ts` hardcodes purchases as `paidAmount = totalAmount, dueAmount = 0, paymentStatus = 'paid'`. Multi-unit conversions (Boxes → Strips) are missing.                     | Pharma stockists buy 90% of stock on 21-to-45 day credit. If supplier invoices don't feed into payables and multi-unit conversions don't calculate strip cost, inventory and money tracking break immediately. |
+| **4. Fake Settings & Mock Access**                 | `saveProfile()` in Settings only runs `console.log()`. User management uses hardcoded mock arrays. Store name, GSTIN, DL numbers never save to DB.                                         | A buyer cannot even enter their store name or drug licenses.                                                                                                                                                   |
+| **5. Artificial "Subscription Lockout"**           | `+layout.svelte` gates access using an arbitrary localStorage subscription check (`ShieldAlert: Subscription Payment Required`) with dummy plans and mock payment triggers.                | It gives the illusion of a SaaS paywall while the core ERP cannot save settings or print bills. A real customer will see a lockout screen and abandon the product.                                             |
+| **6. Customer On-The-Fly Creation**                | During billing, if a new customer or clinic arrives, the cashier must leave the POS screen or deal with an incomplete search component.                                                    | Counter staff must be able to type a new phone number and customer name directly in the billing bar and hit `Enter` to create them without leaving the invoice.                                                |
+| **7. Multi-Unit Pricing (Box vs Strip vs Tablet)** | Line items in billing don't allow selecting packaging units with dynamic price adjustment (e.g., ₹120/Box vs ₹13/Strip).                                                                   | Chemist stores sell in strips and loose tablets while buying in boxes. Without packaging conversions, stock counts and prices are always incorrect.                                                            |
 
 ---
 
@@ -63,21 +63,21 @@ The design philosophy for MedStock ERP is **zero-latency, high-density, keyboard
 
 A pharmacy clerk must be able to conduct 100% of counter operations without touching a mouse:
 
-| Key Binding | Screen Scope | Direct Action Triggered |
-| :--- | :--- | :--- |
-| **`F2`** | POS / Billing | Jump focus directly to Medicine Search Input. |
-| **`F3`** | POS / Billing | Jump focus to Customer Search / Phone input. |
-| **`F4`** | POS / Billing | Cycle Payment Method: Cash $\rightarrow$ UPI $\rightarrow$ Credit Khata $\rightarrow$ Card. |
-| **`F6`** | POS / Billing | Park / Hold active bill and clear screen for the next customer in queue. |
-| **`F7`** | POS / Billing | Open Parked Bills drawer to recall a previous customer's bill. |
-| **`F8`** | POS / Billing | Toggle Rate Tier: Retail (MRP basis) $\leftrightarrow$ Wholesale (PTR basis). |
-| **`F10` or `Ctrl+S`** | POS / Billing | Finalize sale, trigger direct thermal/A4 print, and reset for next sale. |
-| **`Down Arrow`** | Search dropdown | Navigate candidate batches/products without pressing Tab. |
-| **`Enter`** | Grid Inputs | Advance cursor to next field: Product $\rightarrow$ Batch $\rightarrow$ Qty $\rightarrow$ Unit $\rightarrow$ Next Line. |
-| **`Delete` / `Ctrl+Del`** | Grid Inputs | Remove selected line item from active bill. |
-| **`Escape`** | Global | Close any active modal, drawer, or cancel search popup. |
-| **`Ctrl+K`** | Global | Universal search across products, customer ledgers, and invoice numbers. |
-| **`Ctrl+P`** | Invoice View | Direct print current document. |
+| Key Binding               | Screen Scope    | Direct Action Triggered                                                                                                 |
+| :------------------------ | :-------------- | :---------------------------------------------------------------------------------------------------------------------- |
+| **`F2`**                  | POS / Billing   | Jump focus directly to Medicine Search Input.                                                                           |
+| **`F3`**                  | POS / Billing   | Jump focus to Customer Search / Phone input.                                                                            |
+| **`F4`**                  | POS / Billing   | Cycle Payment Method: Cash $\rightarrow$ UPI $\rightarrow$ Credit Khata $\rightarrow$ Card.                             |
+| **`F6`**                  | POS / Billing   | Park / Hold active bill and clear screen for the next customer in queue.                                                |
+| **`F7`**                  | POS / Billing   | Open Parked Bills drawer to recall a previous customer's bill.                                                          |
+| **`F8`**                  | POS / Billing   | Toggle Rate Tier: Retail (MRP basis) $\leftrightarrow$ Wholesale (PTR basis).                                           |
+| **`F10` or `Ctrl+S`**     | POS / Billing   | Finalize sale, trigger direct thermal/A4 print, and reset for next sale.                                                |
+| **`Down Arrow`**          | Search dropdown | Navigate candidate batches/products without pressing Tab.                                                               |
+| **`Enter`**               | Grid Inputs     | Advance cursor to next field: Product $\rightarrow$ Batch $\rightarrow$ Qty $\rightarrow$ Unit $\rightarrow$ Next Line. |
+| **`Delete` / `Ctrl+Del`** | Grid Inputs     | Remove selected line item from active bill.                                                                             |
+| **`Escape`**              | Global          | Close any active modal, drawer, or cancel search popup.                                                                 |
+| **`Ctrl+K`**              | Global          | Universal search across products, customer ledgers, and invoice numbers.                                                |
+| **`Ctrl+P`**              | Invoice View    | Direct print current document.                                                                                          |
 
 ### 2.3 Visual Design Tokens & Clinical Styling System
 
@@ -110,6 +110,7 @@ graph TD
 **Objective:** Remove prototype artifacts, wire all mock settings to the real PostgreSQL database, enforce integer paise arithmetic everywhere, and eliminate fake blockers.
 
 #### Detailed Tasks:
+
 1. **Remove Artificial Subscription Lock:**
    - In [src/routes/+layout.svelte](file:///Users/atul/develop/build-medical/src/routes/+layout.svelte), remove the blocking `isLocked` condition that displays the `Subscription Payment Required` error banner.
    - Retain `/subscription` as an administrative license & renewal info page, but ensure the core ERP functionality is 100% unlocked for authenticated users.
@@ -124,6 +125,7 @@ graph TD
    - Ensure the database is pre-seeded with 100+ standard Indian formulations (Paracetamol, Amoxicillin-Clavulanic, Telmisartan, Pantoprazole, Azithromycin, Cough Syrups, Insulin) with realistic HSN codes, GST slabs (0%, 5%, 12%, 18%), and multi-unit packings.
 
 **Phase 1 Exit Criteria:**
+
 - Store profile edits made in Settings persist across restarts and display on invoices.
 - Cashier and Admin user accounts can be created and logged into with proper role enforcement.
 - Zero mock data remains in the service or repository layer.
@@ -135,6 +137,7 @@ graph TD
 **Objective:** Make the New Sale screen the fastest, most reliable billing experience possible, complete with real receipt and GST invoice printing.
 
 #### Detailed Tasks:
+
 1. **Redesign the POS Screen (`/sales/new`):**
    - Implement the 65/35 ergonomic layout.
    - **Inline Batch Selector:** When searching a medicine with multiple batches, display available batches directly in a sub-table dropdown below the search bar with expiry date, stock, and MRP. Allow navigating with `Down Arrow` and selecting with `Enter`. No full-screen modal interruptions.
@@ -159,6 +162,7 @@ graph TD
    - Refine `F6` hold and `F7` recall workflow so cashiers can service multiple counter customers simultaneously without losing cart items.
 
 **Phase 2 Exit Criteria:**
+
 - A cashier can complete a 5-item bill (Search $\rightarrow$ Select $\rightarrow$ Quantity $\rightarrow$ Tender $\rightarrow$ Print) in under 15 seconds purely using the keyboard.
 - Printed thermal slip matches physical thermal paper dimensions without clipping or text wrapping issues.
 - FEFO automatically picks the earliest non-expired batch; expired batches are hard-blocked.
@@ -170,6 +174,7 @@ graph TD
 **Objective:** Handle vendor stock inwarding with exact landing cost calculations, multi-unit conversions, and batch inventory tracking.
 
 #### Detailed Tasks:
+
 1. **Inward GRN Entry Workflow (`/purchases/new`):**
    - Connect purchase entry directly to `purchaseRepository.ts` and ensure it creates proper payable records in `payments` and `suppliersTable`.
    - Capture Distributor Invoice Number, Invoice Date, Payment Due Date (Credit Period in days, e.g., 21 or 30 days).
@@ -187,6 +192,7 @@ graph TD
    - Require a reason (`'Damage'`, `'Physical Count Correction'`, `'Supplier Return'`) and log an immutable delta into `batch_stock_events`.
 
 **Phase 3 Exit Criteria:**
+
 - Inwarding 10 boxes of a medicine creates the correct number of sellable strips/tablets with accurate expiry and batch records.
 - The supplier's outstanding payable balance increases by the exact invoice amount.
 
@@ -197,6 +203,7 @@ graph TD
 **Objective:** Provide rock-solid credit ledger management with partial settlements, outstanding aging, and ledger statement generation.
 
 #### Detailed Tasks:
+
 1. **Customer Khata Management (`/customers/[id]`):**
    - Complete chronological double-entry ledger showing Date, Voucher Type (Sale Invoice, Cash Receipt, Sales Return), Reference No, Debit, Credit, and Running Balance.
    - Outstanding Aging Analysis: Categorize dues into `< 30 days`, `30–60 days`, `60–90 days`, and `> 90 days (Overdue)`.
@@ -211,6 +218,7 @@ graph TD
    - Format a clean text summary of customer dues with payment link/UPI QR details that can be sent via WhatsApp with a single click.
 
 **Phase 4 Exit Criteria:**
+
 - Partial payment against a ₹10,000 credit sale accurately reflects ₹6,000 outstanding balance in the ledger.
 - Ledger reports tie out to the exact rupee against all historical invoices and payment receipts.
 
@@ -221,6 +229,7 @@ graph TD
 **Objective:** Fulfill all legal requirements under the Drugs & Cosmetics Act, 1940 and Indian GST statutory guidelines so the store can pass government audits.
 
 #### Detailed Tasks:
+
 1. **Schedule H / H1 / X Narcotic Statutory Register:**
    - Polish [src/routes/reports/schedule-h1/+page.svelte](file:///Users/atul/develop/build-medical/src/routes/reports/schedule-h1/+page.svelte) to match official **Form 35** statutory inspection register format:
      - Columns: Date | Patient Name & Address | Prescribing Doctor Name & Reg No | Drug Name | Batch No | Qty Dispensed | Balance Stock | Pharmacist Signature.
@@ -235,6 +244,7 @@ graph TD
    - List all batches expiring within 30, 60, and 90 days with supplier names to facilitate returning near-expiry stock before the return window closes.
 
 **Phase 5 Exit Criteria:**
+
 - Exported HSN and GSTR-1 CSV files can be imported directly into Indian GST filing software without column errors.
 - Schedule H1 report accurately tracks all dispensed restricted formulations with prescriber details.
 
@@ -245,6 +255,7 @@ graph TD
 **Objective:** Package the application so it can run reliably in physical stores on standard Windows/Linux hardware with zero internet dependency.
 
 #### Detailed Tasks:
+
 1. **Single-Command Local Store Server Setup:**
    - Create a lightweight installation package (`scripts/install-store-server.sh` or Windows `.bat` / Docker Compose) that sets up:
      - Node.js runtime + PostgreSQL database.
@@ -259,6 +270,7 @@ graph TD
    - Wrap the frontend in a lightweight Tauri desktop executable for Windows/Linux counters, providing direct access to hardware serial/USB thermal printers.
 
 **Phase 6 Exit Criteria:**
+
 - The application boots up automatically when the store PC powers on.
 - Multiple counter devices on the local Wi-Fi can bill simultaneously with zero internet connection.
 - A nightly backup is verified and can be restored with a single script.
@@ -286,6 +298,7 @@ graph TD
 ```
 
 #### Immediate Go-To-Market Steps:
+
 1. **Pilot Deployment (The Benchmark Store):**
    - Deploy at the target family-owned store (in Ballia, UP) or a friendly local pharmacy.
    - Run parallel billing alongside their existing manual register or Marg system for 7 days.

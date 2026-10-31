@@ -34,7 +34,9 @@
 	// Metrics
 	let totalProducts = $derived(products.length);
 	let activeProducts = $derived(products.filter((p) => p.active).length);
-	let h1Products = $derived(products.filter((p) => p.drugSchedule === 'H1' || p.drugSchedule === 'X').length);
+	let h1Products = $derived(
+		products.filter((p) => p.drugSchedule === 'H1' || p.drugSchedule === 'X').length
+	);
 
 	let filteredProducts = $derived.by(() => {
 		let list = products;
@@ -87,7 +89,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Medicine & Product Catalog</h1>
-			<p class="text-xs text-text-muted">Master formulary, pricing, drug schedules, and packaging details</p>
+			<p class="text-xs text-text-muted">
+				Master formulary, pricing, drug schedules, and packaging details
+			</p>
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="primary" size="sm" onclick={() => goto('/inventory/products/new')}>
@@ -103,12 +107,16 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Formulary Items</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent"
+					>
 						<Pill size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-2xl font-black text-text-primary tabular-nums">{totalProducts}</span>
+					<span class="font-mono text-2xl font-black text-text-primary tabular-nums"
+						>{totalProducts}</span
+					>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Master catalogue entries</div>
 			</div>
@@ -118,12 +126,16 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-success">Active SKU Listings</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success"
+					>
 						<CheckCircle2 size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-2xl font-black text-success tabular-nums">{activeProducts}</span>
+					<span class="font-mono text-2xl font-black text-success tabular-nums"
+						>{activeProducts}</span
+					>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Available for billing</div>
 			</div>
@@ -133,12 +145,16 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-schedule-h1">Controlled (Sch H1/X)</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-schedule-h1-light text-schedule-h1">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-schedule-h1-light text-schedule-h1"
+					>
 						<ShieldAlert size={16} />
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span class="font-mono text-2xl font-black text-schedule-h1 tabular-nums">{h1Products}</span>
+					<span class="font-mono text-2xl font-black text-schedule-h1 tabular-nums"
+						>{h1Products}</span
+					>
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Doctor Rx & statutory logged</div>
 			</div>
@@ -146,9 +162,13 @@
 	</div>
 
 	<!-- Toolbar & Filters -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+			<div
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+			>
 				<Search size={15} />
 			</div>
 			<input
@@ -191,13 +211,21 @@
 	{:else if error}
 		<EmptyState title="Error Loading Products" message={error} />
 	{:else if products.length === 0}
-		<EmptyState title="No Products Found" message="Create your first medicine entry to build your formulary.">
+		<EmptyState
+			title="No Products Found"
+			message="Create your first medicine entry to build your formulary."
+		>
 			{#snippet action()}
-				<Button variant="primary" onclick={() => goto('/inventory/products/new')}>+ New Product</Button>
+				<Button variant="primary" onclick={() => goto('/inventory/products/new')}
+					>+ New Product</Button
+				>
 			{/snippet}
 		</EmptyState>
 	{:else if filteredProducts.length === 0}
-		<EmptyState title="No Matching Products" message="No medicines found matching your search filter." />
+		<EmptyState
+			title="No Matching Products"
+			message="No medicines found matching your search filter."
+		/>
 	{:else}
 		<DataTable
 			items={paginatedProducts}
@@ -218,10 +246,13 @@
 				<td class="px-4 py-2.5 font-medium whitespace-nowrap">
 					<a
 						href="/inventory/products/{product.id}"
-						class="flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent group"
+						class="group flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent"
 					>
 						<span>{product.name}</span>
-						<ArrowUpRight size={12} class="opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
+						<ArrowUpRight
+							size={12}
+							class="text-accent opacity-0 transition-opacity group-hover:opacity-100"
+						/>
 					</a>
 					{#if product.packSize && product.packSize > 1}
 						<span class="text-[11px] text-text-muted">Pack: {product.packSize} units</span>
@@ -229,12 +260,12 @@
 				</td>
 
 				<!-- Generic -->
-				<td class="max-w-[220px] truncate px-4 py-2.5 text-text-secondary text-xs">
+				<td class="max-w-[220px] truncate px-4 py-2.5 text-xs text-text-secondary">
 					{product.genericName || '-'}
 				</td>
 
 				<!-- Manufacturer -->
-				<td class="max-w-[160px] truncate px-4 py-2.5 text-text-secondary text-xs">
+				<td class="max-w-[160px] truncate px-4 py-2.5 text-xs text-text-secondary">
 					{product.manufacturer || '-'}
 				</td>
 
@@ -242,10 +273,10 @@
 				<td class="px-4 py-2.5 text-center">
 					{#if product.drugSchedule && product.drugSchedule !== 'none'}
 						<span
-							class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider
+							class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold tracking-wider uppercase
 								{product.drugSchedule === 'H1' || product.drugSchedule === 'X'
-								? 'bg-schedule-h1-light text-schedule-h1 border border-schedule-h1/20'
-								: 'bg-warning-light text-warning border border-warning/20'}"
+								? 'border border-schedule-h1/20 bg-schedule-h1-light text-schedule-h1'
+								: 'border border-warning/20 bg-warning-light text-warning'}"
 						>
 							<ShieldAlert size={10} />
 							<span>Sch {product.drugSchedule}</span>

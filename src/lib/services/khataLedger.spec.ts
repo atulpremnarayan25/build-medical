@@ -108,7 +108,11 @@ describe('Phase 4: Khata Ledger Running Balances & FIFO Settlement', () => {
 		const paymentRecords: any[] = [];
 		const paymentRepo = {
 			create: async (input: any) => {
-				const rec = { ...input, id: 'pay-001', createdAt: new Date('2026-03-02T12:00:00Z').toISOString() };
+				const rec = {
+					...input,
+					id: 'pay-001',
+					createdAt: new Date('2026-03-02T12:00:00Z').toISOString()
+				};
 				paymentRecords.push(rec);
 				return rec;
 			}

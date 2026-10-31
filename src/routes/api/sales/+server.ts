@@ -127,6 +127,10 @@ export async function POST(event: RequestEvent) {
 	} catch (err) {
 		console.error('FinalizeSale error:', err);
 		if (err instanceof BillingError) return errorResponse(err.code, err.message, err.status);
-		return errorResponse('INTERNAL_ERROR', 'Failed to record sale: ' + (err instanceof Error ? err.message : String(err)), 500);
+		return errorResponse(
+			'INTERNAL_ERROR',
+			'Failed to record sale: ' + (err instanceof Error ? err.message : String(err)),
+			500
+		);
 	}
 }

@@ -24,6 +24,10 @@ export const POST: RequestHandler = async ({ locals }) => {
 		return jsonResponse(result);
 	} catch (err: any) {
 		console.error('Failed to create backup:', err);
-		return errorResponse('BACKUP_CREATE_ERROR', err.message || 'Failed to create database backup', 500);
+		return errorResponse(
+			'BACKUP_CREATE_ERROR',
+			err.message || 'Failed to create database backup',
+			500
+		);
 	}
 };

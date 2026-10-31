@@ -114,7 +114,9 @@
 			p.totalAmount.toFixed(2)
 		]);
 
-		const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
@@ -137,7 +139,12 @@
 	>
 		{#snippet actions()}
 			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={exportCSV} disabled={filteredPurchases.length === 0}>
+				<Button
+					variant="secondary"
+					size="sm"
+					onclick={exportCSV}
+					disabled={filteredPurchases.length === 0}
+				>
 					<FileSpreadsheet size={14} class="mr-1 text-success" />
 					<span>Export CSV</span>
 				</Button>
@@ -150,10 +157,12 @@
 	</PageHeader>
 
 	<!-- Filters Strip -->
-	<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs space-y-3">
+	<div class="space-y-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<!-- Date Presets -->
-			<div class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs">
+			<div
+				class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs"
+			>
 				<button
 					type="button"
 					class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'today'
@@ -236,7 +245,9 @@
 	<!-- Procurement KPI Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Inward Procurement</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Total Inward Procurement
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 				{formatCurrency(totalPurchasesAmount)}
 			</div>
@@ -244,7 +255,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Inward GRN Invoices</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Inward GRN Invoices
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 				{filteredPurchases.length}
 			</div>
@@ -252,7 +265,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Distinct Suppliers</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Distinct Suppliers
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 				{uniqueSuppliers}
 			</div>
@@ -260,7 +275,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Line Items Inward</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Total Line Items Inward
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 				{totalItemsReceived}
 			</div>
@@ -273,13 +290,15 @@
 		<LoadingState message="Fetching inward purchase records..." />
 	{:else if filteredPurchases.length === 0}
 		<div class="rounded-xl border border-border bg-surface p-8 text-center text-xs text-text-muted">
-			<Truck size={32} class="mx-auto mb-2 opacity-40 text-text-muted" />
+			<Truck size={32} class="mx-auto mb-2 text-text-muted opacity-40" />
 			No purchase entries found for the selected period.
 		</div>
 	{:else}
 		<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
 			<table class="w-full text-left text-xs">
-				<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<thead
+					class="border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase"
+				>
 					<tr>
 						<th class="px-3 py-2.5">Inward Date</th>
 						<th class="px-3 py-2.5">Supplier Bill #</th>
@@ -292,12 +311,15 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredPurchases as purchase}
-						<tr class="hover:bg-surface-hover transition-colors">
+						<tr class="transition-colors hover:bg-surface-hover">
 							<td class="px-3 py-2 font-mono text-[11px] text-text-secondary">
 								{formatDate(purchase.date)}
 							</td>
 							<td class="px-3 py-2 font-mono font-bold text-accent">
-								<a href={`/purchases/${purchase.id}`} class="hover:underline flex items-center gap-1">
+								<a
+									href={`/purchases/${purchase.id}`}
+									class="flex items-center gap-1 hover:underline"
+								>
 									<span>{purchase.supplierInvoiceRef}</span>
 									<ArrowUpRight size={10} class="opacity-60" />
 								</a>
@@ -312,19 +334,24 @@
 								{purchase.supplierGstin || '-'}
 							</td>
 							<td class="px-3 py-2 text-center font-mono">{purchase.itemsCount}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-text-primary">
+							<td class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums">
 								{formatCurrency(purchase.totalAmount)}
 							</td>
 						</tr>
 					{/each}
 				</tbody>
-				<tfoot class="border-t-2 border-border bg-surface-secondary font-bold text-xs">
+				<tfoot class="border-t-2 border-border bg-surface-secondary text-xs font-bold">
 					<tr>
-						<td colspan="5" class="px-3 py-2.5 text-right uppercase tracking-wider text-[10px] text-text-muted">
+						<td
+							colspan="5"
+							class="px-3 py-2.5 text-right text-[10px] tracking-wider text-text-muted uppercase"
+						>
 							Total Procurement Value:
 						</td>
 						<td class="px-3 py-2.5 text-center font-mono">{totalItemsReceived}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(totalPurchasesAmount)}</td>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{formatCurrency(totalPurchasesAmount)}</td
+						>
 					</tr>
 				</tfoot>
 			</table>

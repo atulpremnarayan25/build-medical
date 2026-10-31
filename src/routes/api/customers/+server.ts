@@ -29,6 +29,9 @@ export async function GET({ url }: RequestEvent) {
 export async function POST({ request }: RequestEvent) {
 	try {
 		const input = await request.json();
+		if (!input?.name || typeof input.name !== 'string' || !input.name.trim()) {
+			return errorResponse('VALIDATION_ERROR', 'Customer name is required', 400);
+		}
 		const newCustomer = await customerService.createCustomer(input);
 		return jsonResponse(newCustomer, 201);
 	} catch (err: any) {

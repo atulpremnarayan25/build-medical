@@ -46,7 +46,9 @@ export async function POST({ locals, request }: RequestEvent) {
 
 		const body = await request.json();
 		const name = String(body.name || '').trim();
-		const username = String(body.username || '').trim().toLowerCase();
+		const username = String(body.username || '')
+			.trim()
+			.toLowerCase();
 		const role = body.role === 'owner_admin' ? 'owner_admin' : 'biller';
 		const password = String(body.password || '');
 

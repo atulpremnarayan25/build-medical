@@ -25,14 +25,10 @@ export function createPaymentService(
 
 		async createPayment(input: CreatePaymentInput): Promise<Payment> {
 			const isCustomer =
-				input.partyType === 'customer' ||
-				input.type === 'received' ||
-				(input as any).type === 'in';
+				input.partyType === 'customer' || input.type === 'received' || (input as any).type === 'in';
 
 			const isSupplier =
-				input.partyType === 'supplier' ||
-				input.type === 'made' ||
-				(input as any).type === 'out';
+				input.partyType === 'supplier' || input.type === 'made' || (input as any).type === 'out';
 
 			let customer: any = null;
 			if (isCustomer && internalCustomerService) {

@@ -69,7 +69,7 @@
 
 {#if open}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-all duration-150"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs transition-all duration-150"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -80,13 +80,15 @@
 		<div
 			bind:this={dialogEl}
 			tabindex="-1"
-			class="w-full rounded-2xl border border-border bg-surface-overlay shadow-2xl outline-none overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100 {sizeClasses[
+			class="animate-in fade-in-0 zoom-in-95 w-full overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-2xl duration-100 outline-none {sizeClasses[
 				size
 			]}"
 		>
 			<!-- Header -->
-			<div class="flex items-center justify-between border-b border-border/80 px-6 py-4 bg-surface/50">
-				<h2 class="text-base font-semibold text-text-primary tracking-tight">{title}</h2>
+			<div
+				class="flex items-center justify-between border-b border-border/80 bg-surface/50 px-6 py-4"
+			>
+				<h2 class="text-base font-semibold tracking-tight text-text-primary">{title}</h2>
 				<button
 					type="button"
 					class="pressable cursor-pointer rounded-lg p-1.5 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
@@ -98,13 +100,15 @@
 			</div>
 
 			<!-- Body -->
-			<div class="px-6 py-5 max-h-[80vh] overflow-y-auto">
+			<div class="max-h-[80vh] overflow-y-auto px-6 py-5">
 				{@render children()}
 			</div>
 
 			<!-- Footer -->
 			{#if footer}
-				<div class="flex items-center justify-end gap-2.5 border-t border-border/80 px-6 py-4 bg-surface/30">
+				<div
+					class="flex items-center justify-end gap-2.5 border-t border-border/80 bg-surface/30 px-6 py-4"
+				>
 					{@render footer()}
 				</div>
 			{/if}

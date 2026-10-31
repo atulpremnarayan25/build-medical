@@ -31,11 +31,7 @@ export class DbLedgerRepository implements LedgerRepository {
 			.limit(1);
 
 		const [supplier] = !customer
-			? await this._db
-					.select()
-					.from(suppliersTable)
-					.where(eq(suppliersTable.id, partyId))
-					.limit(1)
+			? await this._db.select().from(suppliersTable).where(eq(suppliersTable.id, partyId)).limit(1)
 			: [null];
 
 		const entries: LedgerEntry[] = [];
@@ -50,7 +46,9 @@ export class DbLedgerRepository implements LedgerRepository {
 				.where(eq(salesTable.customerId, partyId));
 
 			for (const sale of rawSales) {
-				const dateStr = sale.createdAt ? new Date(sale.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = sale.createdAt
+					? new Date(sale.createdAt).toISOString()
+					: new Date().toISOString();
 				entries.push({
 					id: sale.id,
 					date: dateStr,
@@ -79,7 +77,9 @@ export class DbLedgerRepository implements LedgerRepository {
 				);
 
 			for (const payment of rawPayments) {
-				const dateStr = payment.createdAt ? new Date(payment.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = payment.createdAt
+					? new Date(payment.createdAt).toISOString()
+					: new Date().toISOString();
 				const methodStr = (payment.method || 'cash').toUpperCase();
 				entries.push({
 					id: payment.id,
@@ -109,16 +109,18 @@ export class DbLedgerRepository implements LedgerRepository {
 				.from(returnsTable)
 				.innerJoin(salesTable, eq(returnsTable.originalSaleId, salesTable.id))
 				.leftJoin(returnItemsTable, eq(returnsTable.id, returnItemsTable.returnId))
-				.where(
-					and(
-						eq(salesTable.customerId, partyId),
-						eq(returnsTable.returnType, 'sales_return')
-					)
-				)
-				.groupBy(returnsTable.id, returnsTable.createdAt, returnsTable.reason, salesTable.invoiceNumber);
+				.where(and(eq(salesTable.customerId, partyId), eq(returnsTable.returnType, 'sales_return')))
+				.groupBy(
+					returnsTable.id,
+					returnsTable.createdAt,
+					returnsTable.reason,
+					salesTable.invoiceNumber
+				);
 
 			for (const rtn of rawReturns) {
-				const dateStr = rtn.createdAt ? new Date(rtn.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = rtn.createdAt
+					? new Date(rtn.createdAt).toISOString()
+					: new Date().toISOString();
 				entries.push({
 					id: rtn.id,
 					date: dateStr,
@@ -144,7 +146,9 @@ export class DbLedgerRepository implements LedgerRepository {
 				.where(eq(purchasesTable.supplierId, partyId));
 
 			for (const purchase of rawPurchases) {
-				const dateStr = purchase.createdAt ? new Date(purchase.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = purchase.createdAt
+					? new Date(purchase.createdAt).toISOString()
+					: new Date().toISOString();
 				const ref = purchase.supplierInvoiceRef || purchase.invoiceNumber;
 				entries.push({
 					id: purchase.id,
@@ -174,7 +178,9 @@ export class DbLedgerRepository implements LedgerRepository {
 				);
 
 			for (const payment of rawPayments) {
-				const dateStr = payment.createdAt ? new Date(payment.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = payment.createdAt
+					? new Date(payment.createdAt).toISOString()
+					: new Date().toISOString();
 				const methodStr = (payment.method || 'bank').toUpperCase();
 				entries.push({
 					id: payment.id,
@@ -210,10 +216,17 @@ export class DbLedgerRepository implements LedgerRepository {
 						eq(returnsTable.returnType, 'purchase_return')
 					)
 				)
-				.groupBy(returnsTable.id, returnsTable.createdAt, returnsTable.reason, purchasesTable.supplierInvoiceRef);
+				.groupBy(
+					returnsTable.id,
+					returnsTable.createdAt,
+					returnsTable.reason,
+					purchasesTable.supplierInvoiceRef
+				);
 
 			for (const rtn of rawReturns) {
-				const dateStr = rtn.createdAt ? new Date(rtn.createdAt).toISOString() : new Date().toISOString();
+				const dateStr = rtn.createdAt
+					? new Date(rtn.createdAt).toISOString()
+					: new Date().toISOString();
 				entries.push({
 					id: rtn.id,
 					date: dateStr,

@@ -1,5 +1,15 @@
 <script lang="ts">
-	import { BarChart, Search, Box, IndianRupee, Truck, Layers, Filter, FileSpreadsheet, ShieldAlert } from '@lucide/svelte';
+	import {
+		BarChart,
+		Search,
+		Box,
+		IndianRupee,
+		Truck,
+		Layers,
+		Filter,
+		FileSpreadsheet,
+		ShieldAlert
+	} from '@lucide/svelte';
 
 	const reportCategories = [
 		{
@@ -83,7 +93,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Executive Reports & Analytics</h1>
-			<p class="text-xs text-text-muted">GST tax statements, party ledgers, valuation summaries, and compliance audit logs</p>
+			<p class="text-xs text-text-muted">
+				GST tax statements, party ledgers, valuation summaries, and compliance audit logs
+			</p>
 		</div>
 	</div>
 
@@ -91,7 +103,7 @@
 	<div class="space-y-6">
 		{#each reportCategories as category}
 			<section class="space-y-3">
-				<h2 class="text-xs font-bold uppercase tracking-wider text-text-muted">{category.title}</h2>
+				<h2 class="text-xs font-bold tracking-wider text-text-muted uppercase">{category.title}</h2>
 				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 					{#each category.items as item}
 						<a
@@ -104,8 +116,12 @@
 								<item.icon size={18} />
 							</div>
 							<div>
-								<h3 class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">{item.name}</h3>
-								<p class="mt-1 text-xs text-text-muted leading-relaxed">{item.desc}</p>
+								<h3
+									class="text-sm font-semibold text-text-primary transition-colors group-hover:text-accent"
+								>
+									{item.name}
+								</h3>
+								<p class="mt-1 text-xs leading-relaxed text-text-muted">{item.desc}</p>
 							</div>
 						</a>
 					{/each}

@@ -26,7 +26,12 @@ export interface NetworkTopology {
 
 function classifyInterface(name: string): 'Ethernet' | 'Wi-Fi' | 'LAN' | 'Other' {
 	const lower = name.toLowerCase();
-	if (lower.includes('wl') || lower.includes('wi-fi') || lower.includes('wifi') || lower.startsWith('awdl')) {
+	if (
+		lower.includes('wl') ||
+		lower.includes('wi-fi') ||
+		lower.includes('wifi') ||
+		lower.startsWith('awdl')
+	) {
 		return 'Wi-Fi';
 	}
 	if (lower.includes('eth') || lower.startsWith('en')) {
@@ -38,7 +43,10 @@ function classifyInterface(name: string): 'Ethernet' | 'Wi-Fi' | 'LAN' | 'Other'
 	return 'Other';
 }
 
-export async function getNetworkTopology(serverPort?: number, selectedIp?: string): Promise<NetworkTopology> {
+export async function getNetworkTopology(
+	serverPort?: number,
+	selectedIp?: string
+): Promise<NetworkTopology> {
 	const port = serverPort || Number(process.env.PORT || 3000);
 	const rawIfaces = os.networkInterfaces();
 	const activeInterfaces: NetworkInterfaceInfo[] = [];
@@ -84,7 +92,6 @@ export async function getNetworkTopology(serverPort?: number, selectedIp?: strin
 		});
 	} catch (err: any) {
 		console.error('Failed to generate QR Code SVG:', err.message);
-		qrCodeSvg = '';
 	}
 
 	// Count active connected devices/terminals
@@ -96,9 +103,8 @@ export async function getNetworkTopology(serverPort?: number, selectedIp?: strin
 			.where(gt(sessionsTable.expiresAt, new Date()));
 		const activeSessions = Number(sessionResult?.total || 0);
 		connectedDevicesCount = Math.max(1, activeSessions);
-	} catch (e) {
+	} catch {
 		// Fallback in case of temporary DB lock
-		connectedDevicesCount = 1;
 	}
 
 	return {

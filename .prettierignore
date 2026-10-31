@@ -14,3 +14,13 @@ bun.lockb
 /roster.json
 /build/
 /node_modules/
+/shannon/
+/graphify-out/
+/build-med-plans/
+/palace/
+/backups/
+/files/
+/screenshots/
+/migrations/
+/migrations-pg/
+*.sh

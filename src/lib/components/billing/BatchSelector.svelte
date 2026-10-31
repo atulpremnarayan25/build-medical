@@ -75,12 +75,19 @@
 	<div class="space-y-3">
 		<!-- Product Context Header -->
 		{#if product}
-			<div class="flex items-center justify-between rounded-lg border border-border bg-surface-secondary p-3">
+			<div
+				class="flex items-center justify-between rounded-lg border border-border bg-surface-secondary p-3"
+			>
 				<div>
 					<div class="flex items-center gap-2">
 						<span class="font-bold text-text-primary">{product.name}</span>
 						{#if product.drugSchedule && product.drugSchedule !== 'none'}
-							<span class="rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider {product.drugSchedule === 'H1' || product.drugSchedule === 'X' ? 'bg-danger-light text-danger border border-danger/20' : 'bg-warning-light text-warning border border-warning/20'}">
+							<span
+								class="rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase {product.drugSchedule ===
+									'H1' || product.drugSchedule === 'X'
+									? 'border border-danger/20 bg-danger-light text-danger'
+									: 'border border-warning/20 bg-warning-light text-warning'}"
+							>
 								Sch {product.drugSchedule}
 							</span>
 						{/if}
@@ -100,21 +107,32 @@
 		<div class="flex items-center justify-between text-xs text-text-muted">
 			<span>Available Batches in Inventory:</span>
 			<span class="flex items-center gap-1">
-				Use <kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[10px]">↑↓</kbd> and
-				<kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[10px]">Enter</kbd> to pick.
+				Use <kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[10px]"
+					>↑↓</kbd
+				>
+				and
+				<kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[10px]"
+					>Enter</kbd
+				> to pick.
 			</span>
 		</div>
 
 		{#if activeBatches.length === 0}
-			<div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-10 text-center">
+			<div
+				class="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-10 text-center"
+			>
 				<AlertTriangle size={28} class="mb-2 text-warning" />
 				<p class="font-semibold text-text-primary">No available active stock</p>
-				<p class="text-xs text-text-muted mt-1">All batches for this item are either out of stock or expired.</p>
+				<p class="mt-1 text-xs text-text-muted">
+					All batches for this item are either out of stock or expired.
+				</p>
 			</div>
 		{:else}
 			<div class="overflow-x-auto rounded-lg border border-border">
 				<table class="w-full text-left text-sm">
-					<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+					<thead
+						class="border-b border-border bg-surface-secondary text-[11px] font-semibold tracking-wider text-text-muted uppercase"
+					>
 						<tr>
 							<th class="px-3.5 py-2.5">Batch #</th>
 							<th class="px-3.5 py-2.5 text-center">Expiry (FEFO)</th>
@@ -129,12 +147,14 @@
 							<tr
 								class="cursor-pointer border-b border-border-subtle transition-colors last:border-0 {index ===
 								selectedIndex
-									? 'bg-accent-light/60 text-text-primary font-medium'
-									: 'hover:bg-surface-hover text-text-primary'}"
+									? 'bg-accent-light/60 font-medium text-text-primary'
+									: 'text-text-primary hover:bg-surface-hover'}"
 								onclick={() => onSelect(batch)}
 							>
 								<td class="px-3.5 py-2.5">
-									<span class="rounded bg-surface-secondary px-2 py-0.5 font-mono text-xs font-bold text-text-primary border border-border">
+									<span
+										class="rounded border border-border bg-surface-secondary px-2 py-0.5 font-mono text-xs font-bold text-text-primary"
+									>
 										{batch.batchNumber}
 									</span>
 								</td>
@@ -149,7 +169,9 @@
 									/>
 								</td>
 								<td class="px-3.5 py-2.5 text-right tabular-nums">
-									<span class="font-bold {batch.quantity <= 10 ? 'text-warning' : 'text-text-primary'}">
+									<span
+										class="font-bold {batch.quantity <= 10 ? 'text-warning' : 'text-text-primary'}"
+									>
 										{batch.quantity}
 									</span>
 									<span class="text-xs text-text-muted">units</span>
@@ -157,12 +179,16 @@
 								<td class="px-3.5 py-2.5 text-right font-mono text-xs text-text-muted tabular-nums">
 									₹{batch.mrp.toFixed(2)}
 								</td>
-								<td class="px-3.5 py-2.5 text-right font-mono text-sm font-bold text-accent tabular-nums">
+								<td
+									class="px-3.5 py-2.5 text-right font-mono text-sm font-bold text-accent tabular-nums"
+								>
 									₹{batch.sellingRate.toFixed(2)}
 								</td>
 								<td class="px-2 py-2.5 text-center">
 									{#if index === selectedIndex}
-										<span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white">
+										<span
+											class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white"
+										>
 											<Check size={12} />
 										</span>
 									{/if}

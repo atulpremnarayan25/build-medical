@@ -53,49 +53,51 @@
 </script>
 
 <div class="flex flex-wrap items-center gap-2 {className}">
-	<div class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs shadow-xs">
-		<Calendar class="h-3.5 w-3.5 text-text-muted shrink-0" />
-		<span class="text-text-muted text-[11px] font-medium uppercase tracking-wider">From:</span>
+	<div
+		class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs shadow-xs"
+	>
+		<Calendar class="h-3.5 w-3.5 shrink-0 text-text-muted" />
+		<span class="text-[11px] font-medium tracking-wider text-text-muted uppercase">From:</span>
 		<input
 			type="date"
 			bind:value={from}
-			onchange={onchange}
-			class="bg-transparent text-text-primary text-xs outline-none cursor-pointer"
+			{onchange}
+			class="cursor-pointer bg-transparent text-xs text-text-primary outline-none"
 		/>
-		<span class="text-text-muted text-[11px] font-medium uppercase tracking-wider ml-1">To:</span>
+		<span class="ml-1 text-[11px] font-medium tracking-wider text-text-muted uppercase">To:</span>
 		<input
 			type="date"
 			bind:value={to}
-			onchange={onchange}
-			class="bg-transparent text-text-primary text-xs outline-none cursor-pointer"
+			{onchange}
+			class="cursor-pointer bg-transparent text-xs text-text-primary outline-none"
 		/>
 	</div>
 
 	<div class="inline-flex rounded-lg border border-border bg-surface-secondary/70 p-0.5 text-xs">
 		<button
 			type="button"
-			class="rounded px-2 py-0.5 text-[11px] font-medium text-text-muted hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+			class="cursor-pointer rounded px-2 py-0.5 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text-primary"
 			onclick={() => setPreset('today')}
 		>
 			Today
 		</button>
 		<button
 			type="button"
-			class="rounded px-2 py-0.5 text-[11px] font-medium text-text-muted hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+			class="cursor-pointer rounded px-2 py-0.5 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text-primary"
 			onclick={() => setPreset('7d')}
 		>
 			7D
 		</button>
 		<button
 			type="button"
-			class="rounded px-2 py-0.5 text-[11px] font-medium text-text-muted hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+			class="cursor-pointer rounded px-2 py-0.5 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text-primary"
 			onclick={() => setPreset('30d')}
 		>
 			30D
 		</button>
 		<button
 			type="button"
-			class="rounded px-2 py-0.5 text-[11px] font-medium text-text-muted hover:text-text-primary hover:bg-surface transition-colors cursor-pointer"
+			class="cursor-pointer rounded px-2 py-0.5 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text-primary"
 			onclick={() => setPreset('this_month')}
 		>
 			Month

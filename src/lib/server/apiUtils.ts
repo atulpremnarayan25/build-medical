@@ -5,5 +5,19 @@ export function jsonResponse(data: any, status = 200) {
 }
 
 export function errorResponse(code: string, message: string, status = 400) {
-	return json({ data: null, error: { code, message } }, { status });
+	const isInternalOrQuery =
+		status >= 500 ||
+		message.startsWith('Failed query:') ||
+		message.includes('syntax error') ||
+		message.includes('relation "');
+
+	if (isInternalOrQuery) {
+		console.error(`[API Error ${code}]`, message);
+	}
+
+	const safeMessage = isInternalOrQuery
+		? 'An unexpected error occurred. Please try again.'
+		: message;
+
+	return json({ data: null, error: { code, message: safeMessage } }, { status });
 }

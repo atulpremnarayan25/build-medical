@@ -83,7 +83,9 @@ describe('Phase 2 POS: Keyboard-First Billing & Inventory Deduction', () => {
 		const existingUnits = await db
 			.select()
 			.from(productUnitsTable)
-			.where(and(eq(productUnitsTable.productId, doloProduct.id), eq(productUnitsTable.isBaseUnit, true)))
+			.where(
+				and(eq(productUnitsTable.productId, doloProduct.id), eq(productUnitsTable.isBaseUnit, true))
+			)
 			.limit(1);
 
 		if (existingUnits.length === 0) {
@@ -229,10 +231,7 @@ describe('Phase 2 POS: Keyboard-First Billing & Inventory Deduction', () => {
 		expect(stockEvents[0].eventType).toBe('sale');
 
 		// 3. Verify salesTable record
-		const [saleRow] = await db
-			.select()
-			.from(salesTable)
-			.where(eq(salesTable.id, saleId));
+		const [saleRow] = await db.select().from(salesTable).where(eq(salesTable.id, saleId));
 		expect(saleRow).toBeDefined();
 		expect(saleRow.paymentStatus).toBe('paid');
 		expect(Number(saleRow.amountPaidAtSale)).toBeGreaterThan(0);

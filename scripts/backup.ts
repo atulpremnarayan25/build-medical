@@ -17,7 +17,9 @@ async function main() {
 		console.log('✅ Database dump completed successfully!');
 		console.log(`📁 Backup File:     ${result.backup.filename}`);
 		console.log(`📍 Full Path:       ${result.backup.path}`);
-		console.log(`⚖️  Compressed Size: ${result.backup.sizeFormatted} (${result.backup.sizeBytes.toLocaleString()} bytes)`);
+		console.log(
+			`⚖️  Compressed Size: ${result.backup.sizeFormatted} (${result.backup.sizeBytes.toLocaleString()} bytes)`
+		);
 		console.log(`⏱️  Duration:        ${duration}s`);
 		console.log(`🗄️  Total Retained:  ${result.totalRemaining} (Rolling 30-day retention)`);
 

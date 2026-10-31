@@ -2,7 +2,17 @@
 	import { onMount } from 'svelte';
 	import { PageHeader, LoadingState, Button } from '$lib/components/common/index.js';
 	import { formatCurrency, formatDate } from '$lib/utils/formatters.js';
-	import { FileSpreadsheet, Printer, Search, ArrowUpRight, Filter, Calendar, TrendingUp, IndianRupee, FileText } from '@lucide/svelte';
+	import {
+		FileSpreadsheet,
+		Printer,
+		Search,
+		ArrowUpRight,
+		Filter,
+		Calendar,
+		TrendingUp,
+		IndianRupee,
+		FileText
+	} from '@lucide/svelte';
 
 	interface SalesReportItem {
 		id: string;
@@ -133,7 +143,9 @@
 			s.paymentStatus.toUpperCase()
 		]);
 
-		const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
@@ -156,7 +168,12 @@
 	>
 		{#snippet actions()}
 			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={exportToCSV} disabled={filteredSales.length === 0}>
+				<Button
+					variant="secondary"
+					size="sm"
+					onclick={exportToCSV}
+					disabled={filteredSales.length === 0}
+				>
 					<FileSpreadsheet size={14} class="mr-1 text-success" />
 					<span>Export CSV</span>
 				</Button>
@@ -169,10 +186,12 @@
 	</PageHeader>
 
 	<!-- Filters Strip -->
-	<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs space-y-3">
+	<div class="space-y-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<!-- Date Range Presets -->
-			<div class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs">
+			<div
+				class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs"
+			>
 				<button
 					type="button"
 					class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'today'
@@ -276,7 +295,9 @@
 	<!-- Metric KPI Cards -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Gross Turnover</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Total Gross Turnover
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 				{formatCurrency(totalTurnover)}
 			</div>
@@ -284,7 +305,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Taxable Turnover</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Taxable Turnover
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 				{formatCurrency(totalTaxable)}
 			</div>
@@ -292,7 +315,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total GST Output</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Total GST Output
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 				{formatCurrency(totalGst)}
 			</div>
@@ -300,7 +325,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Realized Inflow</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Realized Inflow
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
 				{formatCurrency(totalCollected)}
 			</div>
@@ -308,7 +335,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Debtor Credit Due</div>
+			<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+				Debtor Credit Due
+			</div>
 			<div class="mt-1 font-mono text-lg font-bold text-danger tabular-nums">
 				{formatCurrency(totalDue)}
 			</div>
@@ -321,13 +350,15 @@
 		<LoadingState message="Generating sales register from ledger..." />
 	{:else if filteredSales.length === 0}
 		<div class="rounded-xl border border-border bg-surface p-8 text-center text-xs text-text-muted">
-			<FileText size={32} class="mx-auto mb-2 opacity-40 text-text-muted" />
+			<FileText size={32} class="mx-auto mb-2 text-text-muted opacity-40" />
 			No sales invoices match the selected date range and filters.
 		</div>
 	{:else}
 		<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
 			<table class="w-full text-left text-xs">
-				<thead class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+				<thead
+					class="border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase"
+				>
 					<tr>
 						<th class="px-3 py-2.5">Invoice #</th>
 						<th class="px-3 py-2.5">Date & Time</th>
@@ -344,9 +375,9 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredSales as sale}
-						<tr class="hover:bg-surface-hover transition-colors">
+						<tr class="transition-colors hover:bg-surface-hover">
 							<td class="px-3 py-2 font-mono font-bold text-accent">
-								<a href={`/sales/${sale.id}`} class="hover:underline flex items-center gap-1">
+								<a href={`/sales/${sale.id}`} class="flex items-center gap-1 hover:underline">
 									<span>{sale.invoiceNumber}</span>
 									<ArrowUpRight size={10} class="opacity-60" />
 								</a>
@@ -365,17 +396,33 @@
 								</span>
 							</td>
 							<td class="px-3 py-2">
-								<div class="font-medium text-text-primary">{sale.customerName || 'Walk-in Retail Customer'}</div>
+								<div class="font-medium text-text-primary">
+									{sale.customerName || 'Walk-in Retail Customer'}
+								</div>
 								{#if sale.customerGstin}
-									<div class="font-mono text-[10px] text-text-muted">GSTIN: {sale.customerGstin}</div>
+									<div class="font-mono text-[10px] text-text-muted">
+										GSTIN: {sale.customerGstin}
+									</div>
 								{/if}
 							</td>
 							<td class="px-3 py-2 text-center font-mono">{sale.itemsCount}</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(sale.subtotal)}</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(sale.gstAmount)}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-text-primary">{formatCurrency(sale.totalAmount)}</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-success">{formatCurrency(sale.amountPaidAtSale)}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums {sale.dueAmount > 0 ? 'text-danger' : 'text-text-muted'}">
+							<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums"
+								>{formatCurrency(sale.subtotal)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums"
+								>{formatCurrency(sale.gstAmount)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums"
+								>{formatCurrency(sale.totalAmount)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono text-success tabular-nums"
+								>{formatCurrency(sale.amountPaidAtSale)}</td
+							>
+							<td
+								class="px-3 py-2 text-right font-mono font-bold tabular-nums {sale.dueAmount > 0
+									? 'text-danger'
+									: 'text-text-muted'}"
+							>
 								{formatCurrency(sale.dueAmount)}
 							</td>
 							<td class="px-3 py-2 text-center">
@@ -393,16 +440,29 @@
 						</tr>
 					{/each}
 				</tbody>
-				<tfoot class="border-t-2 border-border bg-surface-secondary font-bold text-xs">
+				<tfoot class="border-t-2 border-border bg-surface-secondary text-xs font-bold">
 					<tr>
-						<td colspan="5" class="px-3 py-2.5 text-right uppercase tracking-wider text-[10px] text-text-muted">
+						<td
+							colspan="5"
+							class="px-3 py-2.5 text-right text-[10px] tracking-wider text-text-muted uppercase"
+						>
 							Total Summary:
 						</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(totalTaxable)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-accent">{formatCurrency(totalGst)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(totalTurnover)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-success">{formatCurrency(totalCollected)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-danger">{formatCurrency(totalDue)}</td>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{formatCurrency(totalTaxable)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-accent tabular-nums"
+							>{formatCurrency(totalGst)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{formatCurrency(totalTurnover)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-success tabular-nums"
+							>{formatCurrency(totalCollected)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-danger tabular-nums"
+							>{formatCurrency(totalDue)}</td
+						>
 						<td></td>
 					</tr>
 				</tfoot>

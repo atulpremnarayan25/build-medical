@@ -97,7 +97,7 @@
 		const effectiveStripCost =
 			baseQty > 0
 				? paiseToRupees(lineTotalPaise) / baseQty
-				: (Number(item.purchaseRate || 0) / packSize);
+				: Number(item.purchaseRate || 0) / packSize;
 
 		return {
 			baseQty,
@@ -109,7 +109,9 @@
 
 <div class="flex-1 overflow-auto border-r border-l border-border bg-surface">
 	<table class="w-full text-left align-top text-xs">
-		<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase shadow-2xs">
+		<thead
+			class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase shadow-2xs"
+		>
 			<tr>
 				<th class="w-8 px-2 py-2 text-center">#</th>
 				<th class="px-2.5 py-2">Product Name</th>
@@ -119,9 +121,15 @@
 				<th class="w-16 px-1.5 py-2 text-right">Qty (Box)*</th>
 				<th class="w-20 px-1.5 py-2 text-center" title="Pharma Scheme e.g. 89+1, 10+1">Deal</th>
 				<th class="w-14 px-1.5 py-2 text-right">Free</th>
-				<th class="w-16 px-1.5 py-2 text-right text-accent font-semibold" title="Total Inward Units (Qty + Free) * Pack Sz">Total Base</th>
+				<th
+					class="w-16 px-1.5 py-2 text-right font-semibold text-accent"
+					title="Total Inward Units (Qty + Free) * Pack Sz">Total Base</th
+				>
 				<th class="w-20 px-1.5 py-2 text-right">Pur.Rate (₹)*</th>
-				<th class="w-20 px-1.5 py-2 text-right text-success font-semibold" title="Effective Landing Cost per base retail strip">Eff. Cost (₹)</th>
+				<th
+					class="w-20 px-1.5 py-2 text-right font-semibold text-success"
+					title="Effective Landing Cost per base retail strip">Eff. Cost (₹)</th
+				>
 				<th class="w-20 px-1.5 py-2 text-right">MRP (₹)*</th>
 				<th class="w-14 px-1.5 py-2 text-right">Dis%</th>
 				<th class="w-14 px-1.5 py-2 text-right">GST%</th>
@@ -135,27 +143,33 @@
 					<td colspan="16" class="px-4 py-16 text-center text-xs text-text-muted">
 						<div class="mx-auto flex max-w-sm flex-col items-center justify-center">
 							{#if disabled}
-								<div class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-secondary text-text-muted mb-2">
+								<div
+									class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-surface-secondary text-text-muted"
+								>
 									<Truck size={20} />
 								</div>
-								<p class="font-bold text-text-primary text-xs">Supplier Selection Required</p>
-								<p class="text-[11px] text-text-muted mt-1 max-w-[280px]">
-									Select a distributor or supplier (F3) before adding medicines to this purchase voucher.
+								<p class="text-xs font-bold text-text-primary">Supplier Selection Required</p>
+								<p class="mt-1 max-w-[280px] text-[11px] text-text-muted">
+									Select a distributor or supplier (F3) before adding medicines to this purchase
+									voucher.
 								</p>
 								{#if onFocusSupplier}
 									<button
 										type="button"
 										onclick={onFocusSupplier}
-										class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-accent-hover active:scale-95 transition-all"
+										class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-accent-hover active:scale-95"
 									>
 										<Truck size={13} />
 										<span>Select Supplier (F3)</span>
 									</button>
 								{/if}
 							{:else}
-								<p class="font-semibold text-text-primary text-xs">Line Items Grid Ready</p>
-								<p class="text-[11px] text-text-muted mt-1">
-									Search and select a medicine (or press <kbd class="rounded border border-border bg-surface-secondary px-1 py-0.5 font-mono text-[10px] text-accent">F2</kbd>) to add inward items to this purchase voucher.
+								<p class="text-xs font-semibold text-text-primary">Line Items Grid Ready</p>
+								<p class="mt-1 text-[11px] text-text-muted">
+									Search and select a medicine (or press <kbd
+										class="rounded border border-border bg-surface-secondary px-1 py-0.5 font-mono text-[10px] text-accent"
+										>F2</kbd
+									>) to add inward items to this purchase voucher.
 								</p>
 							{/if}
 						</div>
@@ -164,17 +178,23 @@
 			{:else}
 				{#each items as item, index (item.uiKey)}
 					{@const financials = computeRowFinancials(item)}
-					<tr class={`hover:bg-surface-hover/50 ${activeRowIndex === index ? 'bg-primary/5 ring-1 ring-inset ring-primary/20' : ''}`}>
-						<td class="px-2 py-2 text-center font-mono text-xs text-text-muted tabular-nums">{index + 1}</td>
+					<tr
+						class={`hover:bg-surface-hover/50 ${activeRowIndex === index ? 'bg-primary/5 ring-primary/20 ring-1 ring-inset' : ''}`}
+					>
+						<td class="px-2 py-2 text-center font-mono text-xs text-text-muted tabular-nums"
+							>{index + 1}</td
+						>
 						<td class="px-2.5 py-2 font-medium text-text-primary">
-							<div class="truncate max-w-[180px] font-semibold" title={item.productName}>{item.productName}</div>
+							<div class="max-w-[180px] truncate font-semibold" title={item.productName}>
+								{item.productName}
+							</div>
 						</td>
 						<td class="px-1.5 py-1.5">
 							<input
 								type="text"
 								bind:value={item.batchNumber}
 								placeholder="BAT-01"
-								class="batch-input w-full rounded border border-border bg-surface px-1.5 py-1 font-mono text-xs uppercase text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								class="batch-input w-full rounded border border-border bg-surface px-1.5 py-1 font-mono text-xs text-text-primary uppercase focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 								onfocus={() => handleFocus(item, index)}
 								onkeydown={(e) => handleRowKeyDown(e, index, 'batchNumber')}
 							/>
@@ -230,7 +250,10 @@
 								onkeydown={(e) => handleRowKeyDown(e, index, 'freeQuantity')}
 							/>
 						</td>
-						<td class="px-1.5 py-2 text-right font-mono text-xs font-bold text-accent tabular-nums" title="Strips Inwarded">
+						<td
+							class="px-1.5 py-2 text-right font-mono text-xs font-bold text-accent tabular-nums"
+							title="Strips Inwarded"
+						>
 							{financials.baseQty}
 						</td>
 						<td class="px-1.5 py-1.5 text-right">
@@ -244,7 +267,10 @@
 								onkeydown={(e) => handleRowKeyDown(e, index, 'purchaseRate')}
 							/>
 						</td>
-						<td class="px-1.5 py-2 text-right font-mono text-xs font-semibold text-success tabular-nums" title="Landing Cost / Strip">
+						<td
+							class="px-1.5 py-2 text-right font-mono text-xs font-semibold text-success tabular-nums"
+							title="Landing Cost / Strip"
+						>
 							₹{financials.effectiveStripCost.toFixed(2)}
 						</td>
 						<td class="px-1.5 py-1.5 text-right">
@@ -269,8 +295,12 @@
 								onkeydown={(e) => handleRowKeyDown(e, index, 'discount')}
 							/>
 						</td>
-						<td class="px-1.5 py-2 text-right font-mono text-xs text-text-secondary tabular-nums">{item.gstRate}%</td>
-						<td class="px-2 py-2 text-right font-mono text-xs font-bold text-text-primary tabular-nums">
+						<td class="px-1.5 py-2 text-right font-mono text-xs text-text-secondary tabular-nums"
+							>{item.gstRate}%</td
+						>
+						<td
+							class="px-2 py-2 text-right font-mono text-xs font-bold text-text-primary tabular-nums"
+						>
 							₹{financials.lineTotal.toFixed(2)}
 						</td>
 						<td class="px-1 py-1.5 text-center">

@@ -33,7 +33,11 @@
 
 	$effect(() => {
 		const param = page.url.searchParams.get('tab');
-		if (param && ['profile', 'users', 'invoice', 'backups'].includes(param) && activeTab !== param) {
+		if (
+			param &&
+			['profile', 'users', 'invoice', 'backups'].includes(param) &&
+			activeTab !== param
+		) {
 			activeTab = param;
 		}
 	});
@@ -52,7 +56,8 @@
 	let invoiceProfile = $state({
 		prefix: 'INV',
 		defaultGst: 12,
-		terms: '1. Goods once sold will not be taken back.\n2. Consult doctor before using scheduled drugs.',
+		terms:
+			'1. Goods once sold will not be taken back.\n2. Consult doctor before using scheduled drugs.',
 		template: 'standard'
 	});
 
@@ -295,7 +300,10 @@
 	<title>Settings - MedStock ERP</title>
 </svelte:head>
 
-<PageHeader title="Settings" subtitle="Manage store profile, team access, and invoice preferences" />
+<PageHeader
+	title="Settings"
+	subtitle="Manage store profile, team access, and invoice preferences"
+/>
 
 <div class="mt-6 flex flex-col gap-6 lg:flex-row">
 	<!-- Sidebar Tabs -->
@@ -345,7 +353,7 @@
 		</button>
 		<a
 			href="/settings/network"
-			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold transition-colors text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+			class="pressable flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary"
 		>
 			<Wifi size={16} />
 			Network & LAN Terminals
@@ -353,432 +361,479 @@
 	</div>
 
 	<!-- Content -->
-	<div class="flex-1 bezel-outer"><div class="bezel-inner p-6">
-		{#if activeTab === 'profile'}
-			<div>
-				<h2 class="text-base font-bold text-text-primary">Store Profile</h2>
-				<p class="mb-6 text-xs text-text-muted">
-					This information appears on your printed invoices and statements.
-				</p>
+	<div class="bezel-outer flex-1">
+		<div class="bezel-inner p-6">
+			{#if activeTab === 'profile'}
+				<div>
+					<h2 class="text-base font-bold text-text-primary">Store Profile</h2>
+					<p class="mb-6 text-xs text-text-muted">
+						This information appears on your printed invoices and statements.
+					</p>
 
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						saveProfile();
-					}}
-					class="max-w-2xl space-y-4"
-				>
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="sm:col-span-2">
-							<label for="set-biz-name" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Business Name *</label
-							>
-							<input
-								id="set-biz-name"
-								type="text"
-								bind:value={storeProfile.name}
-								required
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
+					<form
+						onsubmit={(e) => {
+							e.preventDefault();
+							saveProfile();
+						}}
+						class="max-w-2xl space-y-4"
+					>
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div class="sm:col-span-2">
+								<label
+									for="set-biz-name"
+									class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Business Name *</label
+								>
+								<input
+									id="set-biz-name"
+									type="text"
+									bind:value={storeProfile.name}
+									required
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div class="sm:col-span-2">
+								<label
+									for="set-biz-addr"
+									class="mb-1 block text-xs font-semibold text-text-secondary">Address</label
+								>
+								<textarea
+									id="set-biz-addr"
+									bind:value={storeProfile.address}
+									rows="2"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								></textarea>
+							</div>
+
+							<div>
+								<label
+									for="set-biz-phone"
+									class="mb-1 block text-xs font-semibold text-text-secondary">Phone Number</label
+								>
+								<input
+									id="set-biz-phone"
+									type="text"
+									bind:value={storeProfile.phone}
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div>
+								<label
+									for="set-biz-email"
+									class="mb-1 block text-xs font-semibold text-text-secondary">Email</label
+								>
+								<input
+									id="set-biz-email"
+									type="email"
+									bind:value={storeProfile.email}
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div>
+								<label
+									for="set-biz-gst"
+									class="mb-1 block text-xs font-semibold text-text-secondary">GSTIN</label
+								>
+								<input
+									id="set-biz-gst"
+									type="text"
+									bind:value={storeProfile.gstin}
+									placeholder="e.g. 29ABCDE1234F1Z5"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div>
+								<label for="set-biz-dl" class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Drug License No. (20B)</label
+								>
+								<input
+									id="set-biz-dl"
+									type="text"
+									bind:value={storeProfile.drugLicenseNo}
+									placeholder="e.g. DL-20B-12345"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div>
+								<label
+									for="set-biz-dl2"
+									class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Drug License No. 2 (21B)</label
+								>
+								<input
+									id="set-biz-dl2"
+									type="text"
+									bind:value={storeProfile.drugLicenseNo2}
+									placeholder="e.g. DL-21B-67890"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
 						</div>
 
-						<div class="sm:col-span-2">
-							<label for="set-biz-addr" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Address</label
+						<div class="flex justify-end pt-4">
+							<Button
+								type="submit"
+								variant="primary"
+								size="sm"
+								class="gap-1.5"
+								disabled={isSavingProfile}
 							>
-							<textarea
-								id="set-biz-addr"
-								bind:value={storeProfile.address}
-								rows="2"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							></textarea>
+								<Save size={14} />
+								{isSavingProfile ? 'Saving...' : 'Save Changes'}
+							</Button>
 						</div>
-
-						<div>
-							<label for="set-biz-phone" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Phone Number</label
-							>
-							<input
-								id="set-biz-phone"
-								type="text"
-								bind:value={storeProfile.phone}
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div>
-							<label for="set-biz-email" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Email</label
-							>
-							<input
-								id="set-biz-email"
-								type="email"
-								bind:value={storeProfile.email}
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div>
-							<label for="set-biz-gst" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>GSTIN</label
-							>
-							<input
-								id="set-biz-gst"
-								type="text"
-								bind:value={storeProfile.gstin}
-								placeholder="e.g. 29ABCDE1234F1Z5"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div>
-							<label for="set-biz-dl" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Drug License No. (20B)</label
-							>
-							<input
-								id="set-biz-dl"
-								type="text"
-								bind:value={storeProfile.drugLicenseNo}
-								placeholder="e.g. DL-20B-12345"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div>
-							<label for="set-biz-dl2" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Drug License No. 2 (21B)</label
-							>
-							<input
-								id="set-biz-dl2"
-								type="text"
-								bind:value={storeProfile.drugLicenseNo2}
-								placeholder="e.g. DL-21B-67890"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-					</div>
-
-					<div class="flex justify-end pt-4">
-						<Button type="submit" variant="primary" size="sm" class="gap-1.5" disabled={isSavingProfile}>
-							<Save size={14} /> {isSavingProfile ? 'Saving...' : 'Save Changes'}
-						</Button>
-					</div>
-				</form>
-			</div>
-		{:else if activeTab === 'users'}
-			<div>
-				<div class="mb-6 flex items-center justify-between">
-					<div>
-						<h2 class="text-base font-bold text-text-primary">User Management</h2>
-						<p class="text-xs text-text-muted">Manage staff accounts, assign roles, and control counter access.</p>
-					</div>
-					{#if isOwnerAdmin}
-						<Button variant="primary" size="sm" class="gap-1.5" onclick={() => (isCreateModalOpen = true)}>
-							<UserPlus size={14} /> Add User
-						</Button>
-					{/if}
+					</form>
 				</div>
+			{:else if activeTab === 'users'}
+				<div>
+					<div class="mb-6 flex items-center justify-between">
+						<div>
+							<h2 class="text-base font-bold text-text-primary">User Management</h2>
+							<p class="text-xs text-text-muted">
+								Manage staff accounts, assign roles, and control counter access.
+							</p>
+						</div>
+						{#if isOwnerAdmin}
+							<Button
+								variant="primary"
+								size="sm"
+								class="gap-1.5"
+								onclick={() => (isCreateModalOpen = true)}
+							>
+								<UserPlus size={14} /> Add User
+							</Button>
+						{/if}
+					</div>
 
-				<div class="overflow-x-auto rounded-lg border border-border">
-					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase">
-							<tr>
-								<th class="px-4 py-2.5">Name</th>
-								<th class="px-4 py-2.5">Username</th>
-								<th class="px-4 py-2.5">Role</th>
-								<th class="px-4 py-2.5 text-center">Status</th>
-								{#if isOwnerAdmin}
-									<th class="px-4 py-2.5 text-right">Actions</th>
-								{/if}
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-border-subtle">
-							{#if usersList.length === 0}
+					<div class="overflow-x-auto rounded-lg border border-border">
+						<table class="w-full text-left text-xs">
+							<thead
+								class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase"
+							>
 								<tr>
-									<td colspan={isOwnerAdmin ? 5 : 4} class="px-4 py-8 text-center text-text-muted">
-										No user accounts found.
-									</td>
+									<th class="px-4 py-2.5">Name</th>
+									<th class="px-4 py-2.5">Username</th>
+									<th class="px-4 py-2.5">Role</th>
+									<th class="px-4 py-2.5 text-center">Status</th>
+									{#if isOwnerAdmin}
+										<th class="px-4 py-2.5 text-right">Actions</th>
+									{/if}
 								</tr>
-							{:else}
-								{#each usersList as u}
-									<tr class="transition-colors hover:bg-surface-hover">
-										<td class="px-4 py-3 font-semibold text-text-primary">
-											<div class="flex items-center gap-2">
-												{u.name}
-												{#if u.id === data.currentUser?.id}
-													<span class="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-accent">You</span>
-												{/if}
-											</div>
+							</thead>
+							<tbody class="divide-y divide-border-subtle">
+								{#if usersList.length === 0}
+									<tr>
+										<td
+											colspan={isOwnerAdmin ? 5 : 4}
+											class="px-4 py-8 text-center text-text-muted"
+										>
+											No user accounts found.
 										</td>
-										<td class="px-4 py-3 font-mono text-text-secondary">@{u.username}</td>
-										<td class="px-4 py-3 text-text-secondary">
-											<span class="inline-flex items-center gap-1">
-												{#if u.role === 'owner_admin'}
-													<Shield size={12} class="text-primary" />
-													Owner / Admin
-												{:else}
-													Biller
-												{/if}
-											</span>
-										</td>
-										<td class="px-4 py-3 text-center">
-											{#if u.isActive}
-												<Badge variant="success" size="sm">Active</Badge>
-											{:else}
-												<Badge variant="danger" size="sm">Disabled</Badge>
-											{/if}
-										</td>
-										{#if isOwnerAdmin}
-											<td class="px-4 py-3 text-right">
-												<div class="flex items-center justify-end gap-2">
-													<button
-														type="button"
-														title="Reset Password"
-														class="flex items-center gap-1 rounded px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-secondary hover:text-text-primary"
-														onclick={() => openResetPasswordModal(u)}
-													>
-														<Key size={13} />
-														<span>Reset</span>
-													</button>
-													{#if u.id !== data.currentUser?.id}
-														<button
-															type="button"
-															title={u.isActive ? 'Disable User' : 'Enable User'}
-															class="flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors {u.isActive
-																? 'text-danger hover:bg-danger-light/50'
-																: 'text-success hover:bg-success-light/50'}"
-															onclick={() => toggleUserStatus(u)}
+									</tr>
+								{:else}
+									{#each usersList as u}
+										<tr class="transition-colors hover:bg-surface-hover">
+											<td class="px-4 py-3 font-semibold text-text-primary">
+												<div class="flex items-center gap-2">
+													{u.name}
+													{#if u.id === data.currentUser?.id}
+														<span
+															class="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-accent"
+															>You</span
 														>
-															{#if u.isActive}
-																<XCircle size={13} />
-																<span>Disable</span>
-															{:else}
-																<CheckCircle2 size={13} />
-																<span>Enable</span>
-															{/if}
-														</button>
 													{/if}
 												</div>
 											</td>
-										{/if}
-									</tr>
-								{/each}
-							{/if}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		{:else if activeTab === 'invoice'}
-			<div>
-				<h2 class="text-base font-bold text-text-primary">Invoice Settings</h2>
-				<p class="mb-6 text-xs text-text-muted">Configure formatting, numbering, and series templates.</p>
-
-				<form
-					onsubmit={(e) => {
-						e.preventDefault();
-						saveProfile();
-					}}
-					class="max-w-xl space-y-4"
-				>
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="sm:col-span-1">
-							<label for="inv-pref" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Invoice Prefix</label
-							>
-							<input
-								id="inv-pref"
-								type="text"
-								bind:value={invoiceProfile.prefix}
-								placeholder="e.g. INV"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div class="sm:col-span-1">
-							<label for="inv-gst" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Default GST Rate (%)</label
-							>
-							<input
-								id="inv-gst"
-								type="number"
-								bind:value={invoiceProfile.defaultGst}
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							/>
-						</div>
-
-						<div class="sm:col-span-2">
-							<label for="inv-tpl" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Template Layout</label
-							>
-							<select
-								id="inv-tpl"
-								bind:value={invoiceProfile.template}
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							>
-								<option value="standard">Standard A4 Format</option>
-								<option value="thermal">Thermal POS Format (3-inch)</option>
-								<option value="compact">Compact A5 Format</option>
-							</select>
-						</div>
-
-						<div class="sm:col-span-2">
-							<label for="inv-terms" class="mb-1 block text-xs font-semibold text-text-secondary"
-								>Terms & Conditions</label
-							>
-							<textarea
-								id="inv-terms"
-								bind:value={invoiceProfile.terms}
-								rows="4"
-								class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-							></textarea>
-						</div>
-					</div>
-
-					<div class="flex justify-start pt-4">
-						<Button type="submit" variant="primary" size="sm" class="gap-1.5" disabled={isSavingProfile}>
-							<Save size={14} /> {isSavingProfile ? 'Saving...' : 'Save Preferences'}
-						</Button>
-					</div>
-				</form>
-			</div>
-		{:else if activeTab === 'backups'}
-			<div>
-				<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h2 class="text-base font-bold text-text-primary flex items-center gap-2">
-							<Database size={18} class="text-accent" />
-							Database Backups & Disaster Recovery
-						</h2>
-						<p class="text-xs text-text-muted">
-							Automated nightly compressed snapshots with rolling 30-day retention and one-click USB export.
-						</p>
-					</div>
-					<div class="flex items-center gap-2">
-						<Button
-							variant="secondary"
-							size="sm"
-							class="gap-1.5"
-							disabled={isFetchingBackups}
-							onclick={() => fetchBackups()}
-						>
-							<RefreshCw size={14} class={isFetchingBackups ? 'animate-spin' : ''} /> Refresh
-						</Button>
-						<Button
-							variant="primary"
-							size="sm"
-							class="gap-1.5"
-							disabled={isBackingUp}
-							onclick={() => triggerManualBackup()}
-						>
-							<Download size={14} /> {isBackingUp ? 'Creating Backup...' : 'Manual Backup Now'}
-						</Button>
+											<td class="px-4 py-3 font-mono text-text-secondary">@{u.username}</td>
+											<td class="px-4 py-3 text-text-secondary">
+												<span class="inline-flex items-center gap-1">
+													{#if u.role === 'owner_admin'}
+														<Shield size={12} class="text-primary" />
+														Owner / Admin
+													{:else}
+														Biller
+													{/if}
+												</span>
+											</td>
+											<td class="px-4 py-3 text-center">
+												{#if u.isActive}
+													<Badge variant="success" size="sm">Active</Badge>
+												{:else}
+													<Badge variant="danger" size="sm">Disabled</Badge>
+												{/if}
+											</td>
+											{#if isOwnerAdmin}
+												<td class="px-4 py-3 text-right">
+													<div class="flex items-center justify-end gap-2">
+														<button
+															type="button"
+															title="Reset Password"
+															class="flex items-center gap-1 rounded px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-secondary hover:text-text-primary"
+															onclick={() => openResetPasswordModal(u)}
+														>
+															<Key size={13} />
+															<span>Reset</span>
+														</button>
+														{#if u.id !== data.currentUser?.id}
+															<button
+																type="button"
+																title={u.isActive ? 'Disable User' : 'Enable User'}
+																class="flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors {u.isActive
+																	? 'text-danger hover:bg-danger-light/50'
+																	: 'text-success hover:bg-success-light/50'}"
+																onclick={() => toggleUserStatus(u)}
+															>
+																{#if u.isActive}
+																	<XCircle size={13} />
+																	<span>Disable</span>
+																{:else}
+																	<CheckCircle2 size={13} />
+																	<span>Enable</span>
+																{/if}
+															</button>
+														{/if}
+													</div>
+												</td>
+											{/if}
+										</tr>
+									{/each}
+								{/if}
+							</tbody>
+						</table>
 					</div>
 				</div>
-
-				<!-- Overview stats -->
-				<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-					<div class="rounded-lg border border-border bg-surface-secondary p-4">
-						<span class="text-xs font-semibold text-text-muted">Available Backups</span>
-						<div class="mt-1 text-lg font-bold text-text-primary">
-							{backupsList.length} <span class="text-xs font-normal text-text-muted">snapshots</span>
-						</div>
-						<div class="text-[11px] text-text-muted">Auto-purges after 30 daily backups</div>
-					</div>
-
-					<div class="rounded-lg border border-border bg-surface-secondary p-4">
-						<span class="text-xs font-semibold text-text-muted">Latest Snapshot</span>
-						<div class="mt-1 truncate font-mono text-xs font-bold text-text-primary">
-							{backupsList[0]?.filename || 'No backups yet'}
-						</div>
-						<div class="text-[11px] text-text-muted">
-							{backupsList[0] ? backupsList[0].sizeFormatted : 'Run a manual backup to create first snapshot'}
-						</div>
-					</div>
-
-					<div class="rounded-lg border border-border bg-surface-secondary p-4">
-						<span class="text-xs font-semibold text-text-muted">Disaster Recovery Command</span>
-						<div class="mt-1 font-mono text-xs font-bold text-accent">
-							npm run restore
-						</div>
-						<div class="text-[11px] text-text-muted">Instant 1-command database restoration</div>
-					</div>
-				</div>
-
-				<!-- Backups List Table -->
-				<div class="overflow-x-auto rounded-lg border border-border">
-					<table class="w-full text-left text-xs">
-						<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase">
-							<tr>
-								<th class="px-4 py-2.5">Backup Filename</th>
-								<th class="px-4 py-2.5">Created Date & Time</th>
-								<th class="px-4 py-2.5">Compressed Size</th>
-								<th class="px-4 py-2.5 text-right">Actions</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-border-subtle">
-							{#if backupsList.length === 0}
-								<tr>
-									<td colspan="4" class="px-4 py-8 text-center text-text-muted">
-										No database backups found in <code class="font-mono text-accent">./backups</code>.
-										Click <strong>Manual Backup Now</strong> above to generate your first compressed snapshot.
-									</td>
-								</tr>
-							{:else}
-								{#each backupsList as backup}
-									<tr class="transition-colors hover:bg-surface-hover">
-										<td class="px-4 py-3 font-mono font-medium text-text-primary">
-											<div class="flex items-center gap-2">
-												<HardDrive size={14} class="text-text-muted" />
-												{backup.filename}
-											</div>
-										</td>
-										<td class="px-4 py-3 text-text-secondary">
-											{new Date(backup.createdAt).toLocaleString('en-IN', {
-												dateStyle: 'medium',
-												timeStyle: 'short'
-											})}
-										</td>
-										<td class="px-4 py-3 font-mono font-semibold text-text-primary">
-											{backup.sizeFormatted}
-										</td>
-										<td class="px-4 py-3 text-right">
-											<Button
-												variant="secondary"
-												size="sm"
-												class="gap-1.5"
-												onclick={() => downloadBackup(backup.filename)}
-											>
-												<Download size={13} /> Download to USB
-											</Button>
-										</td>
-									</tr>
-								{/each}
-							{/if}
-						</tbody>
-					</table>
-				</div>
-
-				<!-- Recovery instructions card -->
-				<div class="mt-6 rounded-lg border border-border bg-surface-secondary p-4 text-xs">
-					<h4 class="font-bold text-text-primary">💡 Pharmacy Disaster Recovery Best Practice:</h4>
-					<p class="mt-1 text-text-secondary">
-						Always download your daily <code class="font-mono text-accent">.sql.gz</code> backup to an external USB pen drive at the end of each billing day.
-						In the event of hardware failure, install MedStock ERP on any replacement laptop, insert the pen drive, and run:
+			{:else if activeTab === 'invoice'}
+				<div>
+					<h2 class="text-base font-bold text-text-primary">Invoice Settings</h2>
+					<p class="mb-6 text-xs text-text-muted">
+						Configure formatting, numbering, and series templates.
 					</p>
-					<pre class="mt-2 rounded bg-surface p-2.5 font-mono text-[11px] text-accent border border-border">npm run restore path/to/medstock_backup_YYYY-MM-DD_HHMM.sql.gz</pre>
+
+					<form
+						onsubmit={(e) => {
+							e.preventDefault();
+							saveProfile();
+						}}
+						class="max-w-xl space-y-4"
+					>
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div class="sm:col-span-1">
+								<label for="inv-pref" class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Invoice Prefix</label
+								>
+								<input
+									id="inv-pref"
+									type="text"
+									bind:value={invoiceProfile.prefix}
+									placeholder="e.g. INV"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div class="sm:col-span-1">
+								<label for="inv-gst" class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Default GST Rate (%)</label
+								>
+								<input
+									id="inv-gst"
+									type="number"
+									bind:value={invoiceProfile.defaultGst}
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								/>
+							</div>
+
+							<div class="sm:col-span-2">
+								<label for="inv-tpl" class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Template Layout</label
+								>
+								<select
+									id="inv-tpl"
+									bind:value={invoiceProfile.template}
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								>
+									<option value="standard">Standard A4 Format</option>
+									<option value="thermal">Thermal POS Format (3-inch)</option>
+									<option value="compact">Compact A5 Format</option>
+								</select>
+							</div>
+
+							<div class="sm:col-span-2">
+								<label for="inv-terms" class="mb-1 block text-xs font-semibold text-text-secondary"
+									>Terms & Conditions</label
+								>
+								<textarea
+									id="inv-terms"
+									bind:value={invoiceProfile.terms}
+									rows="4"
+									class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+								></textarea>
+							</div>
+						</div>
+
+						<div class="flex justify-start pt-4">
+							<Button
+								type="submit"
+								variant="primary"
+								size="sm"
+								class="gap-1.5"
+								disabled={isSavingProfile}
+							>
+								<Save size={14} />
+								{isSavingProfile ? 'Saving...' : 'Save Preferences'}
+							</Button>
+						</div>
+					</form>
 				</div>
-			</div>
-		{/if}
+			{:else if activeTab === 'backups'}
+				<div>
+					<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+						<div>
+							<h2 class="flex items-center gap-2 text-base font-bold text-text-primary">
+								<Database size={18} class="text-accent" />
+								Database Backups & Disaster Recovery
+							</h2>
+							<p class="text-xs text-text-muted">
+								Automated nightly compressed snapshots with rolling 30-day retention and one-click
+								USB export.
+							</p>
+						</div>
+						<div class="flex items-center gap-2">
+							<Button
+								variant="secondary"
+								size="sm"
+								class="gap-1.5"
+								disabled={isFetchingBackups}
+								onclick={() => fetchBackups()}
+							>
+								<RefreshCw size={14} class={isFetchingBackups ? 'animate-spin' : ''} /> Refresh
+							</Button>
+							<Button
+								variant="primary"
+								size="sm"
+								class="gap-1.5"
+								disabled={isBackingUp}
+								onclick={() => triggerManualBackup()}
+							>
+								<Download size={14} />
+								{isBackingUp ? 'Creating Backup...' : 'Manual Backup Now'}
+							</Button>
+						</div>
+					</div>
+
+					<!-- Overview stats -->
+					<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+						<div class="rounded-lg border border-border bg-surface-secondary p-4">
+							<span class="text-xs font-semibold text-text-muted">Available Backups</span>
+							<div class="mt-1 text-lg font-bold text-text-primary">
+								{backupsList.length}
+								<span class="text-xs font-normal text-text-muted">snapshots</span>
+							</div>
+							<div class="text-[11px] text-text-muted">Auto-purges after 30 daily backups</div>
+						</div>
+
+						<div class="rounded-lg border border-border bg-surface-secondary p-4">
+							<span class="text-xs font-semibold text-text-muted">Latest Snapshot</span>
+							<div class="mt-1 truncate font-mono text-xs font-bold text-text-primary">
+								{backupsList[0]?.filename || 'No backups yet'}
+							</div>
+							<div class="text-[11px] text-text-muted">
+								{backupsList[0]
+									? backupsList[0].sizeFormatted
+									: 'Run a manual backup to create first snapshot'}
+							</div>
+						</div>
+
+						<div class="rounded-lg border border-border bg-surface-secondary p-4">
+							<span class="text-xs font-semibold text-text-muted">Disaster Recovery Command</span>
+							<div class="mt-1 font-mono text-xs font-bold text-accent">npm run restore</div>
+							<div class="text-[11px] text-text-muted">Instant 1-command database restoration</div>
+						</div>
+					</div>
+
+					<!-- Backups List Table -->
+					<div class="overflow-x-auto rounded-lg border border-border">
+						<table class="w-full text-left text-xs">
+							<thead
+								class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase"
+							>
+								<tr>
+									<th class="px-4 py-2.5">Backup Filename</th>
+									<th class="px-4 py-2.5">Created Date & Time</th>
+									<th class="px-4 py-2.5">Compressed Size</th>
+									<th class="px-4 py-2.5 text-right">Actions</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-border-subtle">
+								{#if backupsList.length === 0}
+									<tr>
+										<td colspan="4" class="px-4 py-8 text-center text-text-muted">
+											No database backups found in <code class="font-mono text-accent"
+												>./backups</code
+											>. Click <strong>Manual Backup Now</strong> above to generate your first compressed
+											snapshot.
+										</td>
+									</tr>
+								{:else}
+									{#each backupsList as backup}
+										<tr class="transition-colors hover:bg-surface-hover">
+											<td class="px-4 py-3 font-mono font-medium text-text-primary">
+												<div class="flex items-center gap-2">
+													<HardDrive size={14} class="text-text-muted" />
+													{backup.filename}
+												</div>
+											</td>
+											<td class="px-4 py-3 text-text-secondary">
+												{new Date(backup.createdAt).toLocaleString('en-IN', {
+													dateStyle: 'medium',
+													timeStyle: 'short'
+												})}
+											</td>
+											<td class="px-4 py-3 font-mono font-semibold text-text-primary">
+												{backup.sizeFormatted}
+											</td>
+											<td class="px-4 py-3 text-right">
+												<Button
+													variant="secondary"
+													size="sm"
+													class="gap-1.5"
+													onclick={() => downloadBackup(backup.filename)}
+												>
+													<Download size={13} /> Download to USB
+												</Button>
+											</td>
+										</tr>
+									{/each}
+								{/if}
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Recovery instructions card -->
+					<div class="mt-6 rounded-lg border border-border bg-surface-secondary p-4 text-xs">
+						<h4 class="font-bold text-text-primary">
+							💡 Pharmacy Disaster Recovery Best Practice:
+						</h4>
+						<p class="mt-1 text-text-secondary">
+							Always download your daily <code class="font-mono text-accent">.sql.gz</code> backup to
+							an external USB pen drive at the end of each billing day. In the event of hardware failure,
+							install MedStock ERP on any replacement laptop, insert the pen drive, and run:
+						</p>
+						<pre
+							class="mt-2 rounded border border-border bg-surface p-2.5 font-mono text-[11px] text-accent">npm run restore path/to/medstock_backup_YYYY-MM-DD_HHMM.sql.gz</pre>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>
 
 <!-- Modal: Add New User -->
-<Modal
-	bind:open={isCreateModalOpen}
-	title="Add New User"
-	size="sm"
->
+<Modal bind:open={isCreateModalOpen} title="Add New User" size="sm">
 	<form
 		onsubmit={(e) => {
 			e.preventDefault();
@@ -787,7 +842,9 @@
 		class="space-y-3"
 	>
 		<div>
-			<label for="new-user-name" class="mb-1 block text-xs font-semibold text-text-secondary">Full Name *</label>
+			<label for="new-user-name" class="mb-1 block text-xs font-semibold text-text-secondary"
+				>Full Name *</label
+			>
 			<input
 				id="new-user-name"
 				type="text"
@@ -798,7 +855,9 @@
 			/>
 		</div>
 		<div>
-			<label for="new-user-username" class="mb-1 block text-xs font-semibold text-text-secondary">Username *</label>
+			<label for="new-user-username" class="mb-1 block text-xs font-semibold text-text-secondary"
+				>Username *</label
+			>
 			<input
 				id="new-user-username"
 				type="text"
@@ -809,7 +868,9 @@
 			/>
 		</div>
 		<div>
-			<label for="new-user-role" class="mb-1 block text-xs font-semibold text-text-secondary">Role</label>
+			<label for="new-user-role" class="mb-1 block text-xs font-semibold text-text-secondary"
+				>Role</label
+			>
 			<select
 				id="new-user-role"
 				bind:value={newUserRole}
@@ -820,7 +881,9 @@
 			</select>
 		</div>
 		<div>
-			<label for="new-user-pass" class="mb-1 block text-xs font-semibold text-text-secondary">Password *</label>
+			<label for="new-user-pass" class="mb-1 block text-xs font-semibold text-text-secondary"
+				>Password *</label
+			>
 			<input
 				id="new-user-pass"
 				type="password"
@@ -832,7 +895,12 @@
 			/>
 		</div>
 		<div class="flex justify-end gap-2 pt-3">
-			<Button type="button" variant="secondary" size="sm" onclick={() => (isCreateModalOpen = false)}>
+			<Button
+				type="button"
+				variant="secondary"
+				size="sm"
+				onclick={() => (isCreateModalOpen = false)}
+			>
 				Cancel
 			</Button>
 			<Button type="submit" variant="primary" size="sm" disabled={isCreatingUser}>
@@ -843,11 +911,7 @@
 </Modal>
 
 <!-- Modal: Reset Password -->
-<Modal
-	bind:open={isResetModalOpen}
-	title="Reset User Password"
-	size="sm"
->
+<Modal bind:open={isResetModalOpen} title="Reset User Password" size="sm">
 	{#if selectedUserForReset}
 		<form
 			onsubmit={(e) => {
@@ -857,10 +921,15 @@
 			class="space-y-3"
 		>
 			<p class="text-xs text-text-secondary">
-				Setting a new password for <span class="font-bold text-text-primary">{selectedUserForReset.name}</span> (@{selectedUserForReset.username}).
+				Setting a new password for <span class="font-bold text-text-primary"
+					>{selectedUserForReset.name}</span
+				>
+				(@{selectedUserForReset.username}).
 			</p>
 			<div>
-				<label for="reset-pass" class="mb-1 block text-xs font-semibold text-text-secondary">New Password *</label>
+				<label for="reset-pass" class="mb-1 block text-xs font-semibold text-text-secondary"
+					>New Password *</label
+				>
 				<input
 					id="reset-pass"
 					type="password"
@@ -872,7 +941,12 @@
 				/>
 			</div>
 			<div class="flex justify-end gap-2 pt-3">
-				<Button type="button" variant="secondary" size="sm" onclick={() => (isResetModalOpen = false)}>
+				<Button
+					type="button"
+					variant="secondary"
+					size="sm"
+					onclick={() => (isResetModalOpen = false)}
+				>
 					Cancel
 				</Button>
 				<Button type="submit" variant="primary" size="sm" disabled={isResettingPassword}>

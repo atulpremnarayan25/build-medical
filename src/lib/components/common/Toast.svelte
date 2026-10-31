@@ -11,10 +11,7 @@
 
 	let { id, type, message }: ToastProps = $props();
 
-	const typeStyles: Record<
-		ToastType,
-		{ container: string; iconColor: string }
-	> = {
+	const typeStyles: Record<ToastType, { container: string; iconColor: string }> = {
 		success: {
 			container: 'border-success/30 bg-surface-elevated text-text-primary shadow-lg',
 			iconColor: 'text-success'
@@ -52,7 +49,7 @@
 		{/if}
 	</div>
 
-	<p class="flex-1 text-xs font-medium leading-relaxed">{message}</p>
+	<p class="flex-1 text-xs leading-relaxed font-medium">{message}</p>
 
 	<button
 		type="button"

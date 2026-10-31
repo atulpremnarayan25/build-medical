@@ -39,39 +39,45 @@
 	}
 
 	let lastRate = $derived(history.length > 0 ? Number(history[0].purchaseRate) : null);
-	let isRateHigher = $derived(
-		lastRate !== null && currentRate > 0 && currentRate > lastRate
-	);
+	let isRateHigher = $derived(lastRate !== null && currentRate > 0 && currentRate > lastRate);
 </script>
 
 {#if productId}
-	<div class="border-t border-border bg-surface-muted/30 p-2.5 text-xs">
+	<div class="bg-surface-muted/30 border-t border-border p-2.5 text-xs">
 		<!-- Inspector Header matching PKS Image 1 -->
 		<div class="mb-2 flex items-center justify-between">
 			<div class="flex items-center gap-2">
-				<span class="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary">
+				<span
+					class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-[10px] font-bold"
+				>
 					{history[0]?.hsnCode ? `HSN: ${history[0].hsnCode}` : 'ITEM'}
 				</span>
 				<span class="font-semibold text-text-primary">
 					{productName}
 					{#if history[0]?.packSize}
-						<span class="text-text-muted font-normal">({history[0].packSize}/pack)</span>
+						<span class="font-normal text-text-muted">({history[0].packSize}/pack)</span>
 					{/if}
 				</span>
 				{#if isRateHigher}
 					<span class="rounded bg-danger/10 px-2 py-0.5 text-[10px] font-semibold text-danger">
-						⚠️ Rate Higher: +₹{(currentRate - (lastRate || 0)).toFixed(2)} vs Last Pur (₹{lastRate?.toFixed(2)})
+						⚠️ Rate Higher: +₹{(currentRate - (lastRate || 0)).toFixed(2)} vs Last Pur (₹{lastRate?.toFixed(
+							2
+						)})
 					</span>
 				{/if}
 			</div>
 
 			<div class="flex items-center gap-2">
 				{#if currentStock !== null}
-					<span class="rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs font-bold text-primary shadow-2xs">
+					<span
+						class="text-primary rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs font-bold shadow-2xs"
+					>
 						Live Stock: {currentStock.toFixed(1)}
 					</span>
 				{/if}
-				<span class="text-[11px] font-medium text-text-muted">Past Purchase Comparison (Image 1)</span>
+				<span class="text-[11px] font-medium text-text-muted"
+					>Past Purchase Comparison (Image 1)</span
+				>
 			</div>
 		</div>
 
@@ -93,25 +99,43 @@
 				<tbody class="divide-y divide-border/50">
 					{#if isLoading}
 						<tr>
-							<td colspan="8" class="px-2 py-2 text-center text-text-muted">Loading purchase history...</td>
+							<td colspan="8" class="px-2 py-2 text-center text-text-muted"
+								>Loading purchase history...</td
+							>
 						</tr>
 					{:else if history.length === 0}
 						<tr>
-							<td colspan="8" class="px-2 py-2 text-center text-text-muted">No previous purchases on record for this product.</td>
+							<td colspan="8" class="px-2 py-2 text-center text-text-muted"
+								>No previous purchases on record for this product.</td
+							>
 						</tr>
 					{:else}
 						{#each history as rec}
-							<tr class="hover:bg-surface-hover/50 font-mono">
+							<tr class="font-mono hover:bg-surface-hover/50">
 								<td class="px-2 py-1 font-semibold text-text-primary">{rec.invoiceNo || '-'}</td>
-								<td class="px-2 py-1 text-text-secondary">{rec.invoiceDate || rec.createdAt?.split('T')[0] || '-'}</td>
-								<td class="px-2 py-1 text-text-primary truncate max-w-[200px]" title={rec.supplierName}>
-									{rec.supplierName} {rec.supplierCity ? `(${rec.supplierCity})` : ''}
+								<td class="px-2 py-1 text-text-secondary"
+									>{rec.invoiceDate || rec.createdAt?.split('T')[0] || '-'}</td
+								>
+								<td
+									class="max-w-[200px] truncate px-2 py-1 text-text-primary"
+									title={rec.supplierName}
+								>
+									{rec.supplierName}
+									{rec.supplierCity ? `(${rec.supplierCity})` : ''}
 								</td>
 								<td class="px-2 py-1 text-right text-text-secondary">{rec.quantity}</td>
-								<td class="px-2 py-1 text-right font-bold text-primary">₹{Number(rec.purchaseRate).toFixed(2)}</td>
-								<td class="px-2 py-1 text-right text-text-secondary">{rec.discount ? `${rec.discount}%` : '0%'}</td>
-								<td class="px-2 py-1 text-right text-text-secondary">{rec.gstRate ? `${rec.gstRate}%` : '0%'}</td>
-								<td class="px-2 py-1 text-right text-text-secondary">₹{Number(rec.mrp).toFixed(2)}</td>
+								<td class="text-primary px-2 py-1 text-right font-bold"
+									>₹{Number(rec.purchaseRate).toFixed(2)}</td
+								>
+								<td class="px-2 py-1 text-right text-text-secondary"
+									>{rec.discount ? `${rec.discount}%` : '0%'}</td
+								>
+								<td class="px-2 py-1 text-right text-text-secondary"
+									>{rec.gstRate ? `${rec.gstRate}%` : '0%'}</td
+								>
+								<td class="px-2 py-1 text-right text-text-secondary"
+									>₹{Number(rec.mrp).toFixed(2)}</td
+								>
 							</tr>
 						{/each}
 					{/if}

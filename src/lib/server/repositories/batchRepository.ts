@@ -1,6 +1,11 @@
 import type { BatchRepository } from '$lib/repositories/batchRepository.js';
 import type { Batch, BatchStatus, CreateBatchInput } from '$lib/types/index.js';
-import { batchesTable, productsTable, suppliersTable, productUnitsTable } from '$lib/server/db/schema.js';
+import {
+	batchesTable,
+	productsTable,
+	suppliersTable,
+	productUnitsTable
+} from '$lib/server/db/schema.js';
 import { eq, and, asc, desc, gt, lte, sql } from 'drizzle-orm';
 import { mapToBatch } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';

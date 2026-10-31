@@ -8,7 +8,10 @@ export const ledgerService = {
 		return unwrap(res);
 	},
 
-	async getLedgerByParty(partyId: string, partyType?: 'customer' | 'supplier'): Promise<LedgerEntry[]> {
+	async getLedgerByParty(
+		partyId: string,
+		partyType?: 'customer' | 'supplier'
+	): Promise<LedgerEntry[]> {
 		if (partyType === 'supplier') {
 			const res = await fetch(`/api/suppliers/${partyId}/ledger`);
 			if (res.ok) return unwrap(res);
@@ -26,7 +29,9 @@ export const ledgerService = {
 		if (res.ok) return unwrap(res);
 
 		// Fallback to reports/ledger endpoint
-		const reportRes = await fetch(`/api/reports/ledger?type=${partyType === 'supplier' ? 'payable' : 'receivable'}&partyId=${partyId}`);
+		const reportRes = await fetch(
+			`/api/reports/ledger?type=${partyType === 'supplier' ? 'payable' : 'receivable'}&partyId=${partyId}`
+		);
 		if (reportRes.ok) {
 			const data = await reportRes.json();
 			return (data.transactions || []).map((t: any) => ({
@@ -35,7 +40,14 @@ export const ledgerService = {
 				partyId,
 				partyName: data.party?.name || '',
 				partyType: partyType || 'customer',
-				type: t.type === 'invoice' ? 'sale' : t.type === 'receipt' ? 'payment-received' : t.type === 'purchase' ? 'purchase' : 'payment-made',
+				type:
+					t.type === 'invoice'
+						? 'sale'
+						: t.type === 'receipt'
+							? 'payment-received'
+							: t.type === 'purchase'
+								? 'purchase'
+								: 'payment-made',
 				reference: t.ref,
 				particulars: t.particulars,
 				debit: t.debit,

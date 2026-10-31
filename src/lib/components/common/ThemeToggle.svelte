@@ -13,7 +13,8 @@
 	let currentTheme = $derived(getTheme());
 
 	function toggle() {
-		const next: Theme = currentTheme === 'light' ? 'dark' : currentTheme === 'dark' ? 'system' : 'light';
+		const next: Theme =
+			currentTheme === 'light' ? 'dark' : currentTheme === 'dark' ? 'system' : 'light';
 		setTheme(next);
 	}
 </script>
@@ -35,10 +36,15 @@
 		{/if}
 	</button>
 {:else}
-	<div class="inline-flex items-center rounded-lg border border-border bg-surface-secondary p-0.5 text-xs {className}">
+	<div
+		class="inline-flex items-center rounded-lg border border-border bg-surface-secondary p-0.5 text-xs {className}"
+	>
 		<button
 			type="button"
-			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme === 'light' ? 'bg-surface text-text-primary shadow-xs font-semibold' : 'text-text-muted hover:text-text-primary'}"
+			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme ===
+			'light'
+				? 'bg-surface font-semibold text-text-primary shadow-xs'
+				: 'text-text-muted hover:text-text-primary'}"
 			onclick={() => setTheme('light')}
 			aria-label="Light theme"
 		>
@@ -47,7 +53,10 @@
 		</button>
 		<button
 			type="button"
-			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme === 'dark' ? 'bg-surface text-text-primary shadow-xs font-semibold' : 'text-text-muted hover:text-text-primary'}"
+			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme ===
+			'dark'
+				? 'bg-surface font-semibold text-text-primary shadow-xs'
+				: 'text-text-muted hover:text-text-primary'}"
 			onclick={() => setTheme('dark')}
 			aria-label="Dark theme"
 		>
@@ -56,7 +65,10 @@
 		</button>
 		<button
 			type="button"
-			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme === 'system' ? 'bg-surface text-text-primary shadow-xs font-semibold' : 'text-text-muted hover:text-text-primary'}"
+			class="flex items-center gap-1 rounded px-2 py-1 font-medium transition-colors {currentTheme ===
+			'system'
+				? 'bg-surface font-semibold text-text-primary shadow-xs'
+				: 'text-text-muted hover:text-text-primary'}"
 			onclick={() => setTheme('system')}
 			aria-label="System theme"
 		>

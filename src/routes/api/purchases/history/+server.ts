@@ -1,6 +1,12 @@
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils.js';
 import { db } from '$lib/server/db/index.js';
-import { purchasesTable, purchaseItemsTable, batchesTable, suppliersTable, productsTable } from '$lib/server/db/schema.js';
+import {
+	purchasesTable,
+	purchaseItemsTable,
+	batchesTable,
+	suppliersTable,
+	productsTable
+} from '$lib/server/db/schema.js';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types.js';
 

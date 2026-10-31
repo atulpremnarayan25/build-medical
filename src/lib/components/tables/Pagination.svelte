@@ -16,9 +16,7 @@
 	let endItem = $derived(Math.min(currentPage * itemsPerPage, totalItems));
 </script>
 
-<div
-	class="flex items-center justify-between border-t border-border bg-surface px-4 py-3 sm:px-6"
->
+<div class="flex items-center justify-between border-t border-border bg-surface px-4 py-3 sm:px-6">
 	<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
 		<div>
 			<p class="text-xs text-text-muted">

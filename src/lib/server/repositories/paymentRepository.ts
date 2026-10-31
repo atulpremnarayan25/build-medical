@@ -83,8 +83,8 @@ export class DbPaymentRepository implements PaymentRepository {
 			Boolean(_input.customerId);
 
 		const direction = isCustomer ? 'customer_payment' : 'supplier_payment';
-		const customerId = isCustomer ? (_input.partyId || _input.customerId || null) : null;
-		const supplierId = !isCustomer ? (_input.partyId || _input.supplierId || null) : null;
+		const customerId = isCustomer ? _input.partyId || _input.customerId || null : null;
+		const supplierId = !isCustomer ? _input.partyId || _input.supplierId || null : null;
 
 		// Resolve valid storeId
 		let storeId = _input.storeId;

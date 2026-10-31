@@ -90,7 +90,9 @@
 
 	// Metrics
 	let totalLines = $derived(rows.length);
-	let additionsCount = $derived(rows.filter((r) => r.delta > 0).reduce((sum, r) => sum + r.delta, 0));
+	let additionsCount = $derived(
+		rows.filter((r) => r.delta > 0).reduce((sum, r) => sum + r.delta, 0)
+	);
 	let reductionsCount = $derived(
 		rows.filter((r) => r.delta < 0).reduce((sum, r) => sum + Math.abs(r.delta), 0)
 	);
@@ -236,7 +238,7 @@
 				errorMessage = `Batch ${r.batchNo} (${r.productName}) cannot have negative final stock.`;
 				return;
 			}
-			const reasonText = (r.notes?.trim() || auditReference.trim() || r.reasonCode?.trim() || '');
+			const reasonText = r.notes?.trim() || auditReference.trim() || r.reasonCode?.trim() || '';
 			if (!reasonText) {
 				errorMessage = `Batch ${r.batchNo} (${r.productName}): Mandatory reason is required.`;
 				return;
@@ -335,8 +337,8 @@
 		>
 			<CheckCircle2 size={18} class="shrink-0 text-success" />
 			<div>
-				<span class="font-bold">Stock Reconciliation Posted Successfully!</span> All batch quantities have
-				been adjusted and logged in the append-only stock movement ledger. Redirecting to audit log...
+				<span class="font-bold">Stock Reconciliation Posted Successfully!</span> All batch quantities
+				have been adjusted and logged in the append-only stock movement ledger. Redirecting to audit log...
 			</div>
 		</div>
 	{/if}
@@ -364,7 +366,10 @@
 	>
 		<!-- Default Reason Preset -->
 		<div>
-			<label for="default-reason-select" class="block text-[11px] font-bold text-text-muted uppercase">Default Reason Code</label>
+			<label
+				for="default-reason-select"
+				class="block text-[11px] font-bold text-text-muted uppercase">Default Reason Code</label
+			>
 			<select
 				id="default-reason-select"
 				bind:value={defaultReason}
@@ -378,7 +383,9 @@
 
 		<!-- Audit Ref / Batch Memo -->
 		<div>
-			<label for="audit-memo-input" class="block text-[11px] font-bold text-text-muted uppercase">Audit Session Memo / Ref</label>
+			<label for="audit-memo-input" class="block text-[11px] font-bold text-text-muted uppercase"
+				>Audit Session Memo / Ref</label
+			>
 			<input
 				id="audit-memo-input"
 				type="text"
@@ -404,7 +411,9 @@
 	<!-- KPI Variance Summary Metric Strip -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-text-muted uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-text-muted uppercase"
+			>
 				<span>Lines in Sheet</span>
 				<FileSpreadsheet size={15} />
 			</div>
@@ -415,7 +424,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-success uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-success uppercase"
+			>
 				<span>Stock Additions (+)</span>
 				<ArrowUp size={15} />
 			</div>
@@ -426,7 +437,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-danger uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-danger uppercase"
+			>
 				<span>Stock Reductions (-)</span>
 				<ArrowDown size={15} />
 			</div>
@@ -437,11 +450,17 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-accent uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-accent uppercase"
+			>
 				<span>Net Value Impact</span>
 				<SlidersHorizontal size={15} />
 			</div>
-			<div class="mt-1 font-mono text-2xl font-black tabular-nums {netFinancialImpact >= 0 ? 'text-success' : 'text-danger'}">
+			<div
+				class="mt-1 font-mono text-2xl font-black tabular-nums {netFinancialImpact >= 0
+					? 'text-success'
+					: 'text-danger'}"
+			>
 				{netFinancialImpact >= 0 ? '+' : ''}₹{netFinancialImpact.toFixed(2)}
 			</div>
 			<div class="mt-0.5 text-[11px] text-text-muted">Est. inventory balance delta</div>
@@ -483,7 +502,7 @@
 					</thead>
 					<tbody class="divide-y divide-border/60">
 						{#each rows as row, index (row.id)}
-							<tr class="hover:bg-surface-hover/60 transition-colors">
+							<tr class="transition-colors hover:bg-surface-hover/60">
 								<td class="px-3 py-2.5 text-center font-mono text-text-muted tabular-nums">
 									{index + 1}
 								</td>
@@ -499,11 +518,17 @@
 										</div>
 									{/if}
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono text-[11px] text-text-secondary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono text-[11px] text-text-secondary tabular-nums"
+								>
 									<div>MRP: ₹{row.mrp.toFixed(2)}</div>
-									<div class="text-[10px] text-text-muted">Cost: ₹{row.purchasePrice.toFixed(2)}</div>
+									<div class="text-[10px] text-text-muted">
+										Cost: ₹{row.purchasePrice.toFixed(2)}
+									</div>
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-bold text-text-secondary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold text-text-secondary tabular-nums"
+								>
 									{row.systemStock}
 								</td>
 								<td class="px-3 py-2.5 text-right">
@@ -512,7 +537,8 @@
 										min="0"
 										step="1"
 										value={row.physicalStock}
-										oninput={(e) => updatePhysicalStock(row, Number((e.target as HTMLInputElement).value))}
+										oninput={(e) =>
+											updatePhysicalStock(row, Number((e.target as HTMLInputElement).value))}
 										class="w-20 rounded border border-border bg-surface px-2 py-1 text-right font-mono text-xs font-bold text-text-primary focus:border-accent focus:outline-none"
 									/>
 								</td>
@@ -522,7 +548,12 @@
 										step="1"
 										value={row.delta}
 										oninput={(e) => updateDelta(row, Number((e.target as HTMLInputElement).value))}
-										class="w-20 rounded border border-border bg-surface px-2 py-1 text-right font-mono text-xs font-bold tabular-nums {row.delta > 0 ? 'border-success/60 bg-success-light text-success font-bold' : row.delta < 0 ? 'border-danger/60 bg-danger-light text-danger font-bold' : 'text-text-muted'} focus:border-accent focus:outline-none"
+										class="w-20 rounded border border-border bg-surface px-2 py-1 text-right font-mono text-xs font-bold tabular-nums {row.delta >
+										0
+											? 'border-success/60 bg-success-light font-bold text-success'
+											: row.delta < 0
+												? 'border-danger/60 bg-danger-light font-bold text-danger'
+												: 'text-text-muted'} focus:border-accent focus:outline-none"
 									/>
 								</td>
 								<td class="px-3 py-2.5">
@@ -546,7 +577,7 @@
 								<td class="px-3 py-2.5 text-center">
 									<button
 										type="button"
-										class="rounded p-1 text-text-muted hover:bg-danger-light hover:text-danger transition-colors"
+										class="rounded p-1 text-text-muted transition-colors hover:bg-danger-light hover:text-danger"
 										title="Remove Line"
 										onclick={() => removeRow(row.id)}
 									>
@@ -564,10 +595,21 @@
 				class="flex flex-col items-center justify-between gap-3 border-t border-border bg-surface-secondary p-3 sm:flex-row"
 			>
 				<div class="flex items-center gap-3 text-xs text-text-muted">
-					<span class="font-mono font-semibold text-text-primary tabular-nums">{totalLines}</span> items in worksheet
+					<span class="font-mono font-semibold text-text-primary tabular-nums">{totalLines}</span>
+					items in worksheet
 					<span>•</span>
-					<span><kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-text-primary">F2</kbd> Product Search</span>
-					<span><kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-text-primary">Ctrl+S</kbd> Commit</span>
+					<span
+						><kbd
+							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-text-primary"
+							>F2</kbd
+						> Product Search</span
+					>
+					<span
+						><kbd
+							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[11px] text-text-primary"
+							>Ctrl+S</kbd
+						> Commit</span
+					>
 				</div>
 
 				<div class="flex items-center gap-3">
@@ -575,7 +617,11 @@
 						<Plus size={14} class="mr-1.5" />
 						<span>Add Another Item (F2)</span>
 					</Button>
-					<Button variant="primary" onclick={submitAdjustments} disabled={saving || rows.length === 0}>
+					<Button
+						variant="primary"
+						onclick={submitAdjustments}
+						disabled={saving || rows.length === 0}
+					>
 						<Save size={14} class="mr-1.5" />
 						<span>{saving ? 'Processing...' : 'Commit Adjustments'}</span>
 					</Button>
@@ -588,8 +634,10 @@
 <!-- Product Search Modal -->
 {#if searchModalOpen}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-		<div class="w-full max-w-2xl rounded-2xl border border-border bg-surface p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-			<div class="flex items-center justify-between border-b border-border pb-3 mb-4">
+		<div
+			class="animate-in fade-in zoom-in-95 w-full max-w-2xl rounded-2xl border border-border bg-surface p-5 shadow-2xl duration-150"
+		>
+			<div class="mb-4 flex items-center justify-between border-b border-border pb-3">
 				<div>
 					<h3 class="text-sm font-bold text-text-primary">Search Product to Adjust</h3>
 					<p class="text-xs text-text-muted">Type product name or barcode to select batches</p>
@@ -597,7 +645,7 @@
 				<button
 					type="button"
 					onclick={() => (searchModalOpen = false)}
-					class="rounded-lg p-1 text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-colors"
+					class="rounded-lg p-1 text-text-muted transition-colors hover:bg-surface-secondary hover:text-text-primary"
 				>
 					✕
 				</button>
@@ -625,7 +673,7 @@
 {#if batchModalOpen && selectedProductForBatch}
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
 		<div
-			class="w-full max-w-xl rounded-2xl border border-border bg-surface p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+			class="animate-in fade-in zoom-in-95 w-full max-w-xl rounded-2xl border border-border bg-surface p-5 shadow-2xl duration-150"
 		>
 			<div class="flex items-start justify-between border-b border-border pb-3">
 				<div>
@@ -653,7 +701,9 @@
 				{:else}
 					<div class="max-h-64 overflow-y-auto rounded-lg border border-border">
 						<table class="w-full text-left text-xs">
-							<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase">
+							<thead
+								class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase"
+							>
 								<tr>
 									<th class="px-3 py-2">Batch No</th>
 									<th class="px-3 py-2">Expiry</th>
@@ -664,7 +714,7 @@
 							</thead>
 							<tbody class="divide-y divide-border/60">
 								{#each availableBatches as b (b.id)}
-									<tr class="hover:bg-surface-hover/60 transition-colors">
+									<tr class="transition-colors hover:bg-surface-hover/60">
 										<td class="px-3 py-2.5 font-mono font-bold text-text-primary uppercase">
 											{b.batchNo || b.batchNumber || 'N/A'}
 										</td>
@@ -674,13 +724,15 @@
 										<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums">
 											₹{Number(b.mrp || 0).toFixed(2)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+										>
 											{Number(b.quantityRemaining ?? b.quantity ?? 0)}
 										</td>
 										<td class="px-3 py-2.5 text-center">
 											<button
 												type="button"
-												class="rounded bg-accent px-2.5 py-1 text-[11px] font-bold text-white hover:bg-accent/90 transition-colors"
+												class="rounded bg-accent px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:bg-accent/90"
 												onclick={() => handleBatchSelect(b)}
 											>
 												Select
@@ -695,9 +747,7 @@
 			</div>
 
 			<div class="mt-4 flex justify-end">
-				<Button variant="secondary" onclick={() => (batchModalOpen = false)}>
-					Cancel
-				</Button>
+				<Button variant="secondary" onclick={() => (batchModalOpen = false)}>Cancel</Button>
 			</div>
 		</div>
 	</div>

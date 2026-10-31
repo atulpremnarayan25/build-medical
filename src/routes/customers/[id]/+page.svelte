@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { PageHeader, LoadingState, EmptyState, Button, Badge } from '$lib/components/common/index.js';
+	import {
+		PageHeader,
+		LoadingState,
+		EmptyState,
+		Button,
+		Badge
+	} from '$lib/components/common/index.js';
 	import CustomerForm from '$lib/components/forms/CustomerForm.svelte';
 	import type { Customer, CreateCustomerInput } from '$lib/types/customer.js';
 	import type { LedgerEntry } from '$lib/types/ledger.js';
@@ -9,7 +15,15 @@
 	import { goto } from '$app/navigation';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import { formatCurrency, formatDate } from '$lib/utils/formatters.js';
-	import { Printer, MessageCircle, CreditCard, Clock, AlertTriangle, ShieldCheck, ArrowDownLeft } from '@lucide/svelte';
+	import {
+		Printer,
+		MessageCircle,
+		CreditCard,
+		Clock,
+		AlertTriangle,
+		ShieldCheck,
+		ArrowDownLeft
+	} from '@lucide/svelte';
 
 	let customerId = $derived($page.params.id as string);
 	let customer = $state<Customer | null>(null);
@@ -112,7 +126,9 @@
 						};
 					}
 				}
-			} catch (_) {}
+			} catch (_) {
+				// Ignore store info fetch failure
+			}
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -202,23 +218,27 @@
 
 <div class="mx-auto max-w-4xl space-y-4">
 	<!-- Printable Header (visible only on print) -->
-	<div class="hidden print:block print:mb-6 border-b pb-4">
-		<div class="flex justify-between items-start">
+	<div class="hidden border-b pb-4 print:mb-6 print:block">
+		<div class="flex items-start justify-between">
 			<div>
 				<h1 class="text-2xl font-bold text-black">{storeInfo.name}</h1>
 				<p class="text-sm text-gray-600">{storeInfo.address}</p>
-				{#if storeInfo.gstin}<p class="text-xs text-gray-500 font-mono">GSTIN: {storeInfo.gstin}</p>{/if}
+				{#if storeInfo.gstin}<p class="font-mono text-xs text-gray-500">
+						GSTIN: {storeInfo.gstin}
+					</p>{/if}
 				{#if storeInfo.phone}<p class="text-xs text-gray-500">Phone: {storeInfo.phone}</p>{/if}
 			</div>
 			<div class="text-right">
-				<h2 class="text-lg font-bold uppercase tracking-wider text-black">Customer Account Statement</h2>
+				<h2 class="text-lg font-bold tracking-wider text-black uppercase">
+					Customer Account Statement
+				</h2>
 				<p class="text-xs text-gray-500">Generated: {new Date().toLocaleString('en-IN')}</p>
-				<p class="text-xs font-mono font-bold mt-1">UPI ID: {storeInfo.upiId}</p>
+				<p class="mt-1 font-mono text-xs font-bold">UPI ID: {storeInfo.upiId}</p>
 			</div>
 		</div>
 
 		{#if customer}
-			<div class="mt-4 grid grid-cols-2 gap-4 rounded border p-3 bg-gray-50 text-xs">
+			<div class="mt-4 grid grid-cols-2 gap-4 rounded border bg-gray-50 p-3 text-xs">
 				<div>
 					<p class="font-bold text-gray-700">Account: {customer.name}</p>
 					{#if customer.phone}<p>Phone: {customer.phone}</p>{/if}
@@ -226,7 +246,7 @@
 				</div>
 				<div class="text-right">
 					{#if customer.gstin}<p class="font-mono">GSTIN: {customer.gstin}</p>{/if}
-					<p class="font-bold text-sm text-gray-900 mt-1">
+					<p class="mt-1 text-sm font-bold text-gray-900">
 						Closing Balance: ₹{(customer.outstandingBalance || 0).toLocaleString('en-IN', {
 							minimumFractionDigits: 2
 						})} Dr
@@ -248,7 +268,7 @@
 						variant="secondary"
 						size="sm"
 						onclick={sendWhatsAppStatement}
-						class="flex items-center gap-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 border-[#25D366]/30"
+						class="flex items-center gap-1.5 border-[#25D366]/30 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20"
 					>
 						<MessageCircle size={14} />
 						<span>Send WhatsApp Statement</span>
@@ -284,19 +304,21 @@
 		<!-- Aging Breakdown Cards -->
 		<div class="space-y-1.5">
 			<div class="flex items-center justify-between px-1">
-				<h3 class="text-[11px] font-bold uppercase tracking-wider text-text-muted">
+				<h3 class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
 					Outstanding Receivables Aging Analysis
 				</h3>
-				<span class="text-[11px] font-mono text-text-muted">FIFO Bill Settlement</span>
+				<span class="font-mono text-[11px] text-text-muted">FIFO Bill Settlement</span>
 			</div>
 			<div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
 				<!-- Current (< 30 days) -->
 				<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Current (&lt;30d)</span>
+						<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+							>Current (&lt;30d)</span
+						>
 						<ShieldCheck size={14} class="text-success" />
 					</div>
-					<p class="mt-1 font-mono text-base font-bold tabular-nums text-text-primary">
+					<p class="mt-1 font-mono text-base font-bold text-text-primary tabular-nums">
 						{formatCurrency(aging.current)}
 					</p>
 					<p class="text-[10px] text-text-muted">Within credit terms</p>
@@ -305,10 +327,12 @@
 				<!-- 30-60 days -->
 				<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">30-60 Days</span>
+						<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+							>30-60 Days</span
+						>
 						<Clock size={14} class="text-info" />
 					</div>
-					<p class="mt-1 font-mono text-base font-bold tabular-nums text-text-primary">
+					<p class="mt-1 font-mono text-base font-bold text-text-primary tabular-nums">
 						{formatCurrency(aging.days30to60)}
 					</p>
 					<p class="text-[10px] text-text-muted">Follow-up due</p>
@@ -317,10 +341,12 @@
 				<!-- 60-90 days -->
 				<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">60-90 Days</span>
+						<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+							>60-90 Days</span
+						>
 						<AlertTriangle size={14} class="text-warning" />
 					</div>
-					<p class="mt-1 font-mono text-base font-bold tabular-nums text-warning">
+					<p class="mt-1 font-mono text-base font-bold text-warning tabular-nums">
 						{formatCurrency(aging.days60to90)}
 					</p>
 					<p class="text-[10px] text-text-muted">Overdue debt</p>
@@ -329,10 +355,12 @@
 				<!-- Overdue (> 90 days) -->
 				<div class="rounded-xl border border-border bg-surface p-3 shadow-2xs">
 					<div class="flex items-center justify-between">
-						<span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Overdue (&gt;90d)</span>
+						<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase"
+							>Overdue (&gt;90d)</span
+						>
 						<AlertTriangle size={14} class="text-danger" />
 					</div>
-					<p class="mt-1 font-mono text-base font-bold tabular-nums text-danger">
+					<p class="mt-1 font-mono text-base font-bold text-danger tabular-nums">
 						{formatCurrency(aging.overdue)}
 					</p>
 					<p class="text-[10px] text-text-muted">Critical recovery</p>
@@ -341,27 +369,38 @@
 		</div>
 
 		<!-- Quick Stats Area -->
-		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 no-print">
-			<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div class="no-print grid grid-cols-1 gap-3 sm:grid-cols-2">
+			<div
+				class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+			>
 				<div>
-					<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Outstanding Balance (Khata)</p>
+					<p class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
+						Total Outstanding Balance (Khata)
+					</p>
 					<h3
-						class="text-xl font-bold font-mono tabular-nums {customer.outstandingBalance > 0
+						class="font-mono text-xl font-bold tabular-nums {customer.outstandingBalance > 0
 							? 'text-warning'
 							: 'text-text-primary'} mt-0.5"
 					>
-						{formatCurrency(customer.outstandingBalance)} {customer.outstandingBalance > 0 ? 'Dr' : ''}
+						{formatCurrency(customer.outstandingBalance)}
+						{customer.outstandingBalance > 0 ? 'Dr' : ''}
 					</h3>
 				</div>
-				<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-warning-light text-warning">
+				<div
+					class="flex h-9 w-9 items-center justify-center rounded-lg bg-warning-light text-warning"
+				>
 					<CreditCard size={18} />
 				</div>
 			</div>
 
-			<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+			<div
+				class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+			>
 				<div>
-					<p class="text-[11px] font-bold uppercase tracking-wider text-text-muted">Approved Credit Limit</p>
-					<h3 class="mt-0.5 text-xl font-bold font-mono tabular-nums text-text-primary">
+					<p class="text-[11px] font-bold tracking-wider text-text-muted uppercase">
+						Approved Credit Limit
+					</p>
+					<h3 class="mt-0.5 font-mono text-xl font-bold text-text-primary tabular-nums">
 						{formatCurrency(customer.creditLimit)}
 					</h3>
 				</div>
@@ -385,10 +424,12 @@
 				class="flex items-center justify-between border-b border-border bg-surface-secondary px-4 py-2.5"
 			>
 				<div>
-					<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">
+					<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
 						Double-Entry Khata Account Ledger
 					</h3>
-					<p class="text-[11px] text-text-muted">Chronological audit trail with live running balance</p>
+					<p class="text-[11px] text-text-muted">
+						Chronological audit trail with live running balance
+					</p>
 				</div>
 				<div class="no-print">
 					<Badge variant="neutral" size="sm">
@@ -399,7 +440,7 @@
 			<div class="overflow-x-auto">
 				<table class="w-full text-left text-xs print:text-[10px]">
 					<thead
-						class="border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted"
+						class="border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase"
 					>
 						<tr>
 							<th class="px-3 py-2.5">Date</th>
@@ -420,12 +461,12 @@
 						{:else}
 							{#each ledgerEntries as entry (entry.id)}
 								<tr class="transition-colors hover:bg-surface-hover">
-									<td class="px-3 py-2 whitespace-nowrap font-mono text-text-secondary">
+									<td class="px-3 py-2 font-mono whitespace-nowrap text-text-secondary">
 										{formatDate(entry.date)}
 									</td>
 									<td class="px-3 py-2">
 										<span
-											class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider {getVoucherBadgeClass(
+											class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase {getVoucherBadgeClass(
 												entry.type
 											)}"
 										>
@@ -441,16 +482,18 @@
 												{entry.particulars}
 											</a>
 										{:else}
-											<span class="text-text-primary font-medium">{entry.particulars}</span>
+											<span class="font-medium text-text-primary">{entry.particulars}</span>
 										{/if}
 										{#if entry.reference && entry.type !== 'sale'}
-											<span class="ml-1 text-[10px] font-mono text-text-muted">[{entry.reference}]</span>
+											<span class="ml-1 font-mono text-[10px] text-text-muted"
+												>[{entry.reference}]</span
+											>
 										{/if}
 									</td>
-									<td class="px-3 py-2 text-right font-mono tabular-nums text-text-primary">
+									<td class="px-3 py-2 text-right font-mono text-text-primary tabular-nums">
 										{entry.debit ? formatCurrency(entry.debit) : '-'}
 									</td>
-									<td class="px-3 py-2 text-right font-mono tabular-nums text-success">
+									<td class="px-3 py-2 text-right font-mono text-success tabular-nums">
 										{entry.credit ? formatCurrency(entry.credit) : '-'}
 									</td>
 									<td
@@ -458,7 +501,8 @@
 											? 'text-warning'
 											: 'text-text-primary'}"
 									>
-										{formatCurrency(entry.balance)} {entry.balance > 0 ? 'Dr' : entry.balance < 0 ? 'Cr' : ''}
+										{formatCurrency(entry.balance)}
+										{entry.balance > 0 ? 'Dr' : entry.balance < 0 ? 'Cr' : ''}
 									</td>
 								</tr>
 							{/each}
@@ -467,22 +511,23 @@
 					{#if ledgerEntries.length > 0}
 						<tfoot class="border-t-2 border-border bg-surface-secondary font-bold">
 							<tr>
-								<td colspan="3" class="px-3 py-2.5 text-right uppercase text-[11px] text-text-secondary">
+								<td
+									colspan="3"
+									class="px-3 py-2.5 text-right text-[11px] text-text-secondary uppercase"
+								>
 									Total / Net Outstanding Balance:
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">
+								<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums">
 									{formatCurrency(
 										ledgerEntries.reduce((acc, cur) => acc + Number(cur.debit || 0), 0)
 									)}
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono tabular-nums text-success">
+								<td class="px-3 py-2.5 text-right font-mono text-success tabular-nums">
 									{formatCurrency(
 										ledgerEntries.reduce((acc, cur) => acc + Number(cur.credit || 0), 0)
 									)}
 								</td>
-								<td
-									class="px-3 py-2.5 text-right font-mono tabular-nums text-warning"
-								>
+								<td class="px-3 py-2.5 text-right font-mono text-warning tabular-nums">
 									{formatCurrency(customer.outstandingBalance)} Dr
 								</td>
 							</tr>

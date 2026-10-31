@@ -198,7 +198,9 @@
 
 <div class="relative w-full">
 	<div class="relative flex items-center">
-		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+		<div
+			class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+		>
 			{#if selectedCustomer}
 				<UserCheck size={16} class="text-accent" />
 			{:else if isWalkIn}
@@ -217,16 +219,19 @@
 					setTimeout(() => inputRef?.select(), 10);
 				}
 			}}
-			onblur={() => setTimeout(() => {
-				if (!isQuickCreateMode) isFocused = false;
-			}, 250)}
+			onblur={() =>
+				setTimeout(() => {
+					if (!isQuickCreateMode) isFocused = false;
+				}, 250)}
 			onkeydown={handleKeyDown}
 			placeholder="Search customer by Name / Phone (F3) or Enter for Walk-in..."
-			class="w-full rounded-md border border-border bg-surface py-2 pr-16 pl-9 text-xs font-medium text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+			class="w-full rounded-md border border-border bg-surface py-2 pr-16 pl-9 text-xs font-medium text-text-primary transition-colors placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 		/>
-		<div class="absolute inset-y-0 right-0 flex items-center pr-2 gap-1">
+		<div class="absolute inset-y-0 right-0 flex items-center gap-1 pr-2">
 			{#if isSearching}
-				<span class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
+				<span
+					class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent border-t-transparent"
+				></span>
 			{/if}
 			{#if selectedCustomer || isWalkIn}
 				<button
@@ -238,7 +243,9 @@
 					<X size={13} />
 				</button>
 			{/if}
-			<kbd class="pointer-events-none rounded border border-border-strong bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] font-semibold text-text-muted shadow-2xs">
+			<kbd
+				class="pointer-events-none rounded border border-border-strong bg-surface-secondary px-1.5 py-0.5 font-mono text-[10px] font-semibold text-text-muted shadow-2xs"
+			>
 				F3
 			</kbd>
 		</div>
@@ -249,28 +256,38 @@
 		<button
 			type="button"
 			onclick={selectWalkIn}
-			class="mt-1.5 flex w-full items-center justify-between rounded-md border border-accent/30 bg-accent-light/40 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent-light transition-colors"
+			class="mt-1.5 flex w-full items-center justify-between rounded-md border border-accent/30 bg-accent-light/40 px-2.5 py-1 text-xs font-semibold text-accent transition-colors hover:bg-accent-light"
 			title="Select Walk-in Cash Sale (Enter or Alt+W)"
 		>
 			<span class="flex items-center gap-1.5">
 				<User size={13} />
 				<span>⚡ Fast Walk-in (Cash Sale)</span>
 			</span>
-			<kbd class="font-mono text-[10px] text-accent/80 border border-accent/30 rounded px-1">Enter</kbd>
+			<kbd class="rounded border border-accent/30 px-1 font-mono text-[10px] text-accent/80"
+				>Enter</kbd
+			>
 		</button>
 	{:else if isWalkIn && !selectedCustomer}
-		<div class="mt-1 flex items-center justify-between rounded bg-success-light border border-success/20 px-2 py-0.5 text-[11px] text-success font-medium">
+		<div
+			class="mt-1 flex items-center justify-between rounded border border-success/20 bg-success-light px-2 py-0.5 text-[11px] font-medium text-success"
+		>
 			<span class="flex items-center gap-1">
 				<UserCheck size={12} />
 				<span>Walk-in Customer (Retail Cash Sale)</span>
 			</span>
-			<button type="button" onclick={handleClear} class="text-[10px] underline hover:text-text-primary">Change (F3)</button>
+			<button
+				type="button"
+				onclick={handleClear}
+				class="text-[10px] underline hover:text-text-primary">Change (F3)</button
+			>
 		</div>
 	{/if}
 
 	<!-- Credit Alert Badge if customer has high outstanding -->
 	{#if selectedCustomer && selectedCustomer.outstandingBalance > 0}
-		<div class="mt-1 flex items-center justify-between rounded bg-warning-light border border-warning/20 px-2 py-0.5 text-[11px] text-warning">
+		<div
+			class="mt-1 flex items-center justify-between rounded border border-warning/20 bg-warning-light px-2 py-0.5 text-[11px] text-warning"
+		>
 			<span class="flex items-center gap-1">
 				<CreditCard size={12} />
 				<span>Outstanding: <strong>₹{selectedCustomer.outstandingBalance.toFixed(2)}</strong></span>
@@ -284,13 +301,15 @@
 	<!-- ON-THE-FLY CUSTOMER CREATION PROMPT (TASK 4) -->
 	{#if isQuickCreateMode}
 		<div
-			class="absolute z-50 mt-1 w-full rounded-lg border-2 border-accent bg-surface p-3 text-xs shadow-2xl ring-1 ring-black/10 focus:outline-none animate-in fade-in duration-150"
+			class="animate-in fade-in absolute z-50 mt-1 w-full rounded-lg border-2 border-accent bg-surface p-3 text-xs shadow-2xl ring-1 ring-black/10 duration-150 focus:outline-none"
 		>
-			<div class="flex items-center justify-between pb-2 mb-2 border-b border-border">
+			<div class="mb-2 flex items-center justify-between border-b border-border pb-2">
 				<div class="flex items-center gap-1.5 font-bold text-accent">
 					<UserPlus size={14} />
 					<span>New Customer Detected:</span>
-					<span class="font-mono bg-accent-light px-1.5 py-0.5 rounded text-accent font-semibold">{searchQuery}</span>
+					<span class="rounded bg-accent-light px-1.5 py-0.5 font-mono font-semibold text-accent"
+						>{searchQuery}</span
+					>
 				</div>
 				<button
 					type="button"
@@ -298,7 +317,7 @@
 						isQuickCreateMode = false;
 						inputRef?.focus();
 					}}
-					class="text-text-muted hover:text-text-primary text-[10px]"
+					class="text-[10px] text-text-muted hover:text-text-primary"
 				>
 					✕ Esc
 				</button>
@@ -312,7 +331,10 @@
 				class="space-y-2.5"
 			>
 				<div>
-					<label for="new-customer-name" class="block text-[11px] font-semibold text-text-muted mb-0.5">Customer Name *</label>
+					<label
+						for="new-customer-name"
+						class="mb-0.5 block text-[11px] font-semibold text-text-muted">Customer Name *</label
+					>
 					<input
 						id="new-customer-name"
 						bind:this={nameInputRef}
@@ -330,7 +352,10 @@
 				</div>
 
 				<div>
-					<label for="new-customer-credit" class="block text-[11px] font-semibold text-text-muted mb-0.5">Credit Limit (₹)</label>
+					<label
+						for="new-customer-credit"
+						class="mb-0.5 block text-[11px] font-semibold text-text-muted">Credit Limit (₹)</label
+					>
 					<input
 						id="new-customer-credit"
 						bind:this={creditInputRef}
@@ -339,7 +364,7 @@
 						placeholder="0"
 						min="0"
 						step="500"
-						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs font-mono text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 						onkeydown={(e) => {
 							if (e.key === 'Escape') {
 								isQuickCreateMode = false;
@@ -357,7 +382,9 @@
 						class="inline-flex items-center gap-1.5 rounded bg-accent px-3 py-1.5 text-xs font-semibold text-white shadow hover:bg-accent-hover focus:outline-none disabled:opacity-50"
 					>
 						{#if isCreatingCustomer}
-							<span class="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+							<span
+								class="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"
+							></span>
 							<span>Saving...</span>
 						{:else}
 							<span>Create & Attach</span>
@@ -368,7 +395,7 @@
 			</form>
 		</div>
 
-	<!-- REGULAR SEARCH DROPDOWN -->
+		<!-- REGULAR SEARCH DROPDOWN -->
 	{:else if isFocused && (results.length > 0 || searchQuery.length > 1)}
 		<ul
 			bind:this={listRef}
@@ -378,7 +405,7 @@
 			<!-- Walk-in Customer Option -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<li
-				class="cursor-pointer border-b border-border-subtle px-3 py-2 text-text-muted italic select-none hover:bg-surface-hover hover:text-text-primary flex items-center justify-between"
+				class="flex cursor-pointer items-center justify-between border-b border-border-subtle px-3 py-2 text-text-muted italic select-none hover:bg-surface-hover hover:text-text-primary"
 				onclick={() => handleSelect(null)}
 				role="option"
 				aria-selected={!selectedCustomer}
@@ -387,15 +414,17 @@
 					<User size={14} />
 					<span>Default Walk-in (Cash Sale)</span>
 				</span>
-				<kbd class="font-mono text-[10px] text-text-muted border border-border rounded px-1">Enter</kbd>
+				<kbd class="rounded border border-border px-1 font-mono text-[10px] text-text-muted"
+					>Enter</kbd
+				>
 			</li>
 
 			{#each results as customer, i (customer.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<li
-					class="cursor-pointer border-b border-border-subtle px-3 py-2 select-none last:border-0 transition-colors {i ===
+					class="cursor-pointer border-b border-border-subtle px-3 py-2 transition-colors select-none last:border-0 {i ===
 					selectedIndex
-						? 'bg-accent-light/60 text-text-primary font-medium'
+						? 'bg-accent-light/60 font-medium text-text-primary'
 						: 'text-text-primary hover:bg-surface-hover'}"
 					onclick={() => handleSelect(customer)}
 					role="option"
@@ -404,7 +433,7 @@
 					<div class="flex items-center justify-between">
 						<div>
 							<div class="font-semibold text-text-primary">{customer.name}</div>
-							<div class="flex items-center gap-2 text-[11px] text-text-muted mt-0.5">
+							<div class="mt-0.5 flex items-center gap-2 text-[11px] text-text-muted">
 								{#if customer.phone}
 									<span class="flex items-center gap-0.5">
 										<Phone size={10} />
@@ -437,7 +466,7 @@
 							isQuickCreateMode = true;
 							setTimeout(() => nameInputRef?.focus(), 50);
 						}}
-						class="w-full inline-flex items-center justify-center gap-1.5 rounded bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-hover"
+						class="inline-flex w-full items-center justify-center gap-1.5 rounded bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-hover"
 					>
 						<UserPlus size={13} />
 						<span>Create Customer for {searchQuery}</span>

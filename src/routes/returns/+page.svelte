@@ -89,8 +89,7 @@
 			const matchId = r.id.toLowerCase().includes(q);
 			const matchItems = r.items.some(
 				(item) =>
-					item.productName.toLowerCase().includes(q) ||
-					item.batchNumber.toLowerCase().includes(q)
+					item.productName.toLowerCase().includes(q) || item.batchNumber.toLowerCase().includes(q)
 			);
 
 			return matchInvoice || matchReason || matchId || matchItems;
@@ -102,15 +101,11 @@
 	let salesReturns = $derived(returns.filter((r) => r.returnType === 'sales_return'));
 	let purchaseReturns = $derived(returns.filter((r) => r.returnType === 'purchase_return'));
 
-	let salesReturnsVal = $derived(
-		salesReturns.reduce((sum, r) => sum + (r.totalAmount || 0), 0)
-	);
+	let salesReturnsVal = $derived(salesReturns.reduce((sum, r) => sum + (r.totalAmount || 0), 0));
 	let purchaseReturnsVal = $derived(
 		purchaseReturns.reduce((sum, r) => sum + (r.totalAmount || 0), 0)
 	);
-	let totalQtyRestocked = $derived(
-		returns.reduce((sum, r) => sum + (r.totalQuantity || 0), 0)
-	);
+	let totalQtyRestocked = $derived(returns.reduce((sum, r) => sum + (r.totalQuantity || 0), 0));
 </script>
 
 <svelte:head>
@@ -158,9 +153,7 @@
 			<div class="mt-1.5 font-mono text-2xl font-black text-success tabular-nums">
 				₹{salesReturnsVal.toFixed(2)}
 			</div>
-			<div class="mt-0.5 text-[11px] text-text-muted">
-				Customer inward refunds issued
-			</div>
+			<div class="mt-0.5 text-[11px] text-text-muted">Customer inward refunds issued</div>
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
@@ -171,9 +164,7 @@
 			<div class="mt-1.5 font-mono text-2xl font-black text-info tabular-nums">
 				₹{purchaseReturnsVal.toFixed(2)}
 			</div>
-			<div class="mt-0.5 text-[11px] text-text-muted">
-				Supplier debit claims submitted
-			</div>
+			<div class="mt-0.5 text-[11px] text-text-muted">Supplier debit claims submitted</div>
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
@@ -184,22 +175,22 @@
 			<div class="mt-1.5 font-mono text-2xl font-black text-accent tabular-nums">
 				{totalQtyRestocked}
 			</div>
-			<div class="mt-0.5 text-[11px] text-text-muted">
-				Inventory delta transactions
-			</div>
+			<div class="mt-0.5 text-[11px] text-text-muted">Inventory delta transactions</div>
 		</div>
 	</div>
 
 	<!-- Controls / Filter Bar -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<!-- Search Input -->
-		<div class="relative flex-1 max-w-md">
-			<Search size={14} class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+		<div class="relative max-w-md flex-1">
+			<Search size={14} class="absolute top-1/2 left-3 -translate-y-1/2 text-text-muted" />
 			<input
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search by Invoice #, Product, Batch, or Reason..."
-				class="w-full rounded-lg border border-border bg-surface-secondary py-1.5 pl-8 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:bg-surface focus:outline-none"
+				class="w-full rounded-lg border border-border bg-surface-secondary py-1.5 pr-3 pl-8 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:bg-surface focus:outline-none"
 			/>
 		</div>
 
@@ -216,8 +207,9 @@
 			</button>
 			<button
 				type="button"
-				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {typeFilter === 'sales_return'
-					? 'bg-success-light text-success font-bold shadow-xs'
+				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {typeFilter ===
+				'sales_return'
+					? 'bg-success-light font-bold text-success shadow-xs'
 					: 'text-text-muted hover:text-text-primary'}"
 				onclick={() => (typeFilter = 'sales_return')}
 			>
@@ -225,8 +217,9 @@
 			</button>
 			<button
 				type="button"
-				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {typeFilter === 'purchase_return'
-					? 'bg-info-light text-info font-bold shadow-xs'
+				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {typeFilter ===
+				'purchase_return'
+					? 'bg-info-light font-bold text-info shadow-xs'
 					: 'text-text-muted hover:text-text-primary'}"
 				onclick={() => (typeFilter = 'purchase_return')}
 			>
@@ -256,7 +249,9 @@
 		<div class="overflow-hidden rounded-xl border border-border bg-surface shadow-2xs">
 			<div class="overflow-x-auto">
 				<table class="w-full text-left text-xs">
-					<thead class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase">
+					<thead
+						class="border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase"
+					>
 						<tr>
 							<th class="w-8 px-3 py-2.5 text-center">#</th>
 							<th class="px-3 py-2.5">Voucher Ref & Date</th>
@@ -271,7 +266,11 @@
 					</thead>
 					<tbody class="divide-y divide-border/60">
 						{#each filteredReturns as r, index (r.id)}
-							<tr class="hover:bg-surface-hover/60 transition-colors {expandedRowId === r.id ? 'bg-surface-hover/40' : ''}">
+							<tr
+								class="transition-colors hover:bg-surface-hover/60 {expandedRowId === r.id
+									? 'bg-surface-hover/40'
+									: ''}"
+							>
 								<td class="px-3 py-2.5 text-center font-mono text-text-muted tabular-nums">
 									{index + 1}
 								</td>
@@ -291,12 +290,16 @@
 								</td>
 								<td class="px-3 py-2.5">
 									{#if r.returnType === 'sales_return'}
-										<span class="inline-flex items-center gap-1 rounded bg-success-light px-2 py-0.5 font-mono text-[11px] font-bold text-success">
+										<span
+											class="inline-flex items-center gap-1 rounded bg-success-light px-2 py-0.5 font-mono text-[11px] font-bold text-success"
+										>
 											<ArrowDownLeft size={12} />
 											Credit Note (CN)
 										</span>
 									{:else}
-										<span class="inline-flex items-center gap-1 rounded bg-info-light text-info px-2 py-0.5 font-mono text-[11px] font-bold text-info">
+										<span
+											class="inline-flex items-center gap-1 rounded bg-info-light px-2 py-0.5 font-mono text-[11px] font-bold text-info"
+										>
 											<ArrowUpRight size={12} />
 											Debit Note (DN)
 										</span>
@@ -315,18 +318,21 @@
 											</span>
 										</div>
 									{:else}
-										<span class="font-mono text-text-muted text-[11px]">Direct / Manual</span>
+										<span class="font-mono text-[11px] text-text-muted">Direct / Manual</span>
 									{/if}
 								</td>
 								<td class="px-3 py-2.5">
-									<div class="max-w-[200px] truncate font-medium text-text-primary" title={r.reason}>
+									<div
+										class="max-w-[200px] truncate font-medium text-text-primary"
+										title={r.reason}
+									>
 										{r.reason || 'General Return'}
 									</div>
 								</td>
 								<td class="px-3 py-2.5 text-center">
 									<button
 										type="button"
-										class="inline-flex items-center gap-1 rounded border border-border bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-text-primary hover:border-accent hover:text-accent transition-colors"
+										class="inline-flex items-center gap-1 rounded border border-border bg-surface-secondary px-2 py-1 text-[11px] font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent"
 										onclick={() => toggleExpand(r.id)}
 									>
 										<span>{r.items.length} {r.items.length === 1 ? 'line' : 'lines'}</span>
@@ -337,16 +343,23 @@
 										{/if}
 									</button>
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+								>
 									{r.totalQuantity}
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-black tabular-nums {r.returnType === 'sales_return' ? 'text-success' : 'text-info'}">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-black tabular-nums {r.returnType ===
+									'sales_return'
+										? 'text-success'
+										: 'text-info'}"
+								>
 									₹{r.totalAmount.toFixed(2)}
 								</td>
 								<td class="px-3 py-2.5 text-center">
 									<button
 										type="button"
-										class="rounded p-1 text-text-muted hover:bg-surface-hover hover:text-text-primary transition-colors"
+										class="rounded p-1 text-text-muted transition-colors hover:bg-surface-hover hover:text-text-primary"
 										title="Print Voucher"
 										onclick={() => window.print()}
 									>
@@ -360,12 +373,20 @@
 								<tr class="bg-surface-secondary/40">
 									<td colspan="9" class="p-3">
 										<div class="rounded-lg border border-border bg-surface p-3 shadow-2xs">
-											<div class="mb-2 flex items-center justify-between text-[11px] font-bold text-text-muted uppercase">
+											<div
+												class="mb-2 flex items-center justify-between text-[11px] font-bold text-text-muted uppercase"
+											>
 												<span>Returned Batch Details ({r.items.length} lines)</span>
-												<span class="font-mono font-normal">Stock Delta: {r.returnType === 'sales_return' ? '+Restocked In' : '-Debited Out'}</span>
+												<span class="font-mono font-normal"
+													>Stock Delta: {r.returnType === 'sales_return'
+														? '+Restocked In'
+														: '-Debited Out'}</span
+												>
 											</div>
 											<table class="w-full text-left text-xs">
-												<thead class="border-b border-border bg-surface-secondary text-[10px] font-semibold text-text-secondary uppercase">
+												<thead
+													class="border-b border-border bg-surface-secondary text-[10px] font-semibold text-text-secondary uppercase"
+												>
 													<tr>
 														<th class="px-2.5 py-1.5">Product</th>
 														<th class="px-2.5 py-1.5">Batch / Expiry</th>
@@ -380,15 +401,23 @@
 																{item.productName}
 															</td>
 															<td class="px-2.5 py-1.5 font-mono text-[11px]">
-																<span class="font-bold text-text-primary uppercase">{item.batchNumber}</span>
+																<span class="font-bold text-text-primary uppercase"
+																	>{item.batchNumber}</span
+																>
 																{#if item.expiryDate}
-																	<span class="text-text-muted ml-2">EXP: {item.expiryDate.substring(0, 7)}</span>
+																	<span class="ml-2 text-text-muted"
+																		>EXP: {item.expiryDate.substring(0, 7)}</span
+																	>
 																{/if}
 															</td>
-															<td class="px-2.5 py-1.5 text-right font-mono font-bold text-text-primary tabular-nums">
+															<td
+																class="px-2.5 py-1.5 text-right font-mono font-bold text-text-primary tabular-nums"
+															>
 																{item.quantity}
 															</td>
-															<td class="px-2.5 py-1.5 text-right font-mono font-bold text-text-primary tabular-nums">
+															<td
+																class="px-2.5 py-1.5 text-right font-mono font-bold text-text-primary tabular-nums"
+															>
 																₹{item.lineAmount.toFixed(2)}
 															</td>
 														</tr>

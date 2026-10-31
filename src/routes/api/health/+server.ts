@@ -34,13 +34,12 @@ export const GET: RequestHandler = async (event: any = {}) => {
 		await db.execute(sql`SELECT 1`);
 		dbLatencyMs = Math.round((performance.now() - dbPingStart) * 100) / 100;
 		dbHealthy = true;
-	} catch (err: any) {
-		dbHealthy = false;
+	} catch {
 		dbError = 'Database unavailable';
 	}
 
 	// Storage metrics via fs.statfsSync
-	let storageInfo: any = null;
+	let storageInfo: any;
 	try {
 		const stats = fs.statfsSync('.');
 		const totalBytes = stats.bsize * stats.blocks;

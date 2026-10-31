@@ -54,13 +54,13 @@
 	{type}
 	disabled={disabled || loading}
 	data-testid={dataTestId}
-	class="pressable inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:pointer-events-none {variantClasses[
+	class="pressable inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:cursor-not-allowed {variantClasses[
 		variant
 	]} {sizeClasses[size]} {className}"
 	{onclick}
 >
 	{#if loading}
-		<Loader2 class="h-4 w-4 animate-spin shrink-0 text-current" />
+		<Loader2 class="h-4 w-4 shrink-0 animate-spin text-current" />
 	{:else if icon}
 		{@render icon()}
 	{/if}

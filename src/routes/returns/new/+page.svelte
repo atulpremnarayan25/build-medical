@@ -84,17 +84,21 @@
 	let filteredInvoices = $derived.by(() => {
 		const q = invoiceSearchQuery.toLowerCase();
 		if (returnType === 'sales_return') {
-			return salesList.filter(
-				(s) =>
-					s.invoiceNumber.toLowerCase().includes(q) ||
-					(s.customerName && s.customerName.toLowerCase().includes(q))
-			).slice(0, 8);
+			return salesList
+				.filter(
+					(s) =>
+						s.invoiceNumber.toLowerCase().includes(q) ||
+						(s.customerName && s.customerName.toLowerCase().includes(q))
+				)
+				.slice(0, 8);
 		} else {
-			return purchasesList.filter(
-				(p) =>
-					p.invoiceNumber.toLowerCase().includes(q) ||
-					(p.supplierName && p.supplierName.toLowerCase().includes(q))
-			).slice(0, 8);
+			return purchasesList
+				.filter(
+					(p) =>
+						p.invoiceNumber.toLowerCase().includes(q) ||
+						(p.supplierName && p.supplierName.toLowerCase().includes(q))
+				)
+				.slice(0, 8);
 		}
 	});
 
@@ -261,8 +265,10 @@
 
 		const payload = {
 			returnType,
-			originalSaleId: returnType === 'sales_return' && selectedInvoiceId ? selectedInvoiceId : undefined,
-			originalPurchaseId: returnType === 'purchase_return' && selectedInvoiceId ? selectedInvoiceId : undefined,
+			originalSaleId:
+				returnType === 'sales_return' && selectedInvoiceId ? selectedInvoiceId : undefined,
+			originalPurchaseId:
+				returnType === 'purchase_return' && selectedInvoiceId ? selectedInvoiceId : undefined,
 			reason: finalReason || 'Returned Goods Voucher',
 			items: items.map((it) => ({
 				batchId: it.batchId,
@@ -307,7 +313,10 @@
 			items = [];
 			selectedInvoiceId = '';
 			invoiceSearchQuery = '';
-			addToast('info', `Switched to: ${returnType === 'sales_return' ? 'Credit Note (Sales Return)' : 'Debit Note (Purchase Return)'}`);
+			addToast(
+				'info',
+				`Switched to: ${returnType === 'sales_return' ? 'Credit Note (Sales Return)' : 'Debit Note (Purchase Return)'}`
+			);
 		}
 		if (e.key === 'F10') {
 			e.preventDefault();
@@ -341,15 +350,24 @@
 		class="flex flex-wrap items-center gap-3 rounded-t-xl border border-b-0 border-border bg-sidebar px-4 py-2 text-xs font-medium text-sidebar-text shadow-2xs"
 	>
 		<span class="flex items-center gap-1.5 text-accent-hover">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">F8</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>F8</kbd
+			>
 			<span>Toggle Type ({returnType === 'sales_return' ? 'Sales CN' : 'Purchase DN'})</span>
 		</span>
 		<span class="flex items-center gap-1.5 text-warning">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Enter</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>Enter</kbd
+			>
 			<span>Table Navigation</span>
 		</span>
 		<span class="ml-auto flex items-center gap-1.5 text-accent">
-			<kbd class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active">Ctrl+S / F10</kbd>
+			<kbd
+				class="rounded border border-sidebar-hover bg-sidebar-hover px-1.5 py-0.5 font-mono text-[10px] text-sidebar-text-active"
+				>Ctrl+S / F10</kbd
+			>
 			<span>Issue Return Voucher</span>
 		</span>
 	</div>
@@ -360,11 +378,14 @@
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 			<!-- Return Type Toggle -->
 			<div>
-				<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Return Classification *</span>
+				<span class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+					>Return Classification *</span
+				>
 				<div class="grid grid-cols-2 gap-2">
 					<button
 						type="button"
-						class="flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-bold transition-all {returnType === 'sales_return'
+						class="flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-bold transition-all {returnType ===
+						'sales_return'
 							? 'border-success bg-success-light text-success ring-1 ring-success'
 							: 'border-border bg-surface-secondary text-text-muted hover:text-text-primary'}"
 						onclick={() => {
@@ -380,7 +401,8 @@
 
 					<button
 						type="button"
-						class="flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-bold transition-all {returnType === 'purchase_return'
+						class="flex items-center justify-center gap-2 rounded-lg border p-2.5 text-xs font-bold transition-all {returnType ===
+						'purchase_return'
 							? 'border-info bg-info-light text-info ring-1 ring-info'
 							: 'border-border bg-surface-secondary text-text-muted hover:text-text-primary'}"
 						onclick={() => {
@@ -398,7 +420,10 @@
 
 			<!-- Original Invoice Selector -->
 			<div class="relative">
-				<label for="inv-search-input" class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">
+				<label
+					for="inv-search-input"
+					class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+				>
 					Link Original {returnType === 'sales_return' ? 'Sale Invoice' : 'Inward GRN / Purchase'} (Optional)
 				</label>
 				<div class="relative">
@@ -407,16 +432,20 @@
 						type="text"
 						bind:value={invoiceSearchQuery}
 						onfocus={() => (invoiceDropdownOpen = true)}
-						placeholder={returnType === 'sales_return' ? 'Search sale invoice # or customer...' : 'Search purchase invoice # or supplier...'}
+						placeholder={returnType === 'sales_return'
+							? 'Search sale invoice # or customer...'
+							: 'Search purchase invoice # or supplier...'}
 						class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none"
 					/>
 					{#if invoiceDropdownOpen && filteredInvoices.length > 0}
-						<ul class="absolute z-20 mt-1 max-h-52 w-full overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl divide-y divide-border/60">
+						<ul
+							class="absolute z-20 mt-1 max-h-52 w-full divide-y divide-border/60 overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl"
+						>
 							{#each filteredInvoices as inv (inv.id)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 								<li
-									class="cursor-pointer px-3 py-2 hover:bg-surface-hover transition-colors"
+									class="cursor-pointer px-3 py-2 transition-colors hover:bg-surface-hover"
 									onclick={() => handleSelectInvoice(inv)}
 								>
 									<div class="flex items-center justify-between">
@@ -424,7 +453,11 @@
 										<span class="font-mono text-text-muted">₹{inv.grandTotal.toFixed(2)}</span>
 									</div>
 									<div class="text-[11px] text-text-muted">
-										{returnType === 'sales_return' ? ((inv as Sale).customerName || 'Walk-in Customer') : (inv as Purchase).supplierName} • {new Date((inv as any).date || (inv as any).invoiceDate).toLocaleDateString()}
+										{returnType === 'sales_return'
+											? (inv as Sale).customerName || 'Walk-in Customer'
+											: (inv as Purchase).supplierName} • {new Date(
+											(inv as any).date || (inv as any).invoiceDate
+										).toLocaleDateString()}
 									</div>
 								</li>
 							{/each}
@@ -435,19 +468,37 @@
 
 			<!-- Return Reason Selection -->
 			<div>
-				<label for="return-reason-select" class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase">Return Reason Code *</label>
+				<label
+					for="return-reason-select"
+					class="mb-1 block text-[11px] font-semibold text-text-secondary uppercase"
+					>Return Reason Code *</label
+				>
 				<select
 					id="return-reason-select"
 					bind:value={reason}
 					class="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary focus:border-accent focus:outline-none"
 				>
-					<option value="Customer Return - Prescribed Medicine Changed">Customer Return - Prescribed Medicine Changed</option>
-					<option value="Customer Return - Adverse Reaction / Not Required">Customer Return - Adverse Reaction / Not Required</option>
-					<option value="Damaged / Seal Broken / Leaked Strip">Damaged / Seal Broken / Leaked Strip</option>
-					<option value="Near Expiry Stock Return to Distributor">Near Expiry Stock Return to Distributor</option>
-					<option value="Wrong Medicine Inwarded / Dispensed">Wrong Medicine Inwarded / Dispensed</option>
-					<option value="Rate Discrepancy / Overcharge Correction">Rate Discrepancy / Overcharge Correction</option>
-					<option value="Physical Stock Audit Variance Reversal">Physical Stock Audit Variance Reversal</option>
+					<option value="Customer Return - Prescribed Medicine Changed"
+						>Customer Return - Prescribed Medicine Changed</option
+					>
+					<option value="Customer Return - Adverse Reaction / Not Required"
+						>Customer Return - Adverse Reaction / Not Required</option
+					>
+					<option value="Damaged / Seal Broken / Leaked Strip"
+						>Damaged / Seal Broken / Leaked Strip</option
+					>
+					<option value="Near Expiry Stock Return to Distributor"
+						>Near Expiry Stock Return to Distributor</option
+					>
+					<option value="Wrong Medicine Inwarded / Dispensed"
+						>Wrong Medicine Inwarded / Dispensed</option
+					>
+					<option value="Rate Discrepancy / Overcharge Correction"
+						>Rate Discrepancy / Overcharge Correction</option
+					>
+					<option value="Physical Stock Audit Variance Reversal"
+						>Physical Stock Audit Variance Reversal</option
+					>
 					<option value="Other">Other (Custom Reason)</option>
 				</select>
 				{#if reason === 'Other'}
@@ -463,11 +514,15 @@
 
 		<!-- Manual Line Add Picker -->
 		<div class="rounded-lg border border-border/80 bg-surface-secondary/60 p-3">
-			<div class="mb-2 text-[11px] font-bold text-text-muted uppercase">Add Item / Batch Manually</div>
-			<div class="grid grid-cols-1 gap-2.5 sm:grid-cols-12 items-end">
+			<div class="mb-2 text-[11px] font-bold text-text-muted uppercase">
+				Add Item / Batch Manually
+			</div>
+			<div class="grid grid-cols-1 items-end gap-2.5 sm:grid-cols-12">
 				<!-- Product search -->
-				<div class="sm:col-span-5 relative">
-					<label for="ret-prod-search" class="text-[10px] font-semibold text-text-muted uppercase">Product Name</label>
+				<div class="relative sm:col-span-5">
+					<label for="ret-prod-search" class="text-[10px] font-semibold text-text-muted uppercase"
+						>Product Name</label
+					>
 					<input
 						id="ret-prod-search"
 						bind:this={searchInputRef}
@@ -478,7 +533,9 @@
 						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs text-text-primary focus:border-accent focus:outline-none"
 					/>
 					{#if productResults.length > 0}
-						<ul class="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl divide-y divide-border/60">
+						<ul
+							class="absolute z-20 mt-1 max-h-48 w-full divide-y divide-border/60 overflow-auto rounded-lg border border-border bg-surface py-1 text-xs shadow-xl"
+						>
 							{#each productResults as prod (prod.id)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -487,7 +544,9 @@
 									onclick={() => selectProduct(prod)}
 								>
 									<div class="font-bold text-text-primary">{prod.name}</div>
-									<div class="text-[11px] text-text-muted">MRP: ₹{prod.mrp} • Rate: ₹{prod.purchaseRate}</div>
+									<div class="text-[11px] text-text-muted">
+										MRP: ₹{prod.mrp} • Rate: ₹{prod.purchaseRate}
+									</div>
 								</li>
 							{/each}
 						</ul>
@@ -496,10 +555,12 @@
 
 				<!-- Batch select -->
 				<div class="sm:col-span-3">
-					<label for="ret-batch-select" class="text-[10px] font-semibold text-text-muted uppercase">Batch</label>
+					<label for="ret-batch-select" class="text-[10px] font-semibold text-text-muted uppercase"
+						>Batch</label
+					>
 					<select
 						id="ret-batch-select"
-						class="w-full rounded border border-border bg-surface px-2 py-1.5 text-xs font-mono text-text-primary focus:border-accent focus:outline-none"
+						class="w-full rounded border border-border bg-surface px-2 py-1.5 font-mono text-xs text-text-primary focus:border-accent focus:outline-none"
 						disabled={availableBatches.length === 0}
 						onchange={(e) => {
 							const bId = (e.target as HTMLSelectElement).value;
@@ -518,25 +579,29 @@
 
 				<!-- Qty -->
 				<div class="sm:col-span-2">
-					<label for="ret-manual-qty" class="text-[10px] font-semibold text-text-muted uppercase">Return Qty</label>
+					<label for="ret-manual-qty" class="text-[10px] font-semibold text-text-muted uppercase"
+						>Return Qty</label
+					>
 					<input
 						id="ret-manual-qty"
 						type="number"
 						min="1"
 						bind:value={manualQty}
-						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs font-mono font-bold text-text-primary focus:border-accent focus:outline-none"
+						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 font-mono text-xs font-bold text-text-primary focus:border-accent focus:outline-none"
 					/>
 				</div>
 
 				<!-- Rate -->
 				<div class="sm:col-span-1">
-					<label for="ret-manual-rate" class="text-[10px] font-semibold text-text-muted uppercase">Rate (₹)</label>
+					<label for="ret-manual-rate" class="text-[10px] font-semibold text-text-muted uppercase"
+						>Rate (₹)</label
+					>
 					<input
 						id="ret-manual-rate"
 						type="number"
 						step="0.01"
 						bind:value={manualRate}
-						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 text-xs font-mono font-bold text-text-primary focus:border-accent focus:outline-none"
+						class="w-full rounded border border-border bg-surface px-2.5 py-1.5 font-mono text-xs font-bold text-text-primary focus:border-accent focus:outline-none"
 					/>
 				</div>
 
@@ -554,7 +619,9 @@
 	<!-- Line Items Table -->
 	<div class="overflow-x-auto border-x border-border bg-surface">
 		<table class="w-full text-left text-xs">
-			<thead class="border-y border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase">
+			<thead
+				class="border-y border-border bg-surface-secondary text-[11px] font-semibold text-text-secondary uppercase"
+			>
 				<tr>
 					<th class="w-8 px-3 py-2 text-center">#</th>
 					<th class="px-3 py-2">Product Description</th>
@@ -583,9 +650,13 @@
 								{item.productName}
 							</td>
 							<td class="px-3 py-2">
-								<span class="font-mono font-bold text-text-primary uppercase">{item.batchNumber}</span>
+								<span class="font-mono font-bold text-text-primary uppercase"
+									>{item.batchNumber}</span
+								>
 								{#if item.expiryDate}
-									<span class="font-mono text-[11px] text-text-muted ml-2">EXP: {item.expiryDate.substring(0, 7)}</span>
+									<span class="ml-2 font-mono text-[11px] text-text-muted"
+										>EXP: {item.expiryDate.substring(0, 7)}</span
+									>
 								{/if}
 							</td>
 							<td class="px-3 py-2 text-right">
@@ -594,8 +665,9 @@
 									min="1"
 									max={item.maxQty}
 									value={item.quantity}
-									oninput={(e) => updateItemQty(index, Number((e.target as HTMLInputElement).value))}
-									class="w-20 rounded border border-border bg-surface px-2 py-1 text-right font-mono font-bold text-xs text-text-primary focus:border-accent focus:outline-none"
+									oninput={(e) =>
+										updateItemQty(index, Number((e.target as HTMLInputElement).value))}
+									class="w-20 rounded border border-border bg-surface px-2 py-1 text-right font-mono text-xs font-bold text-text-primary focus:border-accent focus:outline-none"
 								/>
 							</td>
 							<td class="px-3 py-2 text-right">
@@ -603,7 +675,8 @@
 									type="number"
 									step="0.01"
 									value={item.unitRate}
-									oninput={(e) => updateItemRate(index, Number((e.target as HTMLInputElement).value))}
+									oninput={(e) =>
+										updateItemRate(index, Number((e.target as HTMLInputElement).value))}
 									class="w-24 rounded border border-border bg-surface px-2 py-1 text-right font-mono text-xs text-text-primary focus:border-accent focus:outline-none"
 								/>
 							</td>
@@ -613,7 +686,7 @@
 							<td class="px-3 py-2 text-center">
 								<button
 									type="button"
-									class="rounded p-1 text-text-muted hover:bg-danger-light hover:text-danger transition-colors"
+									class="rounded p-1 text-text-muted transition-colors hover:bg-danger-light hover:text-danger"
 									onclick={() => removeItem(index)}
 								>
 									<Trash2 size={13} />
@@ -631,7 +704,8 @@
 		class="flex flex-col items-center justify-between gap-4 rounded-b-xl border border-border bg-surface-secondary p-3.5 shadow-2xs md:flex-row"
 	>
 		<div class="flex items-center gap-2 text-xs text-text-muted">
-			<span class="font-mono font-semibold text-text-primary tabular-nums">{items.length}</span> items in return voucher
+			<span class="font-mono font-semibold text-text-primary tabular-nums">{items.length}</span>
+			items in return voucher
 			<span class="text-border-strong">•</span>
 			<span class="font-mono font-semibold text-text-primary tabular-nums">{totalQty}</span> total units
 		</div>
@@ -641,7 +715,11 @@
 				<div class="text-[10px] font-bold text-text-muted uppercase">
 					{returnType === 'sales_return' ? 'Total Refund (Credit)' : 'Total Debit Claim'}
 				</div>
-				<div class="font-mono text-2xl font-black tabular-nums {returnType === 'sales_return' ? 'text-success' : 'text-info'}">
+				<div
+					class="font-mono text-2xl font-black tabular-nums {returnType === 'sales_return'
+						? 'text-success'
+						: 'text-info'}"
+				>
 					₹{grandTotal.toFixed(2)}
 				</div>
 			</div>

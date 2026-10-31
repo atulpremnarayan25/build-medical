@@ -163,10 +163,7 @@ describe('Phase 3 GRN: Goods Inward, Multi-Unit Conversions, Payables Ledger & A
 			.select()
 			.from(batchesTable)
 			.where(
-				and(
-					eq(batchesTable.productId, augmentinProduct.id),
-					eq(batchesTable.batchNo, batchNumber)
-				)
+				and(eq(batchesTable.productId, augmentinProduct.id), eq(batchesTable.batchNo, batchNumber))
 			);
 
 		expect(batchRow).toBeDefined();

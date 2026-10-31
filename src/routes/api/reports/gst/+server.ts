@@ -139,7 +139,13 @@ export async function GET(event: RequestEvent) {
 	// B2C Slabs aggregation map: key = gstRate
 	const b2cSlabsMap = new Map<
 		number,
-		{ gstRate: number; taxablePaise: number; cgstPaise: number; sgstPaise: number; totalPaise: number }
+		{
+			gstRate: number;
+			taxablePaise: number;
+			cgstPaise: number;
+			sgstPaise: number;
+			totalPaise: number;
+		}
 	>();
 
 	// Initialize standard slabs (0%, 5%, 12%, 18%)
@@ -170,9 +176,7 @@ export async function GET(event: RequestEvent) {
 	>();
 
 	for (const sale of sales) {
-		const hasValidGstin = Boolean(
-			sale.customerGstin && sale.customerGstin.trim().length >= 5
-		);
+		const hasValidGstin = Boolean(sale.customerGstin && sale.customerGstin.trim().length >= 5);
 
 		const invTaxablePaise = toPaise(sale.subtotal);
 		const invGstPaise = toPaise(sale.gstAmount);
@@ -199,9 +203,8 @@ export async function GET(event: RequestEvent) {
 			}
 
 			// Weighted or primary GST rate
-			const maxRate = items.length > 0
-				? Math.max(...items.map((it) => Number(it.gstRate || 0)))
-				: 12;
+			const maxRate =
+				items.length > 0 ? Math.max(...items.map((it) => Number(it.gstRate || 0))) : 12;
 
 			b2bInvoices.push({
 				id: sale.id,
@@ -378,7 +381,16 @@ export async function GET(event: RequestEvent) {
 		.innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
 		.where(and(eq(purchasesTable.storeId, storeId), ...purchaseDateFilters));
 
-	const itcSlabsMap = new Map<number, { taxablePaise: number; cgstPaise: number; sgstPaise: number; totalPaise: number; count: number }>();
+	const itcSlabsMap = new Map<
+		number,
+		{
+			taxablePaise: number;
+			cgstPaise: number;
+			sgstPaise: number;
+			totalPaise: number;
+			count: number;
+		}
+	>();
 	for (const rate of [0, 5, 12, 18]) {
 		itcSlabsMap.set(rate, { taxablePaise: 0, cgstPaise: 0, sgstPaise: 0, totalPaise: 0, count: 0 });
 	}
@@ -419,10 +431,18 @@ export async function GET(event: RequestEvent) {
 	// Overall sales slabs breakdown for quick overview
 	const overallSalesSlabs = [0, 5, 12, 18].map((rate) => {
 		const b2cSlab = b2cSlabs.find((s) => s.gstRate === rate);
-		const b2bTaxable = b2bInvoices.filter((inv) => inv.rate === rate).reduce((s, i) => s + i.taxableAmount, 0);
-		const b2bCgst = b2bInvoices.filter((inv) => inv.rate === rate).reduce((s, i) => s + i.cgstAmount, 0);
-		const b2bSgst = b2bInvoices.filter((inv) => inv.rate === rate).reduce((s, i) => s + i.sgstAmount, 0);
-		const b2bTotal = b2bInvoices.filter((inv) => inv.rate === rate).reduce((s, i) => s + i.totalAmount, 0);
+		const b2bTaxable = b2bInvoices
+			.filter((inv) => inv.rate === rate)
+			.reduce((s, i) => s + i.taxableAmount, 0);
+		const b2bCgst = b2bInvoices
+			.filter((inv) => inv.rate === rate)
+			.reduce((s, i) => s + i.cgstAmount, 0);
+		const b2bSgst = b2bInvoices
+			.filter((inv) => inv.rate === rate)
+			.reduce((s, i) => s + i.sgstAmount, 0);
+		const b2bTotal = b2bInvoices
+			.filter((inv) => inv.rate === rate)
+			.reduce((s, i) => s + i.totalAmount, 0);
 
 		return {
 			gstRate: rate,

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PageHeader, LoadingState, Button, DateRangePicker } from '$lib/components/common/index.js';
+	import {
+		PageHeader,
+		LoadingState,
+		Button,
+		DateRangePicker
+	} from '$lib/components/common/index.js';
 	import { formatCurrency, formatDate, formatDateTime } from '$lib/utils/formatters.js';
 	import {
 		FileSpreadsheet,
@@ -206,10 +211,7 @@
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
-		link.setAttribute(
-			'download',
-			`Form_35_Schedule_H1_Register_${fromDate}_to_${toDate}.csv`
-		);
+		link.setAttribute('download', `Form_35_Schedule_H1_Register_${fromDate}_to_${toDate}.csv`);
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
@@ -245,8 +247,14 @@
 				[Prescribed under Rule 65(9)(b) &amp; Rule 65(9)(g) of the Drugs and Cosmetics Rules, 1945]
 			</div>
 			<div class="period-badge">
-				Audit Period: <strong>{fromDate || 'Start'}</strong> to <strong>{toDate || 'Present'}</strong>
-				| Filter: <strong>{scheduleFilter === 'all' ? 'All Scheduled (H/H1/X)' : 'Schedule ' + scheduleFilter}</strong>
+				Audit Period: <strong>{fromDate || 'Start'}</strong> to
+				<strong>{toDate || 'Present'}</strong>
+				| Filter:
+				<strong
+					>{scheduleFilter === 'all'
+						? 'All Scheduled (H/H1/X)'
+						: 'Schedule ' + scheduleFilter}</strong
+				>
 			</div>
 		</div>
 	</div>
@@ -295,7 +303,9 @@
 						<td>{row.manufacturer || '-'}</td>
 						<td style="font-family: monospace; font-weight: bold;">{row.batchNo}</td>
 						<td style="font-family: monospace;">{row.expiryDate}</td>
-						<td style="text-align: right; font-family: monospace; font-weight: bold;">{row.quantity}</td>
+						<td style="text-align: right; font-family: monospace; font-weight: bold;"
+							>{row.quantity}</td
+						>
 						<td>{row.billerName}</td>
 					</tr>
 				{/each}
@@ -306,8 +316,16 @@
 	<!-- Print Footer with Regulatory Signatures -->
 	<div class="print-footer">
 		<div class="declaration-note">
-			<p><strong>Declaration:</strong> I hereby certify that the particulars furnished above are true and complete extracts from the dispensing ledger maintained under Rule 65 of the Drugs and Cosmetics Rules, 1945.</p>
-			<p style="margin-top: 4px;">Total Dispatches: <strong>{summary.totalEntries}</strong> | Total Units Dispensed: <strong>{summary.totalQuantity}</strong> | Total Value: <strong>{formatCurrency(summary.totalValue)}</strong></p>
+			<p>
+				<strong>Declaration:</strong> I hereby certify that the particulars furnished above are true and
+				complete extracts from the dispensing ledger maintained under Rule 65 of the Drugs and Cosmetics
+				Rules, 1945.
+			</p>
+			<p style="margin-top: 4px;">
+				Total Dispatches: <strong>{summary.totalEntries}</strong> | Total Units Dispensed:
+				<strong>{summary.totalQuantity}</strong>
+				| Total Value: <strong>{formatCurrency(summary.totalValue)}</strong>
+			</p>
 		</div>
 		<div class="sign-block">
 			<div class="sign-line">Registered Pharmacist In-Charge</div>
@@ -321,7 +339,7 @@
 </div>
 
 <!-- ON-SCREEN UI -->
-<div class="space-y-4 no-print">
+<div class="no-print space-y-4">
 	<PageHeader
 		title="Schedule H1 / Form 35 Statutory Register"
 		subtitle="Statutory inspection register compliant with Rule 65 of Drugs and Cosmetics Rules, 1945 for Schedule H, H1 & X substances"
@@ -347,17 +365,23 @@
 	</PageHeader>
 
 	<!-- Regulatory Rule 65 Statutory Notice -->
-	<div class="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-3 text-text-primary">
+	<div
+		class="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-3 text-text-primary"
+	>
 		<ShieldAlert class="mt-0.5 h-5 w-5 shrink-0 text-warning" />
 		<div class="text-xs leading-relaxed">
-			<p class="font-bold uppercase tracking-wider text-warning">
+			<p class="font-bold tracking-wider text-warning uppercase">
 				Rule 65 Compliance — Drugs &amp; Cosmetics Rules, 1945
 			</p>
 			<p class="mt-0.5 text-text-secondary">
-				Under Rule 65, pharmacies must maintain an unalterable register for <strong>Schedule H1</strong> and
-				<strong>Schedule X</strong> substances recording: Date of supply, Patient name &amp; address, Prescribing doctor's name
-				and medical registration number, Drug name &amp; quantity, Batch number &amp; manufacturer, and Dispensing pharmacist.
-				Records must be retained for Drug Inspector audit for at least <strong>3 years</strong>.
+				Under Rule 65, pharmacies must maintain an unalterable register for <strong
+					>Schedule H1</strong
+				>
+				and
+				<strong>Schedule X</strong> substances recording: Date of supply, Patient name &amp;
+				address, Prescribing doctor's name and medical registration number, Drug name &amp;
+				quantity, Batch number &amp; manufacturer, and Dispensing pharmacist. Records must be
+				retained for Drug Inspector audit for at least <strong>3 years</strong>.
 			</p>
 		</div>
 	</div>
@@ -368,46 +392,59 @@
 			<div class="bezel-inner p-3">
 				<span class="text-[11px] font-semibold text-text-muted">Total Dispatches</span>
 				<div class="mt-1 flex items-baseline justify-between">
-					<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{summary.totalEntries}</span>
+					<span class="font-mono text-xl font-bold text-text-primary tabular-nums"
+						>{summary.totalEntries}</span
+					>
 					<span class="text-[10px] text-text-muted">{summary.distinctInvoices} Bills</span>
 				</div>
 			</div>
 		</div>
 
 		<div class="bezel-outer">
-			<div class="bezel-inner p-3 border border-danger/30 bg-danger/5">
+			<div class="bezel-inner border border-danger/30 bg-danger/5 p-3">
 				<div class="flex items-center justify-between">
 					<span class="text-[11px] font-bold text-danger">Schedule H1</span>
-					<span class="rounded bg-danger-light px-1.5 py-0.5 text-[9px] font-black text-danger">RULE 65</span>
+					<span class="rounded bg-danger-light px-1.5 py-0.5 text-[9px] font-black text-danger"
+						>RULE 65</span
+					>
 				</div>
 				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-danger tabular-nums">{summary.h1Count}</span>
+					<span class="font-mono text-xl font-bold text-danger tabular-nums">{summary.h1Count}</span
+					>
 					<span class="ml-1 text-[10px] text-danger/80">lines</span>
 				</div>
 			</div>
 		</div>
 
 		<div class="bezel-outer">
-			<div class="bezel-inner p-3 border border-warning/30 bg-warning/5">
+			<div class="bezel-inner border border-warning/30 bg-warning/5 p-3">
 				<div class="flex items-center justify-between">
 					<span class="text-[11px] font-bold text-warning">Schedule H</span>
-					<span class="rounded bg-warning-light px-1.5 py-0.5 text-[9px] font-bold text-warning">RX ONLY</span>
+					<span class="rounded bg-warning-light px-1.5 py-0.5 text-[9px] font-bold text-warning"
+						>RX ONLY</span
+					>
 				</div>
 				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-warning tabular-nums">{summary.hCount}</span>
+					<span class="font-mono text-xl font-bold text-warning tabular-nums">{summary.hCount}</span
+					>
 					<span class="ml-1 text-[10px] text-warning/80">lines</span>
 				</div>
 			</div>
 		</div>
 
 		<div class="bezel-outer">
-			<div class="bezel-inner p-3 border border-schedule-h1/30 bg-schedule-h1/5">
+			<div class="bezel-inner border border-schedule-h1/30 bg-schedule-h1/5 p-3">
 				<div class="flex items-center justify-between">
 					<span class="text-[11px] font-bold text-schedule-h1">Schedule X</span>
-					<span class="rounded bg-schedule-h1-light px-1.5 py-0.5 text-[9px] font-black text-schedule-h1">NARCOTIC</span>
+					<span
+						class="rounded bg-schedule-h1-light px-1.5 py-0.5 text-[9px] font-black text-schedule-h1"
+						>NARCOTIC</span
+					>
 				</div>
 				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-schedule-h1 tabular-nums">{summary.xCount}</span>
+					<span class="font-mono text-xl font-bold text-schedule-h1 tabular-nums"
+						>{summary.xCount}</span
+					>
 					<span class="ml-1 text-[10px] text-schedule-h1/80">lines</span>
 				</div>
 			</div>
@@ -417,7 +454,9 @@
 			<div class="bezel-inner p-3">
 				<span class="text-[11px] font-semibold text-text-muted">Total Units Dispensed</span>
 				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-text-primary tabular-nums">{summary.totalQuantity.toLocaleString('en-IN')}</span>
+					<span class="font-mono text-xl font-bold text-text-primary tabular-nums"
+						>{summary.totalQuantity.toLocaleString('en-IN')}</span
+					>
 				</div>
 			</div>
 		</div>
@@ -426,7 +465,7 @@
 			<div class="bezel-inner p-3">
 				<span class="text-[11px] font-semibold text-text-muted">Regulated Turnover</span>
 				<div class="mt-1">
-					<span class="text-xl font-bold font-mono text-success tabular-nums">
+					<span class="font-mono text-xl font-bold text-success tabular-nums">
 						{formatCurrency(summary.totalValue)}
 					</span>
 				</div>
@@ -436,13 +475,11 @@
 
 	<!-- Date Filter Presets & Controls -->
 	<!-- Date Filter Presets & Controls -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
+	<div
+		class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs"
+	>
 		<!-- Date Range Picker Component -->
-		<DateRangePicker
-			bind:from={fromDate}
-			bind:to={toDate}
-			onchange={loadReport}
-		/>
+		<DateRangePicker bind:from={fromDate} bind:to={toDate} onchange={loadReport} />
 
 		<!-- Schedule selector & Search input -->
 		<div class="flex flex-wrap items-center gap-3 text-xs">
@@ -462,13 +499,13 @@
 			</div>
 			<!-- Search input -->
 			<div class="relative w-48 sm:w-64">
-				<Search class="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={13} />
+				<Search class="absolute top-1/2 left-2.5 -translate-y-1/2 text-text-muted" size={13} />
 				<input
 					type="text"
 					placeholder="Search Doctor, Patient, Reg No, Batch, Drug..."
 					bind:value={searchQuery}
 					oninput={handleSearchInput}
-					class="w-full rounded-md border border-border bg-surface py-1 pl-8 pr-2.5 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+					class="w-full rounded-md border border-border bg-surface py-1 pr-2.5 pl-8 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
 				/>
 			</div>
 
@@ -486,7 +523,9 @@
 			</div>
 		{:else if entries.length === 0}
 			<div class="flex flex-col items-center justify-center p-12 text-center">
-				<div class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-secondary text-text-muted">
+				<div
+					class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-secondary text-text-muted"
+				>
 					<Pill size={24} />
 				</div>
 				<h3 class="mt-3 text-sm font-semibold text-text-primary">No Scheduled Drug Dispatches</h3>
@@ -495,57 +534,61 @@
 				</p>
 			</div>
 		{:else}
-			<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto">
-				<table class="w-full text-left text-xs border-collapse">
+			<div class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto">
+				<table class="w-full border-collapse text-left text-xs">
 					<thead>
-						<tr class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
-							<th class="py-2.5 px-3 whitespace-nowrap">Date</th>
-							<th class="py-2.5 px-3">Patient Name &amp; Address</th>
-							<th class="py-2.5 px-3">Prescribing Doctor Name</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Doctor Reg No</th>
-							<th class="py-2.5 px-3">Medicine Name &amp; Strength</th>
-							<th class="py-2.5 px-3">Manufacturer</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Batch No</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Expiry Date</th>
-							<th class="py-2.5 px-3 text-right whitespace-nowrap">Qty Dispensed</th>
-							<th class="py-2.5 px-3 whitespace-nowrap">Biller / Pharmacist Name</th>
+						<tr
+							class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+						>
+							<th class="px-3 py-2.5 whitespace-nowrap">Date</th>
+							<th class="px-3 py-2.5">Patient Name &amp; Address</th>
+							<th class="px-3 py-2.5">Prescribing Doctor Name</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Doctor Reg No</th>
+							<th class="px-3 py-2.5">Medicine Name &amp; Strength</th>
+							<th class="px-3 py-2.5">Manufacturer</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Batch No</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Expiry Date</th>
+							<th class="px-3 py-2.5 text-right whitespace-nowrap">Qty Dispensed</th>
+							<th class="px-3 py-2.5 whitespace-nowrap">Biller / Pharmacist Name</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border font-sans">
 						{#each entries as row}
-							<tr class="hover:bg-surface-hover transition-colors">
+							<tr class="transition-colors hover:bg-surface-hover">
 								<!-- 1. Date -->
-								<td class="py-2.5 px-3 whitespace-nowrap">
+								<td class="px-3 py-2.5 whitespace-nowrap">
 									<div class="font-mono text-text-primary">{formatDate(row.date)}</div>
-									<div class="text-[10px] font-mono text-accent">{row.invoiceNumber}</div>
+									<div class="font-mono text-[10px] text-accent">{row.invoiceNumber}</div>
 								</td>
 
 								<!-- 2. Patient Name & Address -->
-								<td class="py-2.5 px-3 max-w-[220px]">
-									<div class="font-semibold text-text-primary line-clamp-1">
+								<td class="max-w-[220px] px-3 py-2.5">
+									<div class="line-clamp-1 font-semibold text-text-primary">
 										{row.patientDisplayName}
 									</div>
-									<div class="text-[10px] text-text-muted line-clamp-1">
+									<div class="line-clamp-1 text-[10px] text-text-muted">
 										{row.patientFullAddress}
 									</div>
 								</td>
 
 								<!-- 3. Prescribing Doctor Name -->
-								<td class="py-2.5 px-3 max-w-[180px]">
+								<td class="max-w-[180px] px-3 py-2.5">
 									{#if row.prescriberName}
-										<div class="font-medium text-accent line-clamp-1 flex items-center gap-1">
+										<div class="line-clamp-1 flex items-center gap-1 font-medium text-accent">
 											<Stethoscope size={11} class="shrink-0 text-accent" />
 											<span>{row.prescriberName}</span>
 										</div>
 									{:else}
-										<span class="text-text-muted italic text-[11px]">— Not Specified —</span>
+										<span class="text-[11px] text-text-muted italic">— Not Specified —</span>
 									{/if}
 								</td>
 
 								<!-- 4. Doctor Medical Reg No -->
-								<td class="py-2.5 px-3 whitespace-nowrap font-mono text-xs">
+								<td class="px-3 py-2.5 font-mono text-xs whitespace-nowrap">
 									{#if row.prescriberRegNo}
-										<span class="rounded bg-surface-secondary px-1.5 py-0.5 font-bold text-text-secondary border border-border">
+										<span
+											class="rounded border border-border bg-surface-secondary px-1.5 py-0.5 font-bold text-text-secondary"
+										>
 											{row.prescriberRegNo}
 										</span>
 									{:else}
@@ -554,50 +597,62 @@
 								</td>
 
 								<!-- 5. Medicine Name & Strength -->
-								<td class="py-2.5 px-3 max-w-xs">
+								<td class="max-w-xs px-3 py-2.5">
 									<div class="flex items-center gap-1.5">
-										<span class="font-semibold text-text-primary line-clamp-1">{row.productName}</span>
+										<span class="line-clamp-1 font-semibold text-text-primary"
+											>{row.productName}</span
+										>
 										{#if row.drugSchedule === 'H1'}
-											<span class="inline-block rounded bg-danger-light border border-danger/30 px-1 py-0.2 text-[9px] font-black text-danger shrink-0">
+											<span
+												class="py-0.2 inline-block shrink-0 rounded border border-danger/30 bg-danger-light px-1 text-[9px] font-black text-danger"
+											>
 												H1
 											</span>
 										{:else if row.drugSchedule === 'X'}
-											<span class="inline-block rounded bg-schedule-h1-light border border-schedule-h1/30 px-1 py-0.2 text-[9px] font-black text-schedule-h1 shrink-0">
+											<span
+												class="py-0.2 inline-block shrink-0 rounded border border-schedule-h1/30 bg-schedule-h1-light px-1 text-[9px] font-black text-schedule-h1"
+											>
 												X
 											</span>
 										{:else}
-											<span class="inline-block rounded bg-warning-light border border-warning/30 px-1 py-0.2 text-[9px] font-bold text-warning shrink-0">
+											<span
+												class="py-0.2 inline-block shrink-0 rounded border border-warning/30 bg-warning-light px-1 text-[9px] font-bold text-warning"
+											>
 												H
 											</span>
 										{/if}
 									</div>
 									{#if row.genericName}
-										<div class="text-[10px] text-text-muted italic line-clamp-1">{row.genericName}</div>
+										<div class="line-clamp-1 text-[10px] text-text-muted italic">
+											{row.genericName}
+										</div>
 									{/if}
 								</td>
 
 								<!-- 6. Manufacturer -->
-								<td class="py-2.5 px-3 max-w-[140px] text-text-secondary">
+								<td class="max-w-[140px] px-3 py-2.5 text-text-secondary">
 									<div class="line-clamp-1 text-[11px]">{row.manufacturer || 'Standard'}</div>
 								</td>
 
 								<!-- 7. Batch No -->
-								<td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-text-primary">
+								<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-text-primary">
 									{row.batchNo}
 								</td>
 
 								<!-- 8. Expiry Date -->
-								<td class="py-2.5 px-3 whitespace-nowrap font-mono text-[11px] text-text-secondary">
+								<td class="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-text-secondary">
 									{row.expiryDate}
 								</td>
 
 								<!-- 9. Quantity Dispensed -->
-								<td class="py-2.5 px-3 text-right font-mono font-bold text-text-primary whitespace-nowrap">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-text-primary"
+								>
 									{row.quantity}
 								</td>
 
 								<!-- 10. Biller / Pharmacist Name -->
-								<td class="py-2.5 px-3 whitespace-nowrap text-text-secondary text-[11px]">
+								<td class="px-3 py-2.5 text-[11px] whitespace-nowrap text-text-secondary">
 									{row.billerName}
 								</td>
 							</tr>
@@ -642,7 +697,13 @@
 			left: 0;
 			top: 0;
 			width: 100%;
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			font-family:
+				system-ui,
+				-apple-system,
+				BlinkMacSystemFont,
+				'Segoe UI',
+				Roboto,
+				sans-serif;
 			font-size: 8pt;
 			color: #000;
 			background: #fff;

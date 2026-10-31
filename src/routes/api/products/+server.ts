@@ -35,6 +35,9 @@ export async function POST({ request, locals }: RequestEvent) {
 		}
 
 		const input = await request.json();
+		if (!input?.name || typeof input.name !== 'string' || !input.name.trim()) {
+			return errorResponse('VALIDATION_ERROR', 'Product name is required', 400);
+		}
 		const newProduct = await productService.createProduct(input);
 		return jsonResponse(newProduct, 201);
 	} catch (err: any) {

@@ -27,7 +27,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			drugLicenseNo: '',
 			drugLicenseNo2: '',
 			invoicePrefix: 'INV',
-			invoiceTerms: '1. No returns without bill.\n2. Consult registered doctor before taking medicine.'
+			invoiceTerms:
+				'1. No returns without bill.\n2. Consult registered doctor before taking medicine.'
 		},
 		currentUser: locals.user
 	};

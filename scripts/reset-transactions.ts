@@ -6,21 +6,21 @@ async function resetTransactions() {
 
 	await db.transaction(async (tx) => {
 		// 1. Delete return items and returns
-		const resReturnItems = await tx.execute(sql`DELETE FROM return_items`);
-		const resReturns = await tx.execute(sql`DELETE FROM returns`);
+		await tx.execute(sql`DELETE FROM return_items`);
+		await tx.execute(sql`DELETE FROM returns`);
 		console.log('✓ Cleared returns & return items');
 
 		// 2. Delete customer / supplier transaction payments
-		const resPayments = await tx.execute(sql`DELETE FROM payments`);
+		await tx.execute(sql`DELETE FROM payments`);
 		console.log('✓ Cleared transaction payments');
 
 		// 3. Delete sale items and sales
-		const resSaleItems = await tx.execute(sql`DELETE FROM sale_items`);
-		const resSales = await tx.execute(sql`DELETE FROM sales`);
+		await tx.execute(sql`DELETE FROM sale_items`);
+		await tx.execute(sql`DELETE FROM sales`);
 		console.log('✓ Cleared sales & sale items');
 
 		// 4. Delete purchase items
-		const resPurchaseItems = await tx.execute(sql`DELETE FROM purchase_items`);
+		await tx.execute(sql`DELETE FROM purchase_items`);
 		console.log('✓ Cleared purchase items');
 
 		// 5. Delete stock events for batches created by purchases
@@ -44,7 +44,7 @@ async function resetTransactions() {
 		console.log('✓ Cleared purchase-inwarded batches');
 
 		// 8. Delete purchases
-		const resPurchases = await tx.execute(sql`DELETE FROM purchases`);
+		await tx.execute(sql`DELETE FROM purchases`);
 		console.log('✓ Cleared purchases');
 
 		// 9. Recalculate and restore quantity_remaining for all remaining opening stock batches

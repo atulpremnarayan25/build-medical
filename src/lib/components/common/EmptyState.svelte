@@ -20,7 +20,9 @@
 </script>
 
 <div class="flex flex-col items-center justify-center px-4 py-12 text-center {className}">
-	<div class="mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-secondary border border-border/80 text-text-muted shadow-xs">
+	<div
+		class="mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-border/80 bg-surface-secondary text-text-muted shadow-xs"
+	>
 		{#if icon}
 			{@render icon()}
 		{:else}
@@ -28,10 +30,10 @@
 		{/if}
 	</div>
 
-	<h3 class="text-sm font-semibold text-text-primary tracking-tight">{title}</h3>
+	<h3 class="text-sm font-semibold tracking-tight text-text-primary">{title}</h3>
 
 	{#if message}
-		<p class="mt-1 max-w-sm text-xs text-text-muted leading-relaxed">{message}</p>
+		<p class="mt-1 max-w-sm text-xs leading-relaxed text-text-muted">{message}</p>
 	{/if}
 
 	{#if action}

@@ -1,6 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
-import { purchasesTable, purchaseItemsTable, suppliersTable, batchesTable, productsTable } from '$lib/server/db/schema.js';
+import {
+	purchasesTable,
+	purchaseItemsTable,
+	suppliersTable,
+	batchesTable,
+	productsTable
+} from '$lib/server/db/schema.js';
 import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
 

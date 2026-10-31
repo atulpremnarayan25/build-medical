@@ -200,7 +200,8 @@
 		const sumTot = Number((b2bTot + b2cTot).toFixed(2));
 		const diffTotal = Number((data.totals.totalAmount - sumTot).toFixed(2));
 
-		const ok = Math.abs(diffTaxable) < 0.05 && Math.abs(diffGst) < 0.05 && Math.abs(diffTotal) < 0.05;
+		const ok =
+			Math.abs(diffTaxable) < 0.05 && Math.abs(diffGst) < 0.05 && Math.abs(diffTotal) < 0.05;
 		return { ok, diffTaxable, diffGst, diffTotal, sumTaxable, sumGst, sumTot };
 	});
 
@@ -393,8 +394,12 @@
 	</PageHeader>
 
 	<!-- Period Selector Filter -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
-		<div class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs">
+	<div
+		class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs"
+	>
+		<div
+			class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs"
+		>
 			<button
 				type="button"
 				class="rounded-md px-2.5 py-1 font-medium transition-all {datePreset === 'month'
@@ -456,17 +461,23 @@
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Sales Taxable</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Total Sales Taxable
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 					{formatCurrency(totalSalesTaxable)}
 				</div>
-				<div class="text-[10px] text-text-muted">{data?.totals.invoiceCount || 0} Total Invoices</div>
+				<div class="text-[10px] text-text-muted">
+					{data?.totals.invoiceCount || 0} Total Invoices
+				</div>
 			</div>
 		</div>
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Output GST</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Total Output GST
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 					{formatCurrency(totalOutputGst)}
 				</div>
@@ -476,7 +487,9 @@
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Eligible Input Tax Credit (ITC)</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Eligible Input Tax Credit (ITC)
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
 					{formatCurrency(totalInputTaxCredit)}
 				</div>
@@ -486,8 +499,14 @@
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Net GST Payable (GSTR-3B)</div>
-				<div class="mt-1 font-mono text-lg font-bold tabular-nums {netGstLiability > 0 ? 'text-danger' : 'text-success'}">
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Net GST Payable (GSTR-3B)
+				</div>
+				<div
+					class="mt-1 font-mono text-lg font-bold tabular-nums {netGstLiability > 0
+						? 'text-danger'
+						: 'text-success'}"
+				>
 					{formatCurrency(netGstLiability)}
 				</div>
 				<div class="text-[10px] text-text-muted">Output GST minus eligible ITC</div>
@@ -515,26 +534,30 @@
 							? 'Statutory Reconciliation Verified: B2B + B2C Ties Out Exactly to Rupee'
 							: 'Reconciliation Discrepancy Detected'}
 					</span>
-					<div class="text-[11px] text-text-secondary mt-0.5">
-						Total Sales: <strong class="font-mono text-text-primary">{formatCurrency(data.totals.totalAmount)}</strong>
+					<div class="mt-0.5 text-[11px] text-text-secondary">
+						Total Sales: <strong class="font-mono text-text-primary"
+							>{formatCurrency(data.totals.totalAmount)}</strong
+						>
 						= B2B: <span class="font-mono">{formatCurrency(data.b2b.summary.totalAmount)}</span>
 						+ B2C: <span class="font-mono">{formatCurrency(data.b2c.summary.totalAmount)}</span>
 						{#if !check.ok}
-							<span class="text-danger font-bold ml-1">(Diff: ₹{check.diffTotal})</span>
+							<span class="ml-1 font-bold text-danger">(Diff: ₹{check.diffTotal})</span>
 						{/if}
 					</div>
 				</div>
 			</div>
 
-			<div class="flex items-center gap-4 text-[11px] font-mono">
+			<div class="flex items-center gap-4 font-mono text-[11px]">
 				<div>
 					<span class="text-text-muted">Taxable: </span>
-					<strong>{formatCurrency(data.b2b.summary.taxableAmount)}</strong> + <strong>{formatCurrency(data.b2c.summary.taxableAmount)}</strong>
+					<strong>{formatCurrency(data.b2b.summary.taxableAmount)}</strong> +
+					<strong>{formatCurrency(data.b2c.summary.taxableAmount)}</strong>
 					= <strong>{formatCurrency(data.totals.taxableAmount)}</strong>
 				</div>
 				<div>
 					<span class="text-text-muted">GST: </span>
-					<strong>{formatCurrency(data.b2b.summary.gstAmount)}</strong> + <strong>{formatCurrency(data.b2c.summary.gstAmount)}</strong>
+					<strong>{formatCurrency(data.b2b.summary.gstAmount)}</strong> +
+					<strong>{formatCurrency(data.b2c.summary.gstAmount)}</strong>
 					= <strong>{formatCurrency(data.totals.gstAmount)}</strong>
 				</div>
 			</div>
@@ -545,9 +568,10 @@
 	<div class="flex flex-wrap items-center gap-2 border-b border-border pb-2 text-xs">
 		<button
 			type="button"
-			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab === 'summary'
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'summary'
 				? 'bg-accent text-white shadow-2xs'
-				: 'bg-surface text-text-secondary hover:bg-surface-secondary border border-border'}"
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
 			onclick={() => (activeTab = 'summary')}
 		>
 			<Layers size={13} />
@@ -556,9 +580,10 @@
 
 		<button
 			type="button"
-			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab === 'b2b'
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'b2b'
 				? 'bg-accent text-white shadow-2xs'
-				: 'bg-surface text-text-secondary hover:bg-surface-secondary border border-border'}"
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
 			onclick={() => (activeTab = 'b2b')}
 		>
 			<Building2 size={13} />
@@ -567,9 +592,10 @@
 
 		<button
 			type="button"
-			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab === 'b2c'
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'b2c'
 				? 'bg-accent text-white shadow-2xs'
-				: 'bg-surface text-text-secondary hover:bg-surface-secondary border border-border'}"
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
 			onclick={() => (activeTab = 'b2c')}
 		>
 			<User size={13} />
@@ -578,9 +604,10 @@
 
 		<button
 			type="button"
-			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab === 'hsn'
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'hsn'
 				? 'bg-accent text-white shadow-2xs'
-				: 'bg-surface text-text-secondary hover:bg-surface-secondary border border-border'}"
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
 			onclick={() => (activeTab = 'hsn')}
 		>
 			<Hash size={13} />
@@ -589,9 +616,10 @@
 
 		<button
 			type="button"
-			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab === 'itc'
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'itc'
 				? 'bg-accent text-white shadow-2xs'
-				: 'bg-surface text-text-secondary hover:bg-surface-secondary border border-border'}"
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
 			onclick={() => (activeTab = 'itc')}
 		>
 			<ShieldCheck size={13} />
@@ -609,9 +637,9 @@
 			<div class="space-y-4">
 				<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 					<!-- B2B vs B2C Split Cards -->
-					<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-3">
+					<div class="space-y-3 rounded-xl border border-border bg-surface p-4 shadow-2xs">
 						<div class="flex items-center justify-between">
-							<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">
+							<h3 class="text-xs font-bold tracking-wider text-text-muted uppercase">
 								Tax Classification Split
 							</h3>
 							<span class="text-[10px] text-text-muted">Rule 4 &amp; 7 Classification</span>
@@ -621,21 +649,38 @@
 							<!-- B2B Card -->
 							<div class="rounded-lg border border-accent/30 bg-accent/5 p-3">
 								<div class="flex items-center justify-between">
-									<span class="text-[10px] font-bold uppercase tracking-wider text-accent">B2B Registered</span>
-									<span class="rounded bg-accent-light px-1.5 py-0.5 text-[9px] font-black text-accent">WITH GSTIN</span>
+									<span class="text-[10px] font-bold tracking-wider text-accent uppercase"
+										>B2B Registered</span
+									>
+									<span
+										class="rounded bg-accent-light px-1.5 py-0.5 text-[9px] font-black text-accent"
+										>WITH GSTIN</span
+									>
 								</div>
 								<div class="mt-1 font-mono text-base font-bold text-text-primary tabular-nums">
 									{formatCurrency(data.b2b.summary.totalAmount)}
 								</div>
 								<div class="mt-2 space-y-0.5 text-[11px] text-text-muted">
-									<div>Invoices: <strong class="font-mono text-text-primary">{data.b2b.summary.invoiceCount}</strong></div>
-									<div>Taxable: <span class="font-mono text-text-secondary">{formatCurrency(data.b2b.summary.taxableAmount)}</span></div>
-									<div>GST: <span class="font-mono text-accent font-semibold">{formatCurrency(data.b2b.summary.gstAmount)}</span></div>
+									<div>
+										Invoices: <strong class="font-mono text-text-primary"
+											>{data.b2b.summary.invoiceCount}</strong
+										>
+									</div>
+									<div>
+										Taxable: <span class="font-mono text-text-secondary"
+											>{formatCurrency(data.b2b.summary.taxableAmount)}</span
+										>
+									</div>
+									<div>
+										GST: <span class="font-mono font-semibold text-accent"
+											>{formatCurrency(data.b2b.summary.gstAmount)}</span
+										>
+									</div>
 								</div>
 								<div class="mt-3">
 									<button
 										type="button"
-										class="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1"
+										class="flex items-center gap-1 text-[11px] font-semibold text-accent hover:underline"
 										onclick={() => (activeTab = 'b2b')}
 									>
 										<span>View Table 4 Invoices</span>
@@ -647,21 +692,38 @@
 							<!-- B2C Card -->
 							<div class="rounded-lg border border-border bg-surface-secondary p-3">
 								<div class="flex items-center justify-between">
-									<span class="text-[10px] font-bold uppercase tracking-wider text-text-secondary">B2C Retail</span>
-									<span class="rounded bg-surface px-1.5 py-0.5 text-[9px] font-bold text-text-muted border border-border">CONSUMER</span>
+									<span class="text-[10px] font-bold tracking-wider text-text-secondary uppercase"
+										>B2C Retail</span
+									>
+									<span
+										class="rounded border border-border bg-surface px-1.5 py-0.5 text-[9px] font-bold text-text-muted"
+										>CONSUMER</span
+									>
 								</div>
 								<div class="mt-1 font-mono text-base font-bold text-text-primary tabular-nums">
 									{formatCurrency(data.b2c.summary.totalAmount)}
 								</div>
 								<div class="mt-2 space-y-0.5 text-[11px] text-text-muted">
-									<div>Invoices: <strong class="font-mono text-text-primary">{data.b2c.summary.invoiceCount}</strong></div>
-									<div>Taxable: <span class="font-mono text-text-secondary">{formatCurrency(data.b2c.summary.taxableAmount)}</span></div>
-									<div>GST: <span class="font-mono text-accent font-semibold">{formatCurrency(data.b2c.summary.gstAmount)}</span></div>
+									<div>
+										Invoices: <strong class="font-mono text-text-primary"
+											>{data.b2c.summary.invoiceCount}</strong
+										>
+									</div>
+									<div>
+										Taxable: <span class="font-mono text-text-secondary"
+											>{formatCurrency(data.b2c.summary.taxableAmount)}</span
+										>
+									</div>
+									<div>
+										GST: <span class="font-mono font-semibold text-accent"
+											>{formatCurrency(data.b2c.summary.gstAmount)}</span
+										>
+									</div>
 								</div>
 								<div class="mt-3">
 									<button
 										type="button"
-										class="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1"
+										class="flex items-center gap-1 text-[11px] font-semibold text-accent hover:underline"
 										onclick={() => (activeTab = 'b2c')}
 									>
 										<span>View Table 7 Slabs</span>
@@ -673,17 +735,27 @@
 					</div>
 
 					<!-- GSTR-3B Tax Offset Ledger -->
-					<div class="flex flex-col justify-between rounded-xl border border-border bg-surface p-4 shadow-2xs">
+					<div
+						class="flex flex-col justify-between rounded-xl border border-border bg-surface p-4 shadow-2xs"
+					>
 						<div>
-							<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">GSTR-3B Tax Offset Ledger</h3>
+							<h3 class="text-xs font-bold tracking-wider text-text-muted uppercase">
+								GSTR-3B Tax Offset Ledger
+							</h3>
 							<div class="mt-3 space-y-2 text-xs">
-								<div class="flex justify-between py-1 border-b border-border">
+								<div class="flex justify-between border-b border-border py-1">
 									<span class="text-text-secondary">Total Output Tax Liability (Sales)</span>
-									<span class="font-mono font-bold text-accent">{formatCurrency(totalOutputGst)}</span>
+									<span class="font-mono font-bold text-accent"
+										>{formatCurrency(totalOutputGst)}</span
+									>
 								</div>
-								<div class="flex justify-between py-1 border-b border-border">
-									<span class="text-text-secondary">Less: Eligible Input Tax Credit (Purchases)</span>
-									<span class="font-mono font-bold text-success">- {formatCurrency(totalInputTaxCredit)}</span>
+								<div class="flex justify-between border-b border-border py-1">
+									<span class="text-text-secondary"
+										>Less: Eligible Input Tax Credit (Purchases)</span
+									>
+									<span class="font-mono font-bold text-success"
+										>- {formatCurrency(totalInputTaxCredit)}</span
+									>
 								</div>
 								<div class="flex justify-between py-1 text-sm font-bold">
 									<span class="text-text-primary">Net Cash Tax Payable into Electronic Ledger</span>
@@ -694,22 +766,29 @@
 							</div>
 						</div>
 
-						<div class="mt-3 rounded-lg bg-surface-secondary p-2 text-[11px] text-text-muted flex items-center gap-2">
-							<ShieldCheck size={16} class="text-success shrink-0" />
-							<span>50/50 Intra-State Central GST &amp; State GST split verified with zero rounding drift.</span>
+						<div
+							class="mt-3 flex items-center gap-2 rounded-lg bg-surface-secondary p-2 text-[11px] text-text-muted"
+						>
+							<ShieldCheck size={16} class="shrink-0 text-success" />
+							<span
+								>50/50 Intra-State Central GST &amp; State GST split verified with zero rounding
+								drift.</span
+							>
 						</div>
 					</div>
 				</div>
 
 				<!-- GST Slab Distribution Stacked Progress Bar -->
 				{#if totalSalesTaxable > 0}
-					<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs space-y-2">
+					<div class="space-y-2 rounded-xl border border-border bg-surface p-4 shadow-2xs">
 						<div class="flex items-center justify-between text-xs font-semibold text-text-primary">
 							<span class="flex items-center gap-1.5">
 								<Layers size={14} class="text-accent" />
 								<span>GST Rate Turnover Distribution</span>
 							</span>
-							<span class="font-mono text-text-muted tabular-nums">Taxable: {formatCurrency(totalSalesTaxable)}</span>
+							<span class="font-mono text-text-muted tabular-nums"
+								>Taxable: {formatCurrency(totalSalesTaxable)}</span
+							>
 						</div>
 						<div class="flex h-3 w-full overflow-hidden rounded-full bg-surface-secondary">
 							{#each data.sales as slab}
@@ -718,34 +797,44 @@
 									<div
 										style="width: {pct}%"
 										class="transition-all {slab.gstRate === 0
-											? "bg-slate-400"
+											? 'bg-slate-400'
 											: slab.gstRate === 5
-												? "bg-accent"
+												? 'bg-accent'
 												: slab.gstRate === 12
-													? "bg-info"
+													? 'bg-info'
 													: slab.gstRate === 18
-														? "bg-warning"
-														: "bg-danger"}"
-										title="{slab.gstRate}% GST: {formatCurrency(slab.taxableAmount)} ({pct.toFixed(1)}%)"
+														? 'bg-warning'
+														: 'bg-danger'}"
+										title="{slab.gstRate}% GST: {formatCurrency(slab.taxableAmount)} ({pct.toFixed(
+											1
+										)}%)"
 									></div>
 								{/if}
 							{/each}
 						</div>
-						<div class="flex flex-wrap items-center gap-4 text-[11px] text-text-muted pt-1 font-mono">
+						<div
+							class="flex flex-wrap items-center gap-4 pt-1 font-mono text-[11px] text-text-muted"
+						>
 							{#each data.sales as slab}
 								{@const pct = (slab.taxableAmount / totalSalesTaxable) * 100}
 								{#if pct > 0}
 									<div class="flex items-center gap-1.5">
-										<span class="h-2 w-2 rounded-full {slab.gstRate === 0
-											? "bg-slate-400"
-											: slab.gstRate === 5
-												? "bg-accent"
-												: slab.gstRate === 12
-													? "bg-info"
-													: slab.gstRate === 18
-														? "bg-warning"
-														: "bg-danger"}"></span>
-										<span>{slab.gstRate}% ({pct.toFixed(1)}% &bull; {formatCurrency(slab.taxableAmount)})</span>
+										<span
+											class="h-2 w-2 rounded-full {slab.gstRate === 0
+												? 'bg-slate-400'
+												: slab.gstRate === 5
+													? 'bg-accent'
+													: slab.gstRate === 12
+														? 'bg-info'
+														: slab.gstRate === 18
+															? 'bg-warning'
+															: 'bg-danger'}"
+										></span>
+										<span
+											>{slab.gstRate}% ({pct.toFixed(1)}% &bull; {formatCurrency(
+												slab.taxableAmount
+											)})</span
+										>
 									</div>
 								{/if}
 							{/each}
@@ -756,13 +845,17 @@
 				<!-- Combined Sales Tax Slabs -->
 				<div class="space-y-2">
 					<div class="flex items-center justify-between">
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">
+						<h3 class="text-xs font-bold tracking-wider text-text-muted uppercase">
 							Outward Supplies — Combined Rate Slabs
 						</h3>
 					</div>
-					<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+					<div
+						class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+					>
 						<table class="w-full text-left text-xs">
-							<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+							<thead
+								class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+							>
 								<tr>
 									<th class="px-3 py-2.5">GST Rate Slab</th>
 									<th class="px-3 py-2.5 text-right">Taxable Value (₹)</th>
@@ -774,23 +867,27 @@
 							</thead>
 							<tbody class="divide-y divide-border">
 								{#each data.sales as slab}
-									<tr class="hover:bg-surface-hover transition-colors">
+									<tr class="transition-colors hover:bg-surface-hover">
 										<td class="px-3 py-2 font-mono font-bold text-accent">
-											<span class="rounded bg-accent-light px-2 py-0.5 text-accent">{slab.gstRate}% GST</span>
+											<span class="rounded bg-accent-light px-2 py-0.5 text-accent"
+												>{slab.gstRate}% GST</span
+											>
 										</td>
-										<td class="px-3 py-2 text-right font-mono tabular-nums text-text-primary">
+										<td class="px-3 py-2 text-right font-mono text-text-primary tabular-nums">
 											{formatCurrency(slab.taxableAmount)}
 										</td>
-										<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">
+										<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">
 											{formatCurrency(slab.cgstAmount)}
 										</td>
-										<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">
+										<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">
 											{formatCurrency(slab.sgstAmount)}
 										</td>
-										<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-accent">
+										<td class="px-3 py-2 text-right font-mono font-bold text-accent tabular-nums">
 											{formatCurrency(slab.cgstAmount + slab.sgstAmount)}
 										</td>
-										<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-text-primary">
+										<td
+											class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums"
+										>
 											{formatCurrency(slab.totalAmount)}
 										</td>
 									</tr>
@@ -801,12 +898,12 @@
 				</div>
 			</div>
 
-		<!-- TAB 2: TABLE 4 B2B INVOICES -->
+			<!-- TAB 2: TABLE 4 B2B INVOICES -->
 		{:else if activeTab === 'b2b'}
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
 					<div>
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
 							Table 4: Taxable Outward Supplies to Registered Persons (B2B)
 						</h3>
 						<p class="text-[11px] text-text-muted">
@@ -824,9 +921,13 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div
+					class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+				>
 					<table class="w-full text-left text-xs">
-						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+						<thead
+							class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+						>
 							<tr>
 								<th class="px-3 py-2.5 whitespace-nowrap">Invoice No</th>
 								<th class="px-3 py-2.5 whitespace-nowrap">Date</th>
@@ -850,40 +951,50 @@
 								</tr>
 							{:else}
 								{#each data.b2b.invoices as inv}
-									<tr class="hover:bg-surface-hover transition-colors font-sans">
-										<td class="px-3 py-2.5 font-mono font-bold text-accent whitespace-nowrap">
+									<tr class="font-sans transition-colors hover:bg-surface-hover">
+										<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-accent">
 											{inv.invoiceNumber}
 										</td>
-										<td class="px-3 py-2.5 font-mono text-text-secondary whitespace-nowrap">
+										<td class="px-3 py-2.5 font-mono whitespace-nowrap text-text-secondary">
 											{formatDate(inv.date)}
 										</td>
-										<td class="px-3 py-2.5 font-semibold text-text-primary max-w-xs truncate">
+										<td class="max-w-xs truncate px-3 py-2.5 font-semibold text-text-primary">
 											{inv.customerName}
 										</td>
-										<td class="px-3 py-2.5 font-mono font-bold text-text-primary whitespace-nowrap">
-											<span class="rounded bg-surface-secondary px-1.5 py-0.5 border border-border">
+										<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-text-primary">
+											<span class="rounded border border-border bg-surface-secondary px-1.5 py-0.5">
 												{inv.customerGstin}
 											</span>
 										</td>
-										<td class="px-3 py-2.5 text-text-secondary whitespace-nowrap">
+										<td class="px-3 py-2.5 whitespace-nowrap text-text-secondary">
 											{inv.pos}
 										</td>
 										<td class="px-3 py-2.5 text-center font-mono font-bold text-accent">
 											{inv.rate}%
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-primary tabular-nums"
+										>
 											{formatCurrency(inv.taxableAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(inv.cgstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(inv.sgstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(inv.igstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-text-primary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-text-primary tabular-nums"
+										>
 											{formatCurrency(inv.totalAmount)}
 										</td>
 									</tr>
@@ -891,14 +1002,24 @@
 							{/if}
 						</tbody>
 						{#if data.b2b.invoices.length > 0}
-							<tfoot class="border-t-2 border-border bg-surface-secondary font-bold font-mono">
+							<tfoot class="border-t-2 border-border bg-surface-secondary font-mono font-bold">
 								<tr>
 									<td colspan="6" class="px-3 py-2 text-text-primary">B2B TOTALS:</td>
-									<td class="px-3 py-2 text-right text-text-primary">{formatCurrency(data.b2b.summary.taxableAmount)}</td>
-									<td class="px-3 py-2 text-right text-text-secondary">{formatCurrency(data.b2b.summary.cgstAmount)}</td>
-									<td class="px-3 py-2 text-right text-text-secondary">{formatCurrency(data.b2b.summary.sgstAmount)}</td>
-									<td class="px-3 py-2 text-right text-text-secondary">{formatCurrency(data.b2b.summary.igstAmount)}</td>
-									<td class="px-3 py-2 text-right text-accent">{formatCurrency(data.b2b.summary.totalAmount)}</td>
+									<td class="px-3 py-2 text-right text-text-primary"
+										>{formatCurrency(data.b2b.summary.taxableAmount)}</td
+									>
+									<td class="px-3 py-2 text-right text-text-secondary"
+										>{formatCurrency(data.b2b.summary.cgstAmount)}</td
+									>
+									<td class="px-3 py-2 text-right text-text-secondary"
+										>{formatCurrency(data.b2b.summary.sgstAmount)}</td
+									>
+									<td class="px-3 py-2 text-right text-text-secondary"
+										>{formatCurrency(data.b2b.summary.igstAmount)}</td
+									>
+									<td class="px-3 py-2 text-right text-accent"
+										>{formatCurrency(data.b2b.summary.totalAmount)}</td
+									>
 								</tr>
 							</tfoot>
 						{/if}
@@ -906,12 +1027,12 @@
 				</div>
 			</div>
 
-		<!-- TAB 3: TABLE 7 B2C SLABS -->
+			<!-- TAB 3: TABLE 7 B2C SLABS -->
 		{:else if activeTab === 'b2c'}
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
 					<div>
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
 							Table 7: Taxable Supplies to Unregistered Persons (B2C Others)
 						</h3>
 						<p class="text-[11px] text-text-muted">
@@ -929,9 +1050,13 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div
+					class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+				>
 					<table class="w-full text-left text-xs">
-						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+						<thead
+							class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+						>
 							<tr>
 								<th class="px-3 py-2.5">Rate Slab</th>
 								<th class="px-3 py-2.5">Place of Supply</th>
@@ -944,51 +1069,65 @@
 						</thead>
 						<tbody class="divide-y divide-border">
 							{#each data.b2c.slabs as slab}
-								<tr class="hover:bg-surface-hover transition-colors font-sans">
+								<tr class="font-sans transition-colors hover:bg-surface-hover">
 									<td class="px-3 py-2.5 font-mono font-bold text-accent">
-										<span class="rounded bg-accent-light px-2 py-0.5 text-accent">{slab.gstRate}% GST</span>
+										<span class="rounded bg-accent-light px-2 py-0.5 text-accent"
+											>{slab.gstRate}% GST</span
+										>
 									</td>
 									<td class="px-3 py-2.5 text-text-secondary">
 										{data.store.pos}
 									</td>
-									<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">
+									<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums">
 										{formatCurrency(slab.taxableAmount)}
 									</td>
-									<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary">
+									<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums">
 										{formatCurrency(slab.cgstAmount)}
 									</td>
-									<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary">
+									<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums">
 										{formatCurrency(slab.sgstAmount)}
 									</td>
-									<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-accent">
+									<td class="px-3 py-2.5 text-right font-mono font-bold text-accent tabular-nums">
 										{formatCurrency(slab.totalTax)}
 									</td>
-									<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-text-primary">
+									<td
+										class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+									>
 										{formatCurrency(slab.totalAmount)}
 									</td>
 								</tr>
 							{/each}
 						</tbody>
-						<tfoot class="border-t-2 border-border bg-surface-secondary font-bold font-mono">
+						<tfoot class="border-t-2 border-border bg-surface-secondary font-mono font-bold">
 							<tr>
 								<td colspan="2" class="px-3 py-2 text-text-primary">B2C TOTALS:</td>
-								<td class="px-3 py-2 text-right text-text-primary">{formatCurrency(data.b2c.summary.taxableAmount)}</td>
-								<td class="px-3 py-2 text-right text-text-secondary">{formatCurrency(data.b2c.summary.cgstAmount)}</td>
-								<td class="px-3 py-2 text-right text-text-secondary">{formatCurrency(data.b2c.summary.sgstAmount)}</td>
-								<td class="px-3 py-2 text-right text-accent">{formatCurrency(data.b2c.summary.gstAmount)}</td>
-								<td class="px-3 py-2 text-right text-accent">{formatCurrency(data.b2c.summary.totalAmount)}</td>
+								<td class="px-3 py-2 text-right text-text-primary"
+									>{formatCurrency(data.b2c.summary.taxableAmount)}</td
+								>
+								<td class="px-3 py-2 text-right text-text-secondary"
+									>{formatCurrency(data.b2c.summary.cgstAmount)}</td
+								>
+								<td class="px-3 py-2 text-right text-text-secondary"
+									>{formatCurrency(data.b2c.summary.sgstAmount)}</td
+								>
+								<td class="px-3 py-2 text-right text-accent"
+									>{formatCurrency(data.b2c.summary.gstAmount)}</td
+								>
+								<td class="px-3 py-2 text-right text-accent"
+									>{formatCurrency(data.b2c.summary.totalAmount)}</td
+								>
 							</tr>
 						</tfoot>
 					</table>
 				</div>
 			</div>
 
-		<!-- TAB 4: TABLE 12 HSN SUMMARY -->
+			<!-- TAB 4: TABLE 12 HSN SUMMARY -->
 		{:else if activeTab === 'hsn'}
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
 					<div>
-						<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">
+						<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
 							Table 12: HSN-Wise Summary of Outward Supplies
 						</h3>
 						<p class="text-[11px] text-text-muted">
@@ -1006,9 +1145,13 @@
 					</Button>
 				</div>
 
-				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div
+					class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+				>
 					<table class="w-full text-left text-xs">
-						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+						<thead
+							class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+						>
 							<tr>
 								<th class="px-3 py-2.5 whitespace-nowrap">HSN Code</th>
 								<th class="px-3 py-2.5">Description</th>
@@ -1030,32 +1173,44 @@
 								</tr>
 							{:else}
 								{#each data.hsnSummary as item}
-									<tr class="hover:bg-surface-hover transition-colors font-sans">
-										<td class="px-3 py-2.5 font-mono font-bold text-accent whitespace-nowrap">
+									<tr class="font-sans transition-colors hover:bg-surface-hover">
+										<td class="px-3 py-2.5 font-mono font-bold whitespace-nowrap text-accent">
 											{item.hsnCode}
 										</td>
-										<td class="px-3 py-2.5 font-medium text-text-primary max-w-xs truncate">
+										<td class="max-w-xs truncate px-3 py-2.5 font-medium text-text-primary">
 											{item.description}
 										</td>
-										<td class="px-3 py-2.5 text-text-secondary whitespace-nowrap">
+										<td class="px-3 py-2.5 whitespace-nowrap text-text-secondary">
 											{item.uqc}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-text-primary"
+										>
 											{item.totalQuantity}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-primary tabular-nums"
+										>
 											{formatCurrency(item.taxableValue)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(item.cgstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(item.sgstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono whitespace-nowrap text-text-secondary tabular-nums"
+										>
 											{formatCurrency(item.igstAmount)}
 										</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-text-primary whitespace-nowrap">
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-text-primary tabular-nums"
+										>
 											{formatCurrency(item.totalValue)}
 										</td>
 									</tr>
@@ -1066,21 +1221,26 @@
 				</div>
 			</div>
 
-		<!-- TAB 5: GSTR-3B ITC OFFSETS -->
+			<!-- TAB 5: GSTR-3B ITC OFFSETS -->
 		{:else if activeTab === 'itc'}
 			<div class="space-y-3">
 				<div>
-					<h3 class="text-xs font-bold uppercase tracking-wider text-text-primary">
+					<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
 						Inward Supplies (Purchases) — Eligible Input Tax Credit (ITC)
 					</h3>
 					<p class="text-[11px] text-text-muted">
-						Tax paid on verified Goods Inward Receipts (GRN) available to set off against outward liability
+						Tax paid on verified Goods Inward Receipts (GRN) available to set off against outward
+						liability
 					</p>
 				</div>
 
-				<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+				<div
+					class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+				>
 					<table class="w-full text-left text-xs">
-						<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+						<thead
+							class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+						>
 							<tr>
 								<th class="px-3 py-2.5">GST Rate Slab</th>
 								<th class="px-3 py-2.5 text-center">Items Received</th>
@@ -1100,16 +1260,29 @@
 								</tr>
 							{:else}
 								{#each data.purchases as pSlab}
-									<tr class="hover:bg-surface-hover transition-colors font-sans">
+									<tr class="font-sans transition-colors hover:bg-surface-hover">
 										<td class="px-3 py-2.5 font-mono font-bold text-success">
-											<span class="rounded bg-success-light px-2 py-0.5 text-success">{pSlab.gstRate}% GST</span>
+											<span class="rounded bg-success-light px-2 py-0.5 text-success"
+												>{pSlab.gstRate}% GST</span
+											>
 										</td>
 										<td class="px-3 py-2.5 text-center font-mono">{pSlab.itemCount}</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(pSlab.taxableAmount)}</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(pSlab.cgstAmount)}</td>
-										<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(pSlab.sgstAmount)}</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-success">{formatCurrency(pSlab.cgstAmount + pSlab.sgstAmount)}</td>
-										<td class="px-3 py-2.5 text-right font-mono font-bold tabular-nums text-text-primary">{formatCurrency(pSlab.totalAmount)}</td>
+										<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+											>{formatCurrency(pSlab.taxableAmount)}</td
+										>
+										<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums"
+											>{formatCurrency(pSlab.cgstAmount)}</td
+										>
+										<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums"
+											>{formatCurrency(pSlab.sgstAmount)}</td
+										>
+										<td class="px-3 py-2.5 text-right font-mono font-bold text-success tabular-nums"
+											>{formatCurrency(pSlab.cgstAmount + pSlab.sgstAmount)}</td
+										>
+										<td
+											class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+											>{formatCurrency(pSlab.totalAmount)}</td
+										>
 									</tr>
 								{/each}
 							{/if}

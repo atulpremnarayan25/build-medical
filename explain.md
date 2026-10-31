@@ -1,7 +1,7 @@
 # MedStock ERP — Technical & Domain Architecture Guide (`explain.md`)
 
 > **Target Audience / Reader Model:** Local LLMs (such as Qwen 2.5/3.5, Gemma 2/4 7B/14B/27B) running in quantized local environments (e.g., llama.cpp, Ollama, LM Studio, MLX on a 16GB MacBook Air M4) as well as software engineers working on this codebase.
-> 
+>
 > **Document Purpose:** Complete, authoritative, end-to-end explanation of the **WHAT**, **WHY**, and **HOW** behind every layer of MedStock ERP: domain logic, regulatory statutes, system architecture, database schema, transactional billing engine, and codebase layout.
 
 ---
@@ -51,11 +51,12 @@
 
 ## 1. Executive Summary & High-Level Purpose
 
-**MedStock ERP** (internally referenced as `MedERP` / `build-medical`) is a mission-critical pharmaceutical enterprise resource planning (ERP) and retail Point-of-Sale (POS) system. 
+**MedStock ERP** (internally referenced as `MedERP` / `build-medical`) is a mission-critical pharmaceutical enterprise resource planning (ERP) and retail Point-of-Sale (POS) system.
 
 It is purpose-built for independent stockists and pharmacy retailers operating in high-rush commercial centers across India (originally modeled for a family-owned medical distribution business in Ballia, Uttar Pradesh).
 
 ### What it does:
+
 - Provides **sub-second, 100% keyboard-driven billing** for high-volume retail counters.
 - Enforces **automated FEFO (First Expiry First Out)** inventory consumption across drug batches.
 - Handles **hybrid operations**: retail consumer billing and B2B wholesale clinic/stockist billing from a single shared stock ledger.
@@ -65,6 +66,7 @@ It is purpose-built for independent stockists and pharmacy retailers operating i
 - Runs **offline-first** on local store hardware via LAN, with asynchronous transactional synchronization to a cloud Postgres replica.
 
 ### Why generic POS / ERP software fails in this domain:
+
 1. **Generic ERPs (QuickBooks, Zoho, Tally, Marg ERP):**
    - Marg and legacy desktop ERPs are cluttered, slow, Windows-only, proprietary, fragile, and lack web/modern API extensibility.
    - Generic cloud POS systems (Square, Shopify) lack batch-level expiry tracking, drug schedules, doctor registration capture, packaging unit hierarchies (box → strip → tablet), and Indian GST split mechanics.
@@ -80,14 +82,15 @@ To write and maintain code in this project, an LLM or developer must understand 
 
 Under the **Drugs and Cosmetics Act, 1940** and **Drugs and Cosmetics Rules, 1945 (Rule 65)**, medicines in India are strictly classified into regulatory schedules:
 
-| Schedule | Description | Regulatory & Software Enforcement |
-| :--- | :--- | :--- |
-| **Normal / OTC** | Over-the-counter drugs (e.g., Paracetamol, vitamins). | Can be dispensed to walk-in anonymous customers with no doctor prescription. |
-| **Schedule H** | Prescription drugs (e.g., standard antibiotics, antihypertensives). | Requires prescription; dispensing record must note prescriber details. |
-| **Schedule H1** | High-risk antibiotics, 3rd/4th gen cephalosporins, psychotropics (e.g., Alprazolam, Zolpidem, Tramadol). | **Mandatory statutory register**: Bill completion is hard-blocked unless: <br>1. Prescribing Doctor's Name is recorded.<br>2. Doctor's Medical Council Registration Number is recorded.<br>3. Patient Name and Contact Details are recorded.<br>Records must be retained for drug inspector audit for at least 3 years. |
-| **Schedule X** | Severe narcotics and habit-forming psychotropics (e.g., Ketamine, Morphine). | Extreme audit requirement; requires duplicate prescription retention and separate stock register. |
+| Schedule         | Description                                                                                              | Regulatory & Software Enforcement                                                                                                                                                                                                                                                                                       |
+| :--------------- | :------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Normal / OTC** | Over-the-counter drugs (e.g., Paracetamol, vitamins).                                                    | Can be dispensed to walk-in anonymous customers with no doctor prescription.                                                                                                                                                                                                                                            |
+| **Schedule H**   | Prescription drugs (e.g., standard antibiotics, antihypertensives).                                      | Requires prescription; dispensing record must note prescriber details.                                                                                                                                                                                                                                                  |
+| **Schedule H1**  | High-risk antibiotics, 3rd/4th gen cephalosporins, psychotropics (e.g., Alprazolam, Zolpidem, Tramadol). | **Mandatory statutory register**: Bill completion is hard-blocked unless: <br>1. Prescribing Doctor's Name is recorded.<br>2. Doctor's Medical Council Registration Number is recorded.<br>3. Patient Name and Contact Details are recorded.<br>Records must be retained for drug inspector audit for at least 3 years. |
+| **Schedule X**   | Severe narcotics and habit-forming psychotropics (e.g., Ketamine, Morphine).                             | Extreme audit requirement; requires duplicate prescription retention and separate stock register.                                                                                                                                                                                                                       |
 
 **In the codebase:**
+
 - `productsTable.drugSchedule`: Stored as `'none'`, `'H'`, `'H1'`, `'X'`.
 - `salesTable`: Has explicit fields `patientName`, `prescriberName`, `prescriberRegNo`.
 - `src/routes/api/reports/schedule-h1/+server.ts`: Generates statutory audit reports for Drug Inspectors.
@@ -97,10 +100,10 @@ Under the **Drugs and Cosmetics Act, 1940** and **Drugs and Cosmetics Rules, 194
 
 Standard warehousing uses FIFO (First In, First Out). In pharmaceutical distribution, **FIFO causes catastrophic financial loss and lethal health hazards**.
 
-- A batch manufactured in January 2026 expiring in December 2026 might arrive *after* a batch manufactured in November 2025 expiring in May 2026.
+- A batch manufactured in January 2026 expiring in December 2026 might arrive _after_ a batch manufactured in November 2025 expiring in May 2026.
 - Using FIFO would sell the December 2026 batch first, leaving the May 2026 batch to expire on the shelf.
 - Expired pharmaceutical stock cannot be sold legally, cannot always be returned to suppliers for full credit, and results in total financial write-off.
-- **FEFO (First Expiry, First Out)** is legally and financially required: the batch with the **earliest expiry date** must *always* be allocated first, regardless of when it arrived in the warehouse.
+- **FEFO (First Expiry, First Out)** is legally and financially required: the batch with the **earliest expiry date** must _always_ be allocated first, regardless of when it arrived in the warehouse.
 - **Near-Expiry (< 90 days):** Warning state surfaced in yellow/amber (`#d97706`).
 - **Expired Stock:** Sale is completely rejected unless explicitly overridden by an authenticated `owner_admin` role (`allowExpiredOverride`).
 
@@ -122,9 +125,9 @@ Goods and Services Tax (GST) in India has strict legal calculation rules:
    - If an intra-state tax total results in an odd number of paise (e.g., 25 paise total tax):
      - `cgstPaise = Math.floor(25 / 2) = 12`
      - `sgstPaise = 25 - 12 = 13`
-     - The sum of CGST and SGST *must always exactly equal* total GST.
+     - The sum of CGST and SGST _must always exactly equal_ total GST.
 5. **Post-Discount Tax Computation:**
-   - When a bill-level discount is given, Indian tax law dictates that GST applies to the *discounted taxable value*, not the list price. Discretionary discounts must be apportioned across line items proportionally *before* computing tax.
+   - When a bill-level discount is given, Indian tax law dictates that GST applies to the _discounted taxable value_, not the list price. Discretionary discounts must be apportioned across line items proportionally _before_ computing tax.
 6. **Invoice Round-Off:**
    - Final invoice grand total is rounded half-up to the nearest whole Rupee (`roundToRupee`). The rounding difference is explicitly recorded as `roundOffRupees`.
 
@@ -141,7 +144,7 @@ Manufacturer ──(PTS)──> Stockist/Wholesaler ──(PTR)──> Retail Ch
 - **PTS (Price to Stockist):** The rate at which pharma companies bill distributors.
 - **Multi-Unit Packaging Conversions:**
   - Medicines are purchased in bulk boxes but sold in strips or loose tablets.
-  - *Hierarchy:* 1 Box = 10 Strips = 100 Tablets.
+  - _Hierarchy:_ 1 Box = 10 Strips = 100 Tablets.
   - The software stores all inventory quantities internally in the **Base Unit** (the smallest indivisible unit, e.g., Tablet).
   - Every product unit defines `conversionToBase` (e.g., Box conversion = 100, Strip conversion = 10).
   - When billing 2 Strips, the billing engine deducts $2 \times 10 = 20$ Base Units from the batch stock.
@@ -149,6 +152,7 @@ Manufacturer ──(PTS)──> Stockist/Wholesaler ──(PTR)──> Retail Ch
 ### 2.5 The B2B Khata (Credit Ledger) System
 
 Indian trade heavily relies on informal and formal revolving credit accounts called **Khata**:
+
 - Local clinics, nursing homes, and retail pharmacies buy stock on credit.
 - Bills are rarely settled immediately in cash; they are marked `paymentStatus: 'credit'` or `'partial'`.
 - The customer balance is an accumulating ledger. When the customer pays ₹10,000 via UPI or cheque a week later, this payment is applied against outstanding debts (FIFO invoice settlement).
@@ -209,8 +213,9 @@ Indian trade heavily relies on informal and formal revolving credit accounts cal
 ### 3.3 Transactional Outbox Sync Engine
 
 To synchronize data between the Store Server and Cloud without distributed two-phase commits:
+
 - Every business transaction (sale, purchase, customer create, stock adjustment) inserts a record into the `sync_outbox` table **inside the exact same database transaction**.
-- If the transaction fails, the business write rolls back *and* the outbox entry rolls back.
+- If the transaction fails, the business write rolls back _and_ the outbox entry rolls back.
 - A background worker polls `sync_outbox WHERE sent_at IS NULL`, batches mutations, and pushes them to the remote `/api/sync/push` endpoint over HTTPS.
 - Upon successful receipt and replay, the sender marks `sent_at = NOW()`.
 
@@ -242,19 +247,20 @@ Invoice numbers must be sequential for tax audits (e.g., `INV-2026-0001`), but t
 
 ### 4.1 Core Technologies
 
-| Layer | Technology | Version | Justification |
-| :--- | :--- | :--- | :--- |
-| **Frontend Framework** | SvelteKit + Svelte 5 | SvelteKit 2.63, Svelte 5.56 | Compiles to minimal JS; zero virtual-DOM overhead; run perfectly on low-spec 4GB RAM POS machines. Uses modern Svelte 5 Runes (`$state`, `$derived`, `$props`). |
-| **Desktop Shell** | Tauri (planned/compatible) | Tauri 2.x | Native OS webview wrapper written in Rust. Replaces Electron (which bundles Chromium and consumes 500MB+ RAM idle). |
-| **Styling** | Tailwind CSS | v4.3 | High-density utility styling with zero runtime CSS-in-JS overhead. |
-| **Database** | PostgreSQL | 15+ | Transactional guarantees, row-level locking (`FOR UPDATE`), trigram indexing (`pg_trgm`), JSONB audit columns. |
-| **ORM & Migrations** | Drizzle ORM | 0.45.2 (`drizzle-orm/postgres-js`) | Type-safe SQL dialect, zero bloat, native support for transactions and prepared queries. |
-| **Testing** | Vitest | 4.1.8 | Sub-second unit and integration testing suite. |
-| **Verification** | Reticle | 2.11.0 | In-app verification harness (`reticle_*` MCP tools) verifying live UI state without brittle end-to-end test flakiness. |
+| Layer                  | Technology                 | Version                            | Justification                                                                                                                                                   |
+| :--------------------- | :------------------------- | :--------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend Framework** | SvelteKit + Svelte 5       | SvelteKit 2.63, Svelte 5.56        | Compiles to minimal JS; zero virtual-DOM overhead; run perfectly on low-spec 4GB RAM POS machines. Uses modern Svelte 5 Runes (`$state`, `$derived`, `$props`). |
+| **Desktop Shell**      | Tauri (planned/compatible) | Tauri 2.x                          | Native OS webview wrapper written in Rust. Replaces Electron (which bundles Chromium and consumes 500MB+ RAM idle).                                             |
+| **Styling**            | Tailwind CSS               | v4.3                               | High-density utility styling with zero runtime CSS-in-JS overhead.                                                                                              |
+| **Database**           | PostgreSQL                 | 15+                                | Transactional guarantees, row-level locking (`FOR UPDATE`), trigram indexing (`pg_trgm`), JSONB audit columns.                                                  |
+| **ORM & Migrations**   | Drizzle ORM                | 0.45.2 (`drizzle-orm/postgres-js`) | Type-safe SQL dialect, zero bloat, native support for transactions and prepared queries.                                                                        |
+| **Testing**            | Vitest                     | 4.1.8                              | Sub-second unit and integration testing suite.                                                                                                                  |
+| **Verification**       | Reticle                    | 2.11.0                             | In-app verification harness (`reticle_*` MCP tools) verifying live UI state without brittle end-to-end test flakiness.                                          |
 
 ### 4.2 Prohibited Technologies & Anti-Patterns
 
 Any LLM modifying this project **must adhere to these strict restrictions**:
+
 - ❌ **NO React, Vue, Angular, or Solid:** The project is strictly Svelte 5.
 - ❌ **NO Electron:** Desktop targeting is strictly Tauri-compatible.
 - ❌ **NO Floating-Point Arithmetic for Money:** Never use JavaScript `number` math for authoritative totals (`0.1 + 0.2 = 0.30000000000000004`). All money calculations must use integer paise via `src/lib/server/billing/money.ts`.
@@ -268,7 +274,7 @@ Any LLM modifying this project **must adhere to these strict restrictions**:
 ### 5.1 The 4-Tier Layer Rule
 
 ```
-[ Tier 1: UI Layer ] 
+[ Tier 1: UI Layer ]
   Svelte Components (`src/routes/**/*.svelte`, `src/lib/components/**/*.svelte`)
   ↓ (reads reactive state, dispatches user events)
 [ Tier 2: State Layer ]
@@ -301,13 +307,14 @@ There are **two sets of services** in this codebase, operating on different side
 ### 5.3 Svelte 5 Runes State Architecture
 
 This codebase is built on **Svelte 5**:
+
 - Uses **Runes** (`$state`, `$derived`, `$effect`, `$props`) instead of legacy Svelte 3/4 `export let` and writable stores.
 - Example from `src/routes/sales/new/+page.svelte`:
   ```svelte
   <script lang="ts">
-    let items = $state<BillItem[]>([]);
-    let customer = $state<Customer | null>(null);
-    let subtotal = $derived(items.reduce((sum, item) => sum + item.lineTotal, 0));
+  	let items = $state<BillItem[]>([]);
+  	let customer = $state<Customer | null>(null);
+  	let subtotal = $derived(items.reduce((sum, item) => sum + item.lineTotal, 0));
   </script>
   ```
 - Store files use the `.svelte.ts` extension (e.g., `toastStore.svelte.ts`, `appStore.svelte.ts`).
@@ -321,6 +328,7 @@ Source file: `src/lib/server/db/schema.ts`
 ### 6.1 Global Schema Conventions & Sync Columns
 
 Every syncable business table implements these standard columns:
+
 - `id`: `uuid('id').primaryKey().defaultRandom()` — UUIDs allow independent node creation without primary key collisions.
 - `createdAt`: `timestamp('created_at', { withTimezone: true }).notNull().defaultNow()`
 - `updatedAt`: `timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()`
@@ -331,7 +339,9 @@ Every syncable business table implements these standard columns:
 ### 6.2 Complete Table-by-Table Reference
 
 #### 1. `stores`
+
 Forward-compatibility for multi-store topology (v1 runs with 1 default row).
+
 - `id`: UUID (PK)
 - `name`: TEXT (Store trading name)
 - `address`: TEXT
@@ -339,7 +349,9 @@ Forward-compatibility for multi-store topology (v1 runs with 1 default row).
 - `drugLicenseNo`, `drugLicenseNo2`: TEXT (Form 20/21 wholesale & retail drug license numbers)
 
 #### 2. `users`
+
 System operators with role-based access control.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `name`: TEXT
@@ -349,13 +361,17 @@ System operators with role-based access control.
 - `isActive`: BOOLEAN (default `true`)
 
 #### 3. `sessions`
+
 Ephemeral node-local authentication tokens (intentionally **never synced** to cloud).
+
 - `id`: TEXT (PK, 32-byte secure random hex)
 - `userId`: UUID (FK -> `users.id` ON DELETE CASCADE)
 - `expiresAt`: TIMESTAMPTZ
 
 #### 4. `products`
+
 Master medicine and FMCG catalog.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `name`: TEXT (Brand name, e.g. "Dolo 650mg") — Indexed via GIN trigram (`gin_trgm_ops`) for instant partial searches
@@ -375,7 +391,9 @@ Master medicine and FMCG catalog.
 - `isActive`: BOOLEAN
 
 #### 5. `product_units`
+
 Packaging unit hierarchy conversions (e.g., Box → Strip → Tablet).
+
 - `id`: UUID (PK)
 - `productId`: UUID (FK -> `products.id` ON DELETE CASCADE)
 - `unitName`: TEXT (e.g. "Box", "Strip", "Tablet")
@@ -385,7 +403,9 @@ Packaging unit hierarchy conversions (e.g., Box → Strip → Tablet).
 - `isBaseUnit`: BOOLEAN (Exactly one unit per product has `isBaseUnit = true`)
 
 #### 6. `batches`
+
 Inventory holding records partitioned by physical batch numbers and expiry dates.
+
 - `id`: UUID (PK)
 - `productId`: UUID (FK -> `products.id`)
 - `batchNo`: TEXT (Manufacturer batch identifier stamped on foil/pack)
@@ -398,7 +418,9 @@ Inventory holding records partitioned by physical batch numbers and expiry dates
 - `purchaseId`: UUID (FK -> `purchases.id`, optional)
 
 #### 7. `batch_stock_events`
+
 **Append-only immutable audit trail of all inventory movements.**
+
 - `id`: UUID (PK)
 - `batchId`: UUID (FK -> `batches.id`)
 - `delta`: NUMERIC (Positive for stock in, negative for stock out)
@@ -408,7 +430,9 @@ Inventory holding records partitioned by physical batch numbers and expiry dates
 - `createdBy`: UUID (FK -> `users.id`)
 
 #### 8. `suppliers`
+
 Wholesale pharmaceutical distributors.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `name`: TEXT
@@ -418,7 +442,9 @@ Wholesale pharmaceutical distributors.
 - `isActive`: BOOLEAN
 
 #### 9. `customers`
+
 Retail consumers and B2B wholesale accounts (clinics, hospitals, doctors).
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `name`: TEXT
@@ -430,7 +456,9 @@ Retail consumers and B2B wholesale accounts (clinics, hospitals, doctors).
 - `isActive`: BOOLEAN
 
 #### 10. `purchases` & `purchase_items`
+
 Inward Goods Received Notes (GRN) from suppliers.
+
 - `purchases`:
   - `id`: UUID (PK)
   - `storeId`: UUID (FK -> `stores.id`)
@@ -447,7 +475,9 @@ Inward Goods Received Notes (GRN) from suppliers.
   - `purchasePrice`: NUMERIC
 
 #### 11. `sales` & `sale_items`
+
 Outward retail and wholesale invoices.
+
 - `sales`:
   - `id`: UUID (PK)
   - `storeId`: UUID (FK -> `stores.id`)
@@ -477,7 +507,9 @@ Outward retail and wholesale invoices.
   - `schemeApplied`: TEXT (e.g. "10+1 Free")
 
 #### 12. `payments`
+
 Dual-direction cash/bank/UPI settlements.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `direction`: TEXT (`'customer_payment'` | `'supplier_payment'`)
@@ -490,7 +522,9 @@ Dual-direction cash/bank/UPI settlements.
 - `createdBy`: UUID (FK -> `users.id`)
 
 #### 13. `returns` & `return_items`
+
 Reversals for customer returns and defective supplier returns.
+
 - `returns`:
   - `id`: UUID (PK)
   - `returnType`: TEXT (`'sales_return'` | `'purchase_return'`)
@@ -507,7 +541,9 @@ Reversals for customer returns and defective supplier returns.
   - `lineAmount`: NUMERIC
 
 #### 14. `invoice_sequences`
+
 Distributed non-colliding invoice sequence generator.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `nodeId`: TEXT (e.g. `'store_server'`, `'cloud'`)
@@ -517,7 +553,9 @@ Distributed non-colliding invoice sequence generator.
 - `allocatedAt`: TIMESTAMPTZ
 
 #### 15. `audit_log`
+
 Append-only log recording every entity modification.
+
 - `id`: UUID (PK)
 - `storeId`: UUID (FK -> `stores.id`)
 - `entityType`: TEXT (`'product'`, `'batch'`, `'sale'`, etc.)
@@ -528,7 +566,9 @@ Append-only log recording every entity modification.
 - `afterValue`: JSONB
 
 #### 16. `sync_outbox`
+
 Transactional buffer for node-to-node replication.
+
 - `id`: UUID (PK)
 - `tableName`: TEXT
 - `rowId`: UUID
@@ -582,7 +622,7 @@ Step 9: Commit Transaction
 4. **Optimistic Guard:**
    The inventory deduction query uses an atomic decrement with a floor check:
    ```sql
-   UPDATE batches 
+   UPDATE batches
    SET quantity_remaining = quantity_remaining - :qty,
        sync_version = sync_version + 1,
        updated_at = NOW()
@@ -598,15 +638,16 @@ The batch allocation algorithm is an **isolated pure function**: no database imp
 
 ```typescript
 export function allocateFefo(
-    requestedBaseUnits: number,
-    candidates: FefoBatch[],
-    options: FefoOptions
-): FefoResult
+	requestedBaseUnits: number,
+	candidates: FefoBatch[],
+	options: FefoOptions
+): FefoResult;
 ```
 
 #### Rules Enforced by `allocateFefo`:
+
 1. **Integer Quantities:** `requestedBaseUnits` must be a positive integer.
-2. **Pinned Batch Handling:** If the cashier explicitly pins a batch (`pinnedBatchId`), allocation considers *only* that batch.
+2. **Pinned Batch Handling:** If the cashier explicitly pins a batch (`pinnedBatchId`), allocation considers _only_ that batch.
 3. **Expiry Filtering:** Unless `includeExpired: true` is passed, batches where `expiryDate <= today` are strictly excluded.
 4. **Zero-Stock Filtering:** Batches with `quantityRemaining <= 0` are excluded.
 5. **Deterministic Sorting:**
@@ -636,6 +677,7 @@ To eliminate floating-point precision errors (e.g. `0.1 + 0.2 = 0.30000000000000
 The `batches.quantityRemaining` column is technically a **materialized cache**. The true legal and financial source of truth is the immutable, append-only `batch_stock_events` table.
 
 Every inventory change appends a row:
+
 - Inward GRN: `delta = +100`, `eventType = 'purchase'`, `referenceId = purchase.id`
 - Retail Sale: `delta = -10`, `eventType = 'sale'`, `referenceId = sale.id`
 - Customer Return: `delta = +5`, `eventType = 'sales_return'`, `referenceId = return.id`
@@ -649,6 +691,7 @@ $$\text{Calculated Stock} = \sum_{\text{events}} \text{delta}$$
 Source file: `src/lib/server/billing/returns.ts`
 
 When a medicine is returned:
+
 1. `returns` record is inserted with the return reason and approving user ID.
 2. `return_items` rows capture the returning batch and quantity.
 3. For **Sales Returns**:
@@ -687,35 +730,36 @@ Balance = Previous Balance + Credit - Debit
 
 In a crowded pharmacy counter, **every mouse click costs 2–5 seconds of customer queue delay**. MedStock ERP is engineered so a clerk never has to lift their hands from the keyboard.
 
-| Key | Global Action | Billing Context Action |
-| :--- | :--- | :--- |
-| `Ctrl+K` | Global Search Palette | Focus product search box |
-| `Ctrl+N` | Open New Sale screen | — |
-| `F2` | — | Focus Product Search input |
-| `F3` | — | Focus Customer Search input |
-| `F4` | — | Cycle Payment Mode (Cash $\rightarrow$ UPI $\rightarrow$ Credit) |
-| `F6` | — | Hold current bill / Recall held bills |
-| `F8` | — | Toggle Sale Type (Retail $\leftrightarrow$ Wholesale) |
-| `F10` / `Ctrl+S` | — | Finalize & Print Invoice |
-| `Escape` | Close modal dialog | Clear active search dropdown |
-| `Tab` / `Enter` | Navigate between inputs | Add item from search dropdown to bill |
+| Key              | Global Action           | Billing Context Action                                           |
+| :--------------- | :---------------------- | :--------------------------------------------------------------- |
+| `Ctrl+K`         | Global Search Palette   | Focus product search box                                         |
+| `Ctrl+N`         | Open New Sale screen    | —                                                                |
+| `F2`             | —                       | Focus Product Search input                                       |
+| `F3`             | —                       | Focus Customer Search input                                      |
+| `F4`             | —                       | Cycle Payment Mode (Cash $\rightarrow$ UPI $\rightarrow$ Credit) |
+| `F6`             | —                       | Hold current bill / Recall held bills                            |
+| `F8`             | —                       | Toggle Sale Type (Retail $\leftrightarrow$ Wholesale)            |
+| `F10` / `Ctrl+S` | —                       | Finalize & Print Invoice                                         |
+| `Escape`         | Close modal dialog      | Clear active search dropdown                                     |
+| `Tab` / `Enter`  | Navigate between inputs | Add item from search dropdown to bill                            |
 
 ### 8.2 Visual Palette & Status Semantics
 
 The visual styling adheres to **"The Clinical Console"** design specification (`DESIGN.md`):
 
-| Purpose | Token / Hex | Context & Meaning |
-| :--- | :--- | :--- |
-| **Primary Brand** | `clinical-teal` (`#0d9488`) | Header actions, primary buttons, active tabs. |
-| **Schedule H1 Violet** | `statutory-violet` (`#7c3aed`) | **Non-negotiable rule:** Applied to all Schedule H, H1, and X badges, alerts, and modal borders. Unambiguously flags regulatory scrutiny. |
-| **Healthy Stock** | `emerald` (`#16a34a`) | Batches with >90 days to expiry and sufficient stock. |
-| **Near-Expiry Warning** | `amber` (`#d97706`) | Batches expiring within 90 days. Warns clerk to prioritize dispensing. |
-| **Expired / Critical** | `rose` (`#dc2626`) | Expired batches or depleted stock. |
-| **Sidebar Canvas** | `slate-900` (`#0f172a`) | Dark, high-contrast, distraction-free navigation shell. |
+| Purpose                 | Token / Hex                    | Context & Meaning                                                                                                                         |
+| :---------------------- | :----------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary Brand**       | `clinical-teal` (`#0d9488`)    | Header actions, primary buttons, active tabs.                                                                                             |
+| **Schedule H1 Violet**  | `statutory-violet` (`#7c3aed`) | **Non-negotiable rule:** Applied to all Schedule H, H1, and X badges, alerts, and modal borders. Unambiguously flags regulatory scrutiny. |
+| **Healthy Stock**       | `emerald` (`#16a34a`)          | Batches with >90 days to expiry and sufficient stock.                                                                                     |
+| **Near-Expiry Warning** | `amber` (`#d97706`)            | Batches expiring within 90 days. Warns clerk to prioritize dispensing.                                                                    |
+| **Expired / Critical**  | `rose` (`#dc2626`)             | Expired batches or depleted stock.                                                                                                        |
+| **Sidebar Canvas**      | `slate-900` (`#0f172a`)        | Dark, high-contrast, distraction-free navigation shell.                                                                                   |
 
 ### 8.3 65/35 POS Screen Division
 
 The New Sale screen (`src/routes/sales/new/+page.svelte`) implements an ergonomic split:
+
 - **Left Column (65% width):** High-density editable tabular grid of invoice items (Product Name, Batch No, Expiry, Pack Unit, Quantity, Rate, Discount, GST %, Line Total).
 - **Right Column (35% width):** Fixed control and summary console:
   - Patient & Prescribing Doctor compliance inputs.
@@ -871,6 +915,7 @@ build-medical/
 When a local LLM (e.g., Qwen 2.5/3.5 or Gemma 2/4 running on a 16GB Mac) is asked to answer questions, debug, or write code in this repository, it should follow these exact steps:
 
 ### 1. Orientation & Search Strategy
+
 - **Do not read whole directories blindly.** In a 16GB context budget, prioritize high-density targeted reads.
 - **For domain and architecture questions:** Refer directly to this file (`explain.md`) or query graphify using `graphify query "<topic>"`.
 - **For database or schema questions:** Check `src/lib/server/db/schema.ts`.
@@ -878,6 +923,7 @@ When a local LLM (e.g., Qwen 2.5/3.5 or Gemma 2/4 running on a 16GB Mac) is aske
 - **For UI behavior:** Trace from `src/routes/<route>/+page.svelte` $\rightarrow$ `src/lib/services/index.ts` $\rightarrow$ `/api/<route>/+server.ts` $\rightarrow$ `src/lib/server/servicesLocator.ts`.
 
 ### 2. Implementation Rules
+
 1. **Never use standard Javascript floating numbers for currency.**
    - Always import `{ toPaise, fromPaise, roundToRupee, percentOf } from '$lib/server/billing/money.js'`.
 2. **Never break Schedule H1 compliance.**

@@ -101,7 +101,9 @@
 			i.mrpValuation.toFixed(2)
 		]);
 
-		const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
@@ -124,7 +126,12 @@
 	>
 		{#snippet actions()}
 			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={exportCSV} disabled={filteredStock.length === 0}>
+				<Button
+					variant="secondary"
+					size="sm"
+					onclick={exportCSV}
+					disabled={filteredStock.length === 0}
+				>
 					<FileSpreadsheet size={14} class="mr-1 text-success" />
 					<span>Export CSV</span>
 				</Button>
@@ -137,8 +144,10 @@
 	</PageHeader>
 
 	<!-- Search and Filters Strip -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
-		<div class="relative flex-1 min-w-[240px]">
+	<div
+		class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs"
+	>
+		<div class="relative min-w-[240px] flex-1">
 			<Search size={14} class="absolute top-1/2 left-3 -translate-y-1/2 text-text-muted" />
 			<input
 				type="text"
@@ -177,7 +186,9 @@
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Stock Valuation (Cost)</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Total Stock Valuation (Cost)
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 					{formatCurrency(totalCostValuation)}
 				</div>
@@ -187,7 +198,9 @@
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Retail Valuation (MRP)</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Total Retail Valuation (MRP)
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 					{formatCurrency(totalMrpValuation)}
 				</div>
@@ -197,19 +210,24 @@
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Gross Margin Potential</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Gross Margin Potential
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-success tabular-nums">
 					{formatCurrency(marginSpread)}
 				</div>
 				<div class="text-[10px] text-text-muted">
-					{totalCostValuation > 0 ? ((marginSpread / totalCostValuation) * 100).toFixed(1) : 0}% Markup
+					{totalCostValuation > 0 ? ((marginSpread / totalCostValuation) * 100).toFixed(1) : 0}%
+					Markup
 				</div>
 			</div>
 		</div>
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Physical Units in Stock</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Physical Units in Stock
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-text-primary tabular-nums">
 					{totalQuantity.toLocaleString()}
 				</div>
@@ -219,7 +237,9 @@
 
 		<div class="bezel-outer">
 			<div class="bezel-inner p-3">
-				<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Active SKUs / Batches</div>
+				<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+					Active SKUs / Batches
+				</div>
 				<div class="mt-1 font-mono text-lg font-bold text-accent tabular-nums">
 					{filteredStock.length} / {totalBatches}
 				</div>
@@ -233,13 +253,17 @@
 		<LoadingState message="Aggregating warehouse stock valuation..." />
 	{:else if filteredStock.length === 0}
 		<div class="rounded-xl border border-border bg-surface p-8 text-center text-xs text-text-muted">
-			<Box size={32} class="mx-auto mb-2 opacity-40 text-text-muted" />
+			<Box size={32} class="mx-auto mb-2 text-text-muted opacity-40" />
 			No products match the selected filters.
 		</div>
 	{:else}
-		<div class="overflow-x-auto max-h-[calc(100vh-28rem)] overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+		<div
+			class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"
+		>
 			<table class="w-full text-left text-xs">
-				<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+				<thead
+					class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+				>
 					<tr>
 						<th class="px-3 py-2.5">Medicine / Item Details</th>
 						<th class="px-3 py-2.5">Category</th>
@@ -256,7 +280,7 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredStock as item}
-						<tr class="hover:bg-surface-hover transition-colors">
+						<tr class="transition-colors hover:bg-surface-hover">
 							<td class="px-3 py-2">
 								<div class="font-semibold text-text-primary">{item.productName}</div>
 								{#if item.genericName}
@@ -270,7 +294,9 @@
 							<td class="px-3 py-2 font-mono text-[11px] text-text-muted">{item.hsnCode || '-'}</td>
 							<td class="px-3 py-2 text-center">
 								{#if item.drugSchedule && item.drugSchedule !== 'none'}
-									<span class="inline-block rounded border border-schedule-h1/20 bg-schedule-h1-light px-1.5 py-0.5 text-[10px] font-bold text-schedule-h1">
+									<span
+										class="inline-block rounded border border-schedule-h1/20 bg-schedule-h1-light px-1.5 py-0.5 text-[10px] font-bold text-schedule-h1"
+									>
 										{item.drugSchedule}
 									</span>
 								{:else}
@@ -278,26 +304,49 @@
 								{/if}
 							</td>
 							<td class="px-3 py-2 text-center font-mono tabular-nums">{item.batchesCount}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums {item.stockLevel === 0 ? 'text-danger' : 'text-text-primary'}">
+							<td
+								class="px-3 py-2 text-right font-mono font-bold tabular-nums {item.stockLevel === 0
+									? 'text-danger'
+									: 'text-text-primary'}"
+							>
 								{item.stockLevel}
 							</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(item.purchaseRate)}</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(item.sellingRate)}</td>
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-text-muted">{formatCurrency(item.mrp)}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-text-primary">{formatCurrency(item.costValuation)}</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums text-accent">{formatCurrency(item.mrpValuation)}</td>
+							<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums"
+								>{formatCurrency(item.purchaseRate)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums"
+								>{formatCurrency(item.sellingRate)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono text-text-muted tabular-nums"
+								>{formatCurrency(item.mrp)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums"
+								>{formatCurrency(item.costValuation)}</td
+							>
+							<td class="px-3 py-2 text-right font-mono font-bold text-accent tabular-nums"
+								>{formatCurrency(item.mrpValuation)}</td
+							>
 						</tr>
 					{/each}
 				</tbody>
-				<tfoot class="border-t-2 border-border bg-surface-secondary font-bold text-xs">
+				<tfoot class="border-t-2 border-border bg-surface-secondary text-xs font-bold">
 					<tr>
-						<td colspan="5" class="px-3 py-2.5 text-right uppercase tracking-wider text-[10px] text-text-muted">
+						<td
+							colspan="5"
+							class="px-3 py-2.5 text-right text-[10px] tracking-wider text-text-muted uppercase"
+						>
 							Valuation Total:
 						</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{totalQuantity.toLocaleString()}</td>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{totalQuantity.toLocaleString()}</td
+						>
 						<td colspan="3"></td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(totalCostValuation)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-accent">{formatCurrency(totalMrpValuation)}</td>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{formatCurrency(totalCostValuation)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-accent tabular-nums"
+							>{formatCurrency(totalMrpValuation)}</td
+						>
 					</tr>
 				</tfoot>
 			</table>

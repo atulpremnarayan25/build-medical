@@ -115,7 +115,8 @@ export class DbCustomerRepository implements CustomerRepository {
 			openingBalance: input.openingBalance !== undefined ? String(input.openingBalance) : '0',
 			defaultAddAmount: input.defaultAddAmount !== undefined ? String(input.defaultAddAmount) : '0',
 			defaultAddDetail: input.defaultAddDetail || null,
-			defaultLessAmount: input.defaultLessAmount !== undefined ? String(input.defaultLessAmount) : '0',
+			defaultLessAmount:
+				input.defaultLessAmount !== undefined ? String(input.defaultLessAmount) : '0',
 			defaultLessDetail: input.defaultLessDetail || null,
 			contactPerson: input.contactPerson || null,
 			remarks: input.remarks || null,
@@ -147,18 +148,23 @@ export class DbCustomerRepository implements CustomerRepository {
 		if (input.panNo !== undefined) updateData.panNo = input.panNo;
 		if (input.drugLicenseNo1 !== undefined) updateData.drugLicenseNo1 = input.drugLicenseNo1;
 		if (input.drugLicenseNo2 !== undefined) updateData.drugLicenseNo2 = input.drugLicenseNo2;
-		if (input.drugLicenseExpiry !== undefined) updateData.drugLicenseExpiry = input.drugLicenseExpiry;
+		if (input.drugLicenseExpiry !== undefined)
+			updateData.drugLicenseExpiry = input.drugLicenseExpiry;
 		if (input.fssaiLicenseNo !== undefined) updateData.fssaiLicenseNo = input.fssaiLicenseNo;
 		if (input.isComposite !== undefined) updateData.isComposite = input.isComposite;
 		if (input.billSeries !== undefined) updateData.billSeries = input.billSeries;
 		if (input.salesRep !== undefined) updateData.salesRep = input.salesRep;
 		if (input.creditLimit !== undefined) updateData.creditLimit = String(input.creditLimit);
 		if (input.creditDays !== undefined) updateData.creditDays = input.creditDays;
-		if (input.openingBalance !== undefined) updateData.openingBalance = String(input.openingBalance);
-		if (input.defaultAddAmount !== undefined) updateData.defaultAddAmount = String(input.defaultAddAmount);
+		if (input.openingBalance !== undefined)
+			updateData.openingBalance = String(input.openingBalance);
+		if (input.defaultAddAmount !== undefined)
+			updateData.defaultAddAmount = String(input.defaultAddAmount);
 		if (input.defaultAddDetail !== undefined) updateData.defaultAddDetail = input.defaultAddDetail;
-		if (input.defaultLessAmount !== undefined) updateData.defaultLessAmount = String(input.defaultLessAmount);
-		if (input.defaultLessDetail !== undefined) updateData.defaultLessDetail = input.defaultLessDetail;
+		if (input.defaultLessAmount !== undefined)
+			updateData.defaultLessAmount = String(input.defaultLessAmount);
+		if (input.defaultLessDetail !== undefined)
+			updateData.defaultLessDetail = input.defaultLessDetail;
 		if (input.contactPerson !== undefined) updateData.contactPerson = input.contactPerson;
 		if (input.remarks !== undefined) updateData.remarks = input.remarks;
 		if (input.customerType !== undefined) updateData.customerType = input.customerType;

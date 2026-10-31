@@ -2,12 +2,7 @@
 	import { onMount } from 'svelte';
 	import { supplierService } from '$lib/services/index.js';
 	import type { Supplier } from '$lib/types/index.js';
-	import {
-		LoadingState,
-		EmptyState,
-		Badge,
-		Button
-	} from '$lib/components/common/index.js';
+	import { LoadingState, EmptyState, Badge, Button } from '$lib/components/common/index.js';
 	import DataTable from '$lib/components/tables/DataTable.svelte';
 	import Pagination from '$lib/components/tables/Pagination.svelte';
 	import { Search, Plus, Truck, CreditCard, CheckCircle2, ArrowUpRight, Eye } from '@lucide/svelte';
@@ -26,9 +21,7 @@
 	// Metrics
 	let totalSuppliersCount = $derived(suppliers.length);
 	let activeSuppliersCount = $derived(suppliers.filter((s) => s.active).length);
-	let totalPayables = $derived(
-		suppliers.reduce((acc, s) => acc + (s.outstandingBalance || 0), 0)
-	);
+	let totalPayables = $derived(suppliers.reduce((acc, s) => acc + (s.outstandingBalance || 0), 0));
 
 	let filteredSuppliers = $derived.by(() => {
 		let list = suppliers;
@@ -83,7 +76,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Suppliers & Distributors</h1>
-			<p class="text-xs text-text-muted">Vendor master directory, contact info, GSTIN, and payables ledger</p>
+			<p class="text-xs text-text-muted">
+				Vendor master directory, contact info, GSTIN, and payables ledger
+			</p>
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="primary" size="sm" onclick={() => goto('/suppliers/new')}>
@@ -95,43 +90,66 @@
 
 	<!-- Metric summary cards -->
 	<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
 				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Vendors</div>
-				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">{totalSuppliersCount}</div>
+				<div class="mt-1 font-mono text-xl font-bold text-text-primary tabular-nums">
+					{totalSuppliersCount}
+				</div>
 			</div>
 			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light text-accent">
 				<Truck size={16} />
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
 				<div class="text-[11px] font-semibold text-text-muted uppercase">Active Suppliers</div>
-				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">{activeSuppliersCount}</div>
+				<div class="mt-1 font-mono text-xl font-bold text-success tabular-nums">
+					{activeSuppliersCount}
+				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success">
+			<div
+				class="flex h-8 w-8 items-center justify-center rounded-lg bg-success-light text-success"
+			>
 				<CheckCircle2 size={16} />
 			</div>
 		</div>
 
-		<div class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+		<div
+			class="flex items-center justify-between rounded-xl border border-border bg-surface p-3.5 shadow-2xs"
+		>
 			<div>
-				<div class="text-[11px] font-semibold text-text-muted uppercase">Total Payables Due (₹)</div>
+				<div class="text-[11px] font-semibold text-text-muted uppercase">
+					Total Payables Due (₹)
+				</div>
 				<div class="mt-1 font-mono text-xl font-bold text-warning tabular-nums">
-					₹{totalPayables.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+					₹{totalPayables.toLocaleString('en-IN', {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2
+					})}
 				</div>
 			</div>
-			<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning">
+			<div
+				class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-light text-warning"
+			>
 				<CreditCard size={16} />
 			</div>
 		</div>
 	</div>
 
 	<!-- Toolbar & Filters -->
-	<div class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between">
+	<div
+		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+			<div
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+			>
 				<Search size={15} />
 			</div>
 			<input
@@ -183,7 +201,7 @@
 		>
 			{#snippet row(supplier)}
 				<!-- Code -->
-				<td class="px-4 py-2.5 font-mono text-xs font-semibold text-text-muted whitespace-nowrap">
+				<td class="px-4 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-text-muted">
 					{supplier.code || '-'}
 				</td>
 
@@ -191,26 +209,30 @@
 				<td class="px-4 py-2.5 font-medium whitespace-nowrap">
 					<a
 						href="/suppliers/{supplier.id}"
-						class="flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent group"
+						class="group flex items-center gap-1.5 font-semibold text-text-primary hover:text-accent"
 					>
 						<span>{supplier.name}</span>
-						<ArrowUpRight size={12} class="opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
+						<ArrowUpRight
+							size={12}
+							class="text-accent opacity-0 transition-opacity group-hover:opacity-100"
+						/>
 					</a>
 				</td>
 
 				<!-- Phone -->
-				<td class="px-4 py-2.5 text-xs text-text-secondary whitespace-nowrap">
+				<td class="px-4 py-2.5 text-xs whitespace-nowrap text-text-secondary">
 					{supplier.phone || supplier.email || '-'}
 				</td>
 
 				<!-- GSTIN -->
-				<td class="px-4 py-2.5 font-mono text-xs text-text-secondary whitespace-nowrap">
+				<td class="px-4 py-2.5 font-mono text-xs whitespace-nowrap text-text-secondary">
 					{supplier.gstin || '-'}
 				</td>
 
 				<!-- Outstanding Balance -->
 				<td
-					class="px-4 py-2.5 text-right font-mono text-xs font-bold tabular-nums {supplier.outstandingBalance > 0
+					class="px-4 py-2.5 text-right font-mono text-xs font-bold tabular-nums {supplier.outstandingBalance >
+					0
 						? 'text-warning'
 						: 'text-text-primary'}"
 				>

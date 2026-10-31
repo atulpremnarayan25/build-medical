@@ -3,7 +3,15 @@
 	import { page } from '$app/stores';
 	import { PageHeader, LoadingState, Button, Modal } from '$lib/components/common/index.js';
 	import { formatCurrency, formatDate } from '$lib/utils/formatters.js';
-	import { FileSpreadsheet, Printer, Search, IndianRupee, Users, Building2, FileText } from '@lucide/svelte';
+	import {
+		FileSpreadsheet,
+		Printer,
+		Search,
+		IndianRupee,
+		Users,
+		Building2,
+		FileText
+	} from '@lucide/svelte';
 
 	interface PartySummary {
 		id: string;
@@ -43,7 +51,9 @@
 		transactions: LedgerTransaction[];
 	}
 
-	let ledgerType = $state<'receivable' | 'payable'>($page.url.searchParams.get('type') === 'payable' ? 'payable' : 'receivable');
+	let ledgerType = $state<'receivable' | 'payable'>(
+		$page.url.searchParams.get('type') === 'payable' ? 'payable' : 'receivable'
+	);
 	let summaries = $state<PartySummary[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
@@ -100,14 +110,18 @@
 	);
 
 	let totalBalance = $derived(
-		filteredSummaries.reduce((acc, p) => acc + (ledgerType === 'receivable' ? (p.balanceDue || 0) : (p.balancePayable || 0)), 0)
+		filteredSummaries.reduce(
+			(acc, p) => acc + (ledgerType === 'receivable' ? p.balanceDue || 0 : p.balancePayable || 0),
+			0
+		)
 	);
 	let totalBilledOrPurchased = $derived(
-		filteredSummaries.reduce((acc, p) => acc + (ledgerType === 'receivable' ? (p.totalBilled || 0) : (p.totalPurchased || 0)), 0)
+		filteredSummaries.reduce(
+			(acc, p) => acc + (ledgerType === 'receivable' ? p.totalBilled || 0 : p.totalPurchased || 0),
+			0
+		)
 	);
-	let totalPaidSum = $derived(
-		filteredSummaries.reduce((acc, p) => acc + p.totalPaid, 0)
-	);
+	let totalPaidSum = $derived(filteredSummaries.reduce((acc, p) => acc + p.totalPaid, 0));
 
 	function exportCSV() {
 		const headers = [
@@ -135,11 +149,15 @@
 				row.push((p.totalPurchased || 0).toFixed(2));
 			}
 			row.push(p.totalPaid.toFixed(2));
-			row.push((ledgerType === 'receivable' ? (p.balanceDue || 0) : (p.balancePayable || 0)).toFixed(2));
+			row.push(
+				(ledgerType === 'receivable' ? p.balanceDue || 0 : p.balancePayable || 0).toFixed(2)
+			);
 			return row;
 		});
 
-		const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
 		const encodedUri = encodeURI(csvContent);
 		const link = document.createElement('a');
 		link.setAttribute('href', encodedUri);
@@ -151,18 +169,29 @@
 </script>
 
 <svelte:head>
-	<title>{ledgerType === 'receivable' ? 'Customer Receivables & Khata Ledger' : 'Supplier Payables Ledger'} - MedStock ERP</title>
+	<title
+		>{ledgerType === 'receivable'
+			? 'Customer Receivables & Khata Ledger'
+			: 'Supplier Payables Ledger'} - MedStock ERP</title
+	>
 </svelte:head>
 
 <div class="space-y-4">
 	<PageHeader
-		title={ledgerType === 'receivable' ? 'Customer Receivables & Khata Aging Ledger' : 'Supplier Payables & Remittance Ledger'}
+		title={ledgerType === 'receivable'
+			? 'Customer Receivables & Khata Aging Ledger'
+			: 'Supplier Payables & Remittance Ledger'}
 		subtitle="Real-time debtor/creditor balances, turnover realization, credit limits, and running statement of accounts"
 		backHref="/reports"
 	>
 		{#snippet actions()}
 			<div class="flex gap-2">
-				<Button variant="secondary" size="sm" onclick={exportCSV} disabled={filteredSummaries.length === 0}>
+				<Button
+					variant="secondary"
+					size="sm"
+					onclick={exportCSV}
+					disabled={filteredSummaries.length === 0}
+				>
 					<FileSpreadsheet size={14} class="mr-1 text-success" />
 					<span>Export Summary CSV</span>
 				</Button>
@@ -175,12 +204,17 @@
 	</PageHeader>
 
 	<!-- Type Toggle and Search Strip -->
-	<div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs">
+	<div
+		class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs"
+	>
 		<!-- Toggle Tab -->
-		<div class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs">
+		<div
+			class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary p-1 text-xs"
+		>
 			<button
 				type="button"
-				class="flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-all {ledgerType === 'receivable'
+				class="flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-all {ledgerType ===
+				'receivable'
 					? 'bg-surface font-semibold text-accent shadow-2xs'
 					: 'text-text-secondary hover:text-text-primary'}"
 				onclick={() => loadLedger('receivable')}
@@ -190,7 +224,8 @@
 			</button>
 			<button
 				type="button"
-				class="flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-all {ledgerType === 'payable'
+				class="flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-all {ledgerType ===
+				'payable'
 					? 'bg-surface font-semibold text-accent shadow-2xs'
 					: 'text-text-secondary hover:text-text-primary'}"
 				onclick={() => loadLedger('payable')}
@@ -201,7 +236,7 @@
 		</div>
 
 		<!-- Search -->
-		<div class="relative flex-1 max-w-md">
+		<div class="relative max-w-md flex-1">
 			<Search size={14} class="absolute top-1/2 left-3 -translate-y-1/2 text-text-muted" />
 			<input
 				type="text"
@@ -219,11 +254,17 @@
 				<div class="text-[11px] font-semibold text-text-muted">
 					{ledgerType === 'receivable' ? 'Net Outstanding Receivable' : 'Net Outstanding Payable'}
 				</div>
-				<div class="mt-2 font-mono text-xl font-black tabular-nums {totalBalance > 0 ? 'text-danger' : 'text-success'}">
+				<div
+					class="mt-2 font-mono text-xl font-black tabular-nums {totalBalance > 0
+						? 'text-danger'
+						: 'text-success'}"
+				>
 					{formatCurrency(totalBalance)}
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">
-					{filteredSummaries.filter(p => (ledgerType === 'receivable' ? (p.balanceDue || 0) : (p.balancePayable || 0)) > 0).length} parties with open balance
+					{filteredSummaries.filter(
+						(p) => (ledgerType === 'receivable' ? p.balanceDue || 0 : p.balancePayable || 0) > 0
+					).length} parties with open balance
 				</div>
 			</div>
 		</div>
@@ -254,7 +295,9 @@
 			<div class="bezel-inner p-3.5">
 				<div class="text-[11px] font-semibold text-accent">Turnover Realization Rate</div>
 				<div class="mt-2 font-mono text-xl font-black text-accent tabular-nums">
-					{totalBilledOrPurchased > 0 ? ((totalPaidSum / totalBilledOrPurchased) * 100).toFixed(1) : 100}%
+					{totalBilledOrPurchased > 0
+						? ((totalPaidSum / totalBilledOrPurchased) * 100).toFixed(1)
+						: 100}%
 				</div>
 				<div class="mt-1 text-[11px] text-text-muted">Collection / payment efficiency</div>
 			</div>
@@ -266,13 +309,15 @@
 		<LoadingState message="Compiling double-entry party ledgers..." />
 	{:else if filteredSummaries.length === 0}
 		<div class="rounded-xl border border-border bg-surface p-8 text-center text-xs text-text-muted">
-			<IndianRupee size={32} class="mx-auto mb-2 opacity-40 text-text-muted" />
+			<IndianRupee size={32} class="mx-auto mb-2 text-text-muted opacity-40" />
 			No party accounts found matching the criteria.
 		</div>
 	{:else}
 		<div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">
 			<table class="w-full text-left text-xs">
-				<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted shadow-xs">
+				<thead
+					class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs"
+				>
 					<tr>
 						<th class="px-3 py-2.5">Party / Account Name</th>
 						<th class="px-3 py-2.5">Contact Details</th>
@@ -290,12 +335,15 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredSummaries as party}
-						{@const balance = ledgerType === 'receivable' ? (party.balanceDue || 0) : (party.balancePayable || 0)}
-						<tr class="hover:bg-surface-hover transition-colors">
+						{@const balance =
+							ledgerType === 'receivable' ? party.balanceDue || 0 : party.balancePayable || 0}
+						<tr class="transition-colors hover:bg-surface-hover">
 							<td class="px-3 py-2 font-semibold text-text-primary">
 								{party.name}
 								{#if party.customerType}
-									<span class="ml-1.5 rounded bg-surface-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase text-text-muted">
+									<span
+										class="ml-1.5 rounded bg-surface-secondary px-1.5 py-0.5 text-[9px] font-bold text-text-muted uppercase"
+									>
 										{party.customerType}
 									</span>
 								{/if}
@@ -307,27 +355,31 @@
 								{party.gstin || '-'}
 							</td>
 							{#if ledgerType === 'receivable'}
-								<td class="px-3 py-2 text-right font-mono tabular-nums text-text-muted">
+								<td class="px-3 py-2 text-right font-mono text-text-muted tabular-nums">
 									{party.creditLimit ? formatCurrency(party.creditLimit) : 'No Limit'}
 								</td>
-								<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">
+								<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">
 									{formatCurrency(party.totalBilled || 0)}
 								</td>
 							{:else}
-								<td class="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">
+								<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">
 									{formatCurrency(party.totalPurchased || 0)}
 								</td>
 							{/if}
-							<td class="px-3 py-2 text-right font-mono tabular-nums text-success">
+							<td class="px-3 py-2 text-right font-mono text-success tabular-nums">
 								{formatCurrency(party.totalPaid)}
 							</td>
-							<td class="px-3 py-2 text-right font-mono font-bold tabular-nums {balance > 0 ? 'text-danger' : 'text-text-muted'}">
+							<td
+								class="px-3 py-2 text-right font-mono font-bold tabular-nums {balance > 0
+									? 'text-danger'
+									: 'text-text-muted'}"
+							>
 								{formatCurrency(balance)}
 							</td>
 							<td class="px-3 py-2 text-center">
 								<button
 									type="button"
-									class="rounded border border-border bg-surface px-2.5 py-1 text-[11px] font-semibold text-accent hover:bg-surface-secondary transition-colors"
+									class="rounded border border-border bg-surface px-2.5 py-1 text-[11px] font-semibold text-accent transition-colors hover:bg-surface-secondary"
 									onclick={() => openStatement(party.id)}
 								>
 									Statement
@@ -336,14 +388,23 @@
 						</tr>
 					{/each}
 				</tbody>
-				<tfoot class="border-t-2 border-border bg-surface-secondary font-bold text-xs">
+				<tfoot class="border-t-2 border-border bg-surface-secondary text-xs font-bold">
 					<tr>
-						<td colspan={ledgerType === 'receivable' ? 4 : 3} class="px-3 py-2.5 text-right uppercase tracking-wider text-[10px] text-text-muted">
+						<td
+							colspan={ledgerType === 'receivable' ? 4 : 3}
+							class="px-3 py-2.5 text-right text-[10px] tracking-wider text-text-muted uppercase"
+						>
 							Total Ledger Balances:
 						</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-text-primary">{formatCurrency(totalBilledOrPurchased)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-success">{formatCurrency(totalPaidSum)}</td>
-						<td class="px-3 py-2.5 text-right font-mono tabular-nums text-danger">{formatCurrency(totalBalance)}</td>
+						<td class="px-3 py-2.5 text-right font-mono text-text-primary tabular-nums"
+							>{formatCurrency(totalBilledOrPurchased)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-success tabular-nums"
+							>{formatCurrency(totalPaidSum)}</td
+						>
+						<td class="px-3 py-2.5 text-right font-mono text-danger tabular-nums"
+							>{formatCurrency(totalBalance)}</td
+						>
 						<td></td>
 					</tr>
 				</tfoot>
@@ -353,25 +414,43 @@
 </div>
 
 <!-- Detailed Statement Dialog Modal -->
-<Modal bind:open={isStatementOpen} title={activeStatement ? `${activeStatement.party.name} - Statement of Account` : 'Party Statement'} size="lg">
+<Modal
+	bind:open={isStatementOpen}
+	title={activeStatement
+		? `${activeStatement.party.name} - Statement of Account`
+		: 'Party Statement'}
+	size="lg"
+>
 	{#if statementLoading}
 		<LoadingState message="Fetching statement line items..." />
 	{:else if activeStatement}
 		<div class="space-y-4">
 			<!-- Header Info Box -->
-			<div class="flex flex-wrap items-center justify-between rounded-lg border border-border bg-surface-secondary p-3 text-xs">
+			<div
+				class="flex flex-wrap items-center justify-between rounded-lg border border-border bg-surface-secondary p-3 text-xs"
+			>
 				<div>
 					<div class="font-bold text-text-primary">{activeStatement.party.name}</div>
 					{#if activeStatement.party.gstin}
-						<div class="font-mono text-[10px] text-text-muted">GSTIN: {activeStatement.party.gstin}</div>
+						<div class="font-mono text-[10px] text-text-muted">
+							GSTIN: {activeStatement.party.gstin}
+						</div>
 					{/if}
 					{#if activeStatement.party.phone}
-						<div class="font-mono text-[10px] text-text-muted">Phone: {activeStatement.party.phone}</div>
+						<div class="font-mono text-[10px] text-text-muted">
+							Phone: {activeStatement.party.phone}
+						</div>
 					{/if}
 				</div>
 				<div class="text-right">
-					<div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Current Closing Balance</div>
-					<div class="font-mono text-base font-bold tabular-nums {activeStatement.closingBalance > 0 ? 'text-danger' : 'text-success'}">
+					<div class="text-[10px] font-bold tracking-wider text-text-muted uppercase">
+						Current Closing Balance
+					</div>
+					<div
+						class="font-mono text-base font-bold tabular-nums {activeStatement.closingBalance > 0
+							? 'text-danger'
+							: 'text-success'}"
+					>
 						{formatCurrency(activeStatement.closingBalance)}
 					</div>
 				</div>
@@ -379,11 +458,15 @@
 
 			<!-- Running Statement Table -->
 			{#if activeStatement.transactions.length === 0}
-				<div class="py-6 text-center text-xs text-text-muted">No transactions recorded for this account.</div>
+				<div class="py-6 text-center text-xs text-text-muted">
+					No transactions recorded for this account.
+				</div>
 			{:else}
 				<div class="max-h-96 overflow-y-auto rounded-lg border border-border bg-surface">
 					<table class="w-full text-left text-xs">
-						<thead class="sticky top-0 border-b border-border bg-surface-secondary text-[10px] font-bold uppercase tracking-wider text-text-muted">
+						<thead
+							class="sticky top-0 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase"
+						>
 							<tr>
 								<th class="px-3 py-2">Date</th>
 								<th class="px-3 py-2">Particulars / Ref</th>
@@ -394,16 +477,26 @@
 						</thead>
 						<tbody class="divide-y divide-border font-mono text-[11px]">
 							{#each activeStatement.transactions as tx}
-								<tr class="hover:bg-surface-hover transition-colors">
+								<tr class="transition-colors hover:bg-surface-hover">
 									<td class="px-3 py-1.5 text-text-muted">{formatDate(tx.date)}</td>
-									<td class="px-3 py-1.5 font-sans font-medium text-text-primary">{tx.particulars}</td>
-									<td class="px-3 py-1.5 text-right tabular-nums {tx.debit > 0 ? 'text-danger font-semibold' : 'text-text-muted'}">
+									<td class="px-3 py-1.5 font-sans font-medium text-text-primary"
+										>{tx.particulars}</td
+									>
+									<td
+										class="px-3 py-1.5 text-right tabular-nums {tx.debit > 0
+											? 'font-semibold text-danger'
+											: 'text-text-muted'}"
+									>
 										{tx.debit > 0 ? formatCurrency(tx.debit) : '-'}
 									</td>
-									<td class="px-3 py-1.5 text-right tabular-nums {tx.credit > 0 ? 'text-success font-semibold' : 'text-text-muted'}">
+									<td
+										class="px-3 py-1.5 text-right tabular-nums {tx.credit > 0
+											? 'font-semibold text-success'
+											: 'text-text-muted'}"
+									>
 										{tx.credit > 0 ? formatCurrency(tx.credit) : '-'}
 									</td>
-									<td class="px-3 py-1.5 text-right font-bold tabular-nums text-text-primary">
+									<td class="px-3 py-1.5 text-right font-bold text-text-primary tabular-nums">
 										{formatCurrency(tx.balance)}
 									</td>
 								</tr>

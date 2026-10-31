@@ -23,6 +23,7 @@ export default defineConfig(
 			'no-undef': 'off',
 			'svelte/no-navigation-without-resolve': 'off', // Architecture allows raw SvelteKit hrefs during prototyping and static linking
 			'svelte/require-each-key': 'off', // Lots of legacy Svelte iterations
+			'svelte/prefer-svelte-reactivity': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-unused-vars': 'warn'
 		}

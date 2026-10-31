@@ -117,7 +117,9 @@
 	<!-- KPI Summary Metrics -->
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-text-muted uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-text-muted uppercase"
+			>
 				<span>Logged Adjustments</span>
 				<FileText size={16} />
 			</div>
@@ -128,7 +130,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-success uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-success uppercase"
+			>
 				<span>Units Added (+)</span>
 				<ArrowUp size={16} />
 			</div>
@@ -139,7 +143,9 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-danger uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-danger uppercase"
+			>
 				<span>Units Reduced (-)</span>
 				<ArrowDown size={16} />
 			</div>
@@ -150,11 +156,17 @@
 		</div>
 
 		<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
-			<div class="flex items-center justify-between text-[11px] font-semibold text-accent uppercase">
+			<div
+				class="flex items-center justify-between text-[11px] font-semibold text-accent uppercase"
+			>
 				<span>Net Stock Shift</span>
 				<SlidersHorizontal size={16} />
 			</div>
-			<div class="mt-1.5 font-mono text-2xl font-black tabular-nums {netStockChange >= 0 ? 'text-success' : 'text-danger'}">
+			<div
+				class="mt-1.5 font-mono text-2xl font-black tabular-nums {netStockChange >= 0
+					? 'text-success'
+					: 'text-danger'}"
+			>
 				{netStockChange >= 0 ? '+' : ''}{netStockChange} units
 			</div>
 			<div class="mt-0.5 text-[11px] text-text-muted">Overall physical delta</div>
@@ -166,13 +178,13 @@
 		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
 	>
 		<!-- Search Input -->
-		<div class="relative flex-1 max-w-md">
-			<Search size={14} class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+		<div class="relative max-w-md flex-1">
+			<Search size={14} class="absolute top-1/2 left-3 -translate-y-1/2 text-text-muted" />
 			<input
 				type="text"
 				bind:value={searchQuery}
 				placeholder="Search by Product, Code, Batch, Reason, or User..."
-				class="w-full rounded-lg border border-border bg-surface-secondary py-1.5 pl-8 pr-3 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:bg-surface focus:outline-none"
+				class="w-full rounded-lg border border-border bg-surface-secondary py-1.5 pr-3 pl-8 text-xs text-text-primary placeholder:text-text-muted focus:border-accent focus:bg-surface focus:outline-none"
 			/>
 		</div>
 
@@ -189,8 +201,9 @@
 			</button>
 			<button
 				type="button"
-				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {filterType === 'additions'
-					? 'bg-success-light text-success font-bold shadow-xs'
+				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {filterType ===
+				'additions'
+					? 'bg-success-light font-bold text-success shadow-xs'
 					: 'text-text-muted hover:text-text-primary'}"
 				onclick={() => (filterType = 'additions')}
 			>
@@ -198,8 +211,9 @@
 			</button>
 			<button
 				type="button"
-				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {filterType === 'reductions'
-					? 'bg-danger-light text-danger font-bold shadow-xs'
+				class="rounded px-2.5 py-1 text-xs font-semibold transition-colors {filterType ===
+				'reductions'
+					? 'bg-danger-light font-bold text-danger shadow-xs'
 					: 'text-text-muted hover:text-text-primary'}"
 				onclick={() => (filterType = 'reductions')}
 			>
@@ -246,7 +260,7 @@
 					</thead>
 					<tbody class="divide-y divide-border/60">
 						{#each filtered as a, index (a.id)}
-							<tr class="hover:bg-surface-hover/60 transition-colors">
+							<tr class="transition-colors hover:bg-surface-hover/60">
 								<td class="px-3 py-2.5 text-center font-mono text-text-muted tabular-nums">
 									{index + 1}
 								</td>
@@ -282,7 +296,9 @@
 								<td class="px-3 py-2.5 text-right font-mono text-text-secondary tabular-nums">
 									₹{a.mrp.toFixed(2)}
 								</td>
-								<td class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums">
+								<td
+									class="px-3 py-2.5 text-right font-mono font-bold text-text-primary tabular-nums"
+								>
 									{a.currentRemaining}
 								</td>
 								<td class="px-3 py-2.5 text-right">
@@ -303,7 +319,10 @@
 									{/if}
 								</td>
 								<td class="px-3 py-2.5">
-									<div class="max-w-[220px] truncate font-medium text-text-primary" title={a.reason}>
+									<div
+										class="max-w-[220px] truncate font-medium text-text-primary"
+										title={a.reason}
+									>
 										{a.reason || 'General Adjustment'}
 									</div>
 								</td>

@@ -121,9 +121,7 @@
 
 	<!-- Status Card Banner -->
 	{#if active}
-		<div
-			class="rounded-xl border border-success-light bg-success-light/40 p-6 shadow-2xs"
-		>
+		<div class="rounded-xl border border-success-light bg-success-light/40 p-6 shadow-2xs">
 			<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-start gap-4">
 					<div class="rounded-full bg-success-light p-3 text-success">
@@ -131,9 +129,7 @@
 					</div>
 					<div>
 						<div class="flex items-center gap-2">
-							<h2 class="text-lg font-bold text-text-primary">
-								Subscription Active & Verified
-							</h2>
+							<h2 class="text-lg font-bold text-text-primary">Subscription Active & Verified</h2>
 							<Badge variant="success">PAID</Badge>
 						</div>
 						<p class="mt-1 text-sm text-text-secondary">
@@ -142,9 +138,16 @@
 							> is active. All inventory, billing, & LEDGER features unlocked.
 						</p>
 						<div class="mt-3 flex flex-wrap gap-4 text-xs text-text-muted">
-							<span><strong class="text-text-secondary">Plan:</strong> {subscription.planName}</span>
-							<span><strong class="text-text-secondary">Expires:</strong> {formatDate(subscription.expiresAt)}</span>
-							<span><strong class="text-text-secondary">Txn ID:</strong> {subscription.transactionRef || 'N/A'}</span>
+							<span><strong class="text-text-secondary">Plan:</strong> {subscription.planName}</span
+							>
+							<span
+								><strong class="text-text-secondary">Expires:</strong>
+								{formatDate(subscription.expiresAt)}</span
+							>
+							<span
+								><strong class="text-text-secondary">Txn ID:</strong>
+								{subscription.transactionRef || 'N/A'}</span
+							>
 						</div>
 					</div>
 				</div>
@@ -156,9 +159,7 @@
 			</div>
 		</div>
 	{:else}
-		<div
-			class="rounded-xl border border-danger-light bg-danger-light/40 p-6 shadow-2xs"
-		>
+		<div class="rounded-xl border border-danger-light bg-danger-light/40 p-6 shadow-2xs">
 			<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div class="flex items-start gap-4">
 					<div class="rounded-full bg-danger-light p-3 text-danger">
@@ -189,9 +190,7 @@
 	<!-- Pricing Plans Grid -->
 	<div class="space-y-4">
 		<div class="text-center sm:text-left">
-			<h2 class="text-xl font-bold text-text-primary">
-				Select Your Wholesale ERP Plan
-			</h2>
+			<h2 class="text-xl font-bold text-text-primary">Select Your Wholesale ERP Plan</h2>
 			<p class="text-xs text-text-muted">
 				Choose the billing plan that fits your pharmaceutical wholesale stockist operations.
 			</p>
@@ -202,9 +201,7 @@
 				{@const isCurrentPlan = subscription.planId === plan.id && active}
 				<div
 					class="relative flex flex-col justify-between rounded-xl border p-6 shadow-2xs transition-all duration-200
-					{plan.isPopular
-						? 'border-accent bg-surface ring-2 ring-accent/20'
-						: 'border-border bg-surface'}"
+					{plan.isPopular ? 'border-accent bg-surface ring-2 ring-accent/20' : 'border-border bg-surface'}"
 				>
 					{#if plan.isPopular}
 						<div
@@ -275,9 +272,7 @@
 					<Building2 size={20} />
 				</div>
 				<div>
-					<h4 class="text-xs font-bold text-text-primary">
-						Wholesale Compliant
-					</h4>
+					<h4 class="text-xs font-bold text-text-primary">Wholesale Compliant</h4>
 					<p class="mt-0.5 text-xs text-text-muted">
 						Includes GST tax invoice receipts for business expense deductions.
 					</p>
@@ -317,9 +312,7 @@
 >
 	<div class="space-y-4">
 		<!-- Summary -->
-		<div
-			class="rounded-lg border border-accent-light/50 bg-accent-light/30 p-4"
-		>
+		<div class="rounded-lg border border-accent-light/50 bg-accent-light/30 p-4">
 			<div class="flex justify-between text-sm">
 				<span class="font-bold text-text-primary">{selectedPlan.name}</span>
 				<span class="font-mono font-bold text-accent tabular-nums"
@@ -352,10 +345,7 @@
 				/>
 			</div>
 			<div>
-				<label
-					for="gstin-input"
-					class="mb-1 block text-xs font-medium text-text-secondary"
-				>
+				<label for="gstin-input" class="mb-1 block text-xs font-medium text-text-secondary">
 					GSTIN Number (Optional)
 				</label>
 				<input
@@ -380,7 +370,7 @@
 					onclick={() => (paymentMethod = 'UPI')}
 					class="flex flex-col items-center gap-1 rounded-lg border p-3 text-xs font-medium transition-colors
 					{paymentMethod === 'UPI'
-						? 'border-accent bg-accent-light/40 text-accent font-bold'
+						? 'border-accent bg-accent-light/40 font-bold text-accent'
 						: 'border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
 				>
 					<QrCode size={20} />
@@ -391,7 +381,7 @@
 					onclick={() => (paymentMethod = 'Card')}
 					class="flex flex-col items-center gap-1 rounded-lg border p-3 text-xs font-medium transition-colors
 					{paymentMethod === 'Card'
-						? 'border-accent bg-accent-light/40 text-accent font-bold'
+						? 'border-accent bg-accent-light/40 font-bold text-accent'
 						: 'border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
 				>
 					<CreditCard size={20} />
@@ -402,7 +392,7 @@
 					onclick={() => (paymentMethod = 'Net Banking')}
 					class="flex flex-col items-center gap-1 rounded-lg border p-3 text-xs font-medium transition-colors
 					{paymentMethod === 'Net Banking'
-						? 'border-accent bg-accent-light/40 text-accent font-bold'
+						? 'border-accent bg-accent-light/40 font-bold text-accent'
 						: 'border-border bg-surface text-text-secondary hover:bg-surface-hover'}"
 				>
 					<Building2 size={20} />
@@ -411,12 +401,8 @@
 			</div>
 
 			{#if paymentMethod === 'UPI'}
-				<div
-					class="rounded-lg border border-border bg-surface-secondary p-3 text-center"
-				>
-					<label
-						for="upi-vpa-input"
-						class="mb-1 block text-xs font-semibold text-text-primary"
+				<div class="rounded-lg border border-border bg-surface-secondary p-3 text-center">
+					<label for="upi-vpa-input" class="mb-1 block text-xs font-semibold text-text-primary"
 						>Scan QR Code or enter VPA ID</label
 					>
 					<div
@@ -432,9 +418,7 @@
 					/>
 				</div>
 			{:else if paymentMethod === 'Card'}
-				<div
-					class="space-y-2 rounded-lg border border-border bg-surface-secondary p-3 text-xs"
-				>
+				<div class="space-y-2 rounded-lg border border-border bg-surface-secondary p-3 text-xs">
 					<div>
 						<label for="card-num-input" class="block text-xs font-medium text-text-secondary"
 							>Card Number</label
@@ -459,7 +443,9 @@
 							/>
 						</div>
 						<div>
-							<label for="card-cvv-input" class="block text-xs font-medium text-text-secondary">CVV</label>
+							<label for="card-cvv-input" class="block text-xs font-medium text-text-secondary"
+								>CVV</label
+							>
 							<input
 								id="card-cvv-input"
 								type="password"
@@ -470,10 +456,9 @@
 					</div>
 				</div>
 			{:else}
-				<div
-					class="rounded-lg border border-border bg-surface-secondary p-3 text-xs"
-				>
-					<label for="bank-select" class="block text-xs font-medium text-text-secondary">Select Bank</label
+				<div class="rounded-lg border border-border bg-surface-secondary p-3 text-xs">
+					<label for="bank-select" class="block text-xs font-medium text-text-secondary"
+						>Select Bank</label
 					>
 					<select
 						id="bank-select"

@@ -12,7 +12,13 @@
 		stickyHeader?: boolean;
 	};
 
-	let { items, columns, row, emptyMessage = 'No data available.', stickyHeader = false }: Props = $props();
+	let {
+		items,
+		columns,
+		row,
+		emptyMessage = 'No data available.',
+		stickyHeader = false
+	}: Props = $props();
 </script>
 
 <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-2xs">

@@ -17,6 +17,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return jsonResponse(topology);
 	} catch (err: any) {
 		console.error('Failed to get network topology:', err);
-		return errorResponse('NETWORK_TOPOLOGY_ERROR', err.message || 'Failed to query network interfaces', 500);
+		return errorResponse(
+			'NETWORK_TOPOLOGY_ERROR',
+			err.message || 'Failed to query network interfaces',
+			500
+		);
 	}
 };

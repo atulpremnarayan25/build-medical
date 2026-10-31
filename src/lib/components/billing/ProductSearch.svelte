@@ -2,7 +2,16 @@
 	import type { Product } from '$lib/types/product.js';
 	import { productService, batchService } from '$lib/services/index.js';
 	import type { Batch } from '$lib/types/batch.js';
-	import { Search, Pill, ShieldAlert, AlertTriangle, ArrowLeft, Check, AlertCircle, Lock } from '@lucide/svelte';
+	import {
+		Search,
+		Pill,
+		ShieldAlert,
+		AlertTriangle,
+		ArrowLeft,
+		Check,
+		AlertCircle,
+		Lock
+	} from '@lucide/svelte';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 
 	let {
@@ -74,7 +83,12 @@
 	});
 
 	$effect(() => {
-		if (selectionMode === 'batches' && batchListRef && selectedBatchIndex >= 0 && candidateBatches.length > 0) {
+		if (
+			selectionMode === 'batches' &&
+			batchListRef &&
+			selectedBatchIndex >= 0 &&
+			candidateBatches.length > 0
+		) {
 			const activeItem = batchListRef.children[selectedBatchIndex] as HTMLElement | undefined;
 			if (activeItem) {
 				activeItem.scrollIntoView({ block: 'nearest' });
@@ -234,44 +248,52 @@
 		{#if disabled}
 			<button
 				type="button"
-				class="absolute inset-0 z-10 w-full h-full cursor-not-allowed bg-transparent"
+				class="absolute inset-0 z-10 h-full w-full cursor-not-allowed bg-transparent"
 				onclick={() => onFocusCustomer?.()}
 				aria-label="Customer selection required before adding medicines"
 			></button>
 		{/if}
-		<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-text-muted">
+		<div
+			class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-text-muted"
+		>
 			<Search size={18} class={disabled ? 'text-text-muted opacity-50' : 'text-accent'} />
 		</div>
 		<input
 			bind:this={inputRef}
 			type="text"
 			bind:value={searchQuery}
-			disabled={disabled}
+			{disabled}
 			onfocus={() => {
 				if (disabled) return;
 				isFocused = true;
 				if (selectionMode === 'batches') selectionMode = 'products';
 			}}
-			onblur={() => setTimeout(() => {
-				if (selectionMode === 'products') isFocused = false;
-			}, 250)}
+			onblur={() =>
+				setTimeout(() => {
+					if (selectionMode === 'products') isFocused = false;
+				}, 250)}
 			onkeydown={handleKeyDown}
 			placeholder={disabled
 				? 'Select a customer first to search medicines (F3)...'
 				: 'Search medicine by Brand, Composition, Generic or Barcode (F2)...'}
-			class="block w-full rounded-lg border border-border bg-surface py-2.5 pr-20 pl-11 text-sm font-medium text-text-primary placeholder:text-text-muted transition-all duration-150 ease-in-out focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-surface-secondary/70 disabled:text-text-muted disabled:border-border-subtle"
+			class="block w-full rounded-lg border border-border bg-surface py-2.5 pr-20 pl-11 text-sm font-medium text-text-primary transition-all duration-150 ease-in-out placeholder:text-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-surface-secondary/70 disabled:text-text-muted"
 		/>
-		<div class="absolute inset-y-0 right-0 flex items-center pr-3 gap-1.5 pointer-events-none">
+		<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center gap-1.5 pr-3">
 			{#if isLoading}
-				<span class="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent"></span>
+				<span class="h-4 w-4 animate-spin rounded-full border-2 border-accent border-t-transparent"
+				></span>
 			{/if}
 			{#if disabled}
-				<span class="inline-flex items-center gap-1 rounded bg-surface-secondary border border-border px-2 py-0.5 text-[11px] font-semibold text-text-muted">
+				<span
+					class="inline-flex items-center gap-1 rounded border border-border bg-surface-secondary px-2 py-0.5 text-[11px] font-semibold text-text-muted"
+				>
 					<Lock size={12} />
 					<span class="hidden sm:inline">Customer Required</span>
 				</span>
 			{:else}
-				<kbd class="hidden sm:inline-flex items-center rounded border border-border-strong bg-surface-secondary px-2 py-0.5 font-mono text-[11px] font-semibold text-text-muted shadow-2xs">
+				<kbd
+					class="hidden items-center rounded border border-border-strong bg-surface-secondary px-2 py-0.5 font-mono text-[11px] font-semibold text-text-muted shadow-2xs sm:inline-flex"
+				>
 					F2
 				</kbd>
 			{/if}
@@ -281,44 +303,57 @@
 	<!-- SUB-DROPDOWN: Mode 2 - INLINE CANDIDATE BATCHES TABLE -->
 	{#if selectionMode === 'batches' && activeProduct}
 		<div
-			class="absolute z-50 mt-1 max-h-80 w-full overflow-hidden rounded-lg border-2 border-accent bg-surface text-xs shadow-2xl ring-1 ring-black/10 focus:outline-none animate-in fade-in slide-in-from-top-1 duration-150"
+			class="animate-in fade-in slide-in-from-top-1 absolute z-50 mt-1 max-h-80 w-full overflow-hidden rounded-lg border-2 border-accent bg-surface text-xs shadow-2xl ring-1 ring-black/10 duration-150 focus:outline-none"
 		>
 			<!-- Batch Selection Header -->
-			<div class="flex items-center justify-between border-b border-border bg-accent/10 px-3.5 py-2">
+			<div
+				class="flex items-center justify-between border-b border-border bg-accent/10 px-3.5 py-2"
+			>
 				<div class="flex items-center gap-2">
 					<button
 						type="button"
 						onclick={backToProductSearch}
-						class="flex items-center gap-1 rounded bg-surface border border-border px-1.5 py-0.5 text-[11px] font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="flex items-center gap-1 rounded border border-border bg-surface px-1.5 py-0.5 text-[11px] font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 						title="Back to product search (Esc)"
 					>
 						<ArrowLeft size={12} />
 						<span>Esc</span>
 					</button>
-					<span class="font-bold text-text-primary text-sm">{activeProduct.name}</span>
+					<span class="text-sm font-bold text-text-primary">{activeProduct.name}</span>
 					{#if activeProduct.drugSchedule && activeProduct.drugSchedule !== 'none'}
-						<span class="rounded px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider
+						<span
+							class="py-0.2 rounded px-1.5 text-[10px] font-bold tracking-wider uppercase
 							{activeProduct.drugSchedule === 'H1' || activeProduct.drugSchedule === 'X'
-								? 'bg-danger-light text-danger border border-danger/20'
-								: 'bg-warning-light text-warning border border-warning/20'}">
+								? 'border border-danger/20 bg-danger-light text-danger'
+								: 'border border-warning/20 bg-warning-light text-warning'}"
+						>
 							Sch {activeProduct.drugSchedule}
 						</span>
 					{/if}
 					<span class="text-[11px] text-text-muted">
-						({candidateBatches.length} {candidateBatches.length === 1 ? 'batch' : 'batches'} found)
+						({candidateBatches.length}
+						{candidateBatches.length === 1 ? 'batch' : 'batches'} found)
 					</span>
 				</div>
 				<div class="flex items-center gap-2 text-[11px] font-semibold text-accent">
 					<span>FEFO Ranked</span>
-					<kbd class="font-mono text-[10px] bg-surface px-1 py-0.5 rounded border border-border text-text-muted">↑↓ to navigate</kbd>
-					<kbd class="font-mono text-[10px] bg-surface px-1 py-0.5 rounded border border-border text-text-muted">Enter to select</kbd>
+					<kbd
+						class="rounded border border-border bg-surface px-1 py-0.5 font-mono text-[10px] text-text-muted"
+						>↑↓ to navigate</kbd
+					>
+					<kbd
+						class="rounded border border-border bg-surface px-1 py-0.5 font-mono text-[10px] text-text-muted"
+						>Enter to select</kbd
+					>
 				</div>
 			</div>
 
 			<!-- Inline Batches Table -->
 			<div class="max-h-60 overflow-y-auto">
 				<table class="w-full text-left text-xs">
-					<thead class="sticky top-0 border-b border-border bg-surface-secondary text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+					<thead
+						class="sticky top-0 border-b border-border bg-surface-secondary text-[11px] font-semibold tracking-wider text-text-muted uppercase"
+					>
 						<tr>
 							<th class="px-3.5 py-2">Batch No</th>
 							<th class="px-3 py-2 text-center">Expiry Date</th>
@@ -334,16 +369,21 @@
 							{@const daysToExpiry = getDaysToExpiry(batch.expiryDate)}
 							{@const nearExpiry = !expired && daysToExpiry <= 90}
 							{@const isSelected = bIdx === selectedBatchIndex}
-							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<tr
-								class="cursor-pointer select-none transition-colors
-									{isSelected ? 'bg-accent-light/80 text-text-primary font-medium ring-1 ring-accent inset-0' : 'hover:bg-surface-hover/80'}
-									{expired ? 'bg-danger-light/10 text-danger/80 cursor-not-allowed opacity-75' : ''}"
+								class="cursor-pointer transition-colors select-none
+									{isSelected
+									? 'inset-0 bg-accent-light/80 font-medium text-text-primary ring-1 ring-accent'
+									: 'hover:bg-surface-hover/80'}
+									{expired ? 'cursor-not-allowed bg-danger-light/10 text-danger/80 opacity-75' : ''}"
 								onclick={() => selectBatch(batch)}
 							>
 								<!-- Batch No -->
 								<td class="px-3.5 py-2">
-									<div class="flex items-center gap-1.5 font-mono font-bold {expired ? 'line-through text-danger' : 'text-text-primary'}">
+									<div
+										class="flex items-center gap-1.5 font-mono font-bold {expired
+											? 'text-danger line-through'
+											: 'text-text-primary'}"
+									>
 										<span>{batch.batchNumber}</span>
 									</div>
 								</td>
@@ -351,23 +391,29 @@
 								<!-- Expiry Date with Color Coding -->
 								<td class="px-3 py-2 text-center font-mono">
 									{#if expired}
-										<span class="inline-flex items-center gap-1 rounded bg-danger-light border border-danger/30 px-1.5 py-0.5 text-[11px] font-bold text-danger">
+										<span
+											class="inline-flex items-center gap-1 rounded border border-danger/30 bg-danger-light px-1.5 py-0.5 text-[11px] font-bold text-danger"
+										>
 											<AlertCircle size={10} />
 											<span>{formatExpiryDate(batch.expiryDate)} (EXPIRED)</span>
 										</span>
 									{:else if nearExpiry}
-										<span class="inline-flex items-center gap-1 rounded bg-warning-light border border-warning/30 px-1.5 py-0.5 text-[11px] font-bold text-warning">
+										<span
+											class="inline-flex items-center gap-1 rounded border border-warning/30 bg-warning-light px-1.5 py-0.5 text-[11px] font-bold text-warning"
+										>
 											<AlertTriangle size={10} />
 											<span>{formatExpiryDate(batch.expiryDate)} ({daysToExpiry}d left)</span>
 										</span>
 									{:else}
-										<span class="text-text-primary font-medium">{formatExpiryDate(batch.expiryDate)}</span>
+										<span class="font-medium text-text-primary"
+											>{formatExpiryDate(batch.expiryDate)}</span
+										>
 									{/if}
 								</td>
 
 								<!-- Stock Units -->
 								<td class="px-3 py-2 text-right font-mono font-bold tabular-nums">
-									<span class="{batch.quantity <= 0 ? 'text-danger' : 'text-text-primary'}">
+									<span class={batch.quantity <= 0 ? 'text-danger' : 'text-text-primary'}>
 										{batch.quantity}
 									</span>
 								</td>
@@ -385,15 +431,19 @@
 								<!-- Status / Select Action -->
 								<td class="px-2 py-2 text-center">
 									{#if expired}
-										<span class="rounded bg-danger text-white px-1 py-0.2 text-[9px] font-black uppercase">
+										<span
+											class="py-0.2 rounded bg-danger px-1 text-[9px] font-black text-white uppercase"
+										>
 											Blocked
 										</span>
 									{:else if isSelected}
-										<span class="inline-flex items-center justify-center rounded-full bg-accent text-white h-4 w-4">
+										<span
+											class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-accent text-white"
+										>
 											<Check size={11} />
 										</span>
 									{:else}
-										<span class="text-[10px] text-text-muted font-mono">Pick</span>
+										<span class="font-mono text-[10px] text-text-muted">Pick</span>
 									{/if}
 								</td>
 							</tr>
@@ -402,21 +452,27 @@
 				</table>
 			</div>
 
-			<div class="flex items-center justify-between border-t border-border bg-surface-secondary px-3 py-1.5 text-[11px] text-text-muted">
-				<span class="text-danger font-semibold">
+			<div
+				class="flex items-center justify-between border-t border-border bg-surface-secondary px-3 py-1.5 text-[11px] text-text-muted"
+			>
+				<span class="font-semibold text-danger">
 					{#if candidateBatches.some((b) => isExpired(b.expiryDate))}
 						⚠️ Expired batches cannot be dispensed (Statutory Drug Rules).
 					{:else}
 						FEFO order: earliest expiry dispensed first.
 					{/if}
 				</span>
-				<button type="button" onclick={backToProductSearch} class="text-accent hover:underline font-medium">
+				<button
+					type="button"
+					onclick={backToProductSearch}
+					class="font-medium text-accent hover:underline"
+				>
 					← Return to search (Esc)
 				</button>
 			</div>
 		</div>
 
-	<!-- SUB-DROPDOWN: Mode 1 - MEDICINE SEARCH RESULTS -->
+		<!-- SUB-DROPDOWN: Mode 1 - MEDICINE SEARCH RESULTS -->
 	{:else if selectionMode === 'products' && (isFocused || searchQuery.trim().length >= 2) && results.length > 0}
 		<ul
 			bind:this={listRef}
@@ -426,7 +482,7 @@
 			{#each results as product, i (product.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<li
-					class="group relative cursor-pointer border-b border-border-subtle px-3.5 py-2.5 select-none last:border-0 transition-colors {i ===
+					class="group relative cursor-pointer border-b border-border-subtle px-3.5 py-2.5 transition-colors select-none last:border-0 {i ===
 					selectedIndex
 						? 'bg-accent-light/60 text-text-primary'
 						: 'text-text-primary hover:bg-surface-hover'}"
@@ -437,23 +493,32 @@
 					<div class="flex items-center justify-between gap-3">
 						<!-- Left details -->
 						<div class="flex min-w-0 items-start gap-2.5">
-							<div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md {i === selectedIndex ? 'bg-accent text-white' : 'bg-surface-secondary text-text-muted group-hover:bg-accent/10 group-hover:text-accent'}">
+							<div
+								class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md {i ===
+								selectedIndex
+									? 'bg-accent text-white'
+									: 'bg-surface-secondary text-text-muted group-hover:bg-accent/10 group-hover:text-accent'}"
+							>
 								<Pill size={15} />
 							</div>
 							<div class="min-w-0">
 								<div class="flex items-center gap-2">
 									<span class="truncate font-semibold text-text-primary">{product.name}</span>
 									{#if product.drugSchedule && product.drugSchedule !== 'none'}
-										<span class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider
+										<span
+											class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[11px] font-bold tracking-wider uppercase
 											{product.drugSchedule === 'H1' || product.drugSchedule === 'X'
-												? 'bg-danger-light text-danger border border-danger/20'
-												: 'bg-warning-light text-warning border border-warning/20'}">
+												? 'border border-danger/20 bg-danger-light text-danger'
+												: 'border border-warning/20 bg-warning-light text-warning'}"
+										>
 											<ShieldAlert size={11} />
 											<span>Sch {product.drugSchedule}</span>
 										</span>
 									{/if}
 									{#if product.category}
-										<span class="hidden rounded bg-surface-secondary px-1.5 py-0.5 text-[11px] font-medium text-text-muted sm:inline-block">
+										<span
+											class="hidden rounded bg-surface-secondary px-1.5 py-0.5 text-[11px] font-medium text-text-muted sm:inline-block"
+										>
 											{product.category}
 										</span>
 									{/if}
@@ -469,8 +534,10 @@
 
 						<!-- Right pricing & stock -->
 						<div class="flex shrink-0 items-center gap-4 text-right">
-							<div class="hidden sm:block text-right">
-								<div class="text-[11px] text-text-muted">MRP ₹{product.mrp?.toFixed(2) || '0.00'}</div>
+							<div class="hidden text-right sm:block">
+								<div class="text-[11px] text-text-muted">
+									MRP ₹{product.mrp?.toFixed(2) || '0.00'}
+								</div>
 								<div class="text-[11px] text-text-muted">GST {product.gstRate}%</div>
 							</div>
 							<div>
@@ -484,20 +551,36 @@
 				</li>
 			{/each}
 
-			<div class="flex items-center justify-between border-t border-border bg-surface-secondary px-3 py-1.5 text-[11px] text-text-muted">
+			<div
+				class="flex items-center justify-between border-t border-border bg-surface-secondary px-3 py-1.5 text-[11px] text-text-muted"
+			>
 				<span>Showing top {results.length} matches</span>
 				<span class="flex items-center gap-1.5">
-					<kbd class="rounded border border-border-strong bg-surface px-1 text-[11px] font-mono">↑↓</kbd> navigate
-					<kbd class="rounded border border-border-strong bg-surface px-1 text-[11px] font-mono">Enter</kbd> pick / see batches
-					<kbd class="rounded border border-border-strong bg-surface px-1 text-[11px] font-mono">Esc</kbd> dismiss
+					<kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[11px]"
+						>↑↓</kbd
+					>
+					navigate
+					<kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[11px]"
+						>Enter</kbd
+					>
+					pick / see batches
+					<kbd class="rounded border border-border-strong bg-surface px-1 font-mono text-[11px]"
+						>Esc</kbd
+					> dismiss
 				</span>
 			</div>
 		</ul>
 	{:else if selectionMode === 'products' && isFocused && searchQuery.trim().length >= 2 && results.length === 0 && !isLoading}
-		<div class="absolute z-50 mt-1 w-full rounded-lg border border-border bg-surface p-4 text-center text-sm text-text-muted shadow-xl">
+		<div
+			class="absolute z-50 mt-1 w-full rounded-lg border border-border bg-surface p-4 text-center text-sm text-text-muted shadow-xl"
+		>
 			<AlertCircle size={20} class="mx-auto mb-1 text-text-muted" />
-			<p>No products found matching "<span class="font-semibold text-text-primary">{searchQuery}</span>"</p>
-			<p class="text-xs mt-1">Check the spelling or add as a new product in Inventory.</p>
+			<p>
+				No products found matching "<span class="font-semibold text-text-primary"
+					>{searchQuery}</span
+				>"
+			</p>
+			<p class="mt-1 text-xs">Check the spelling or add as a new product in Inventory.</p>
 		</div>
 	{/if}
 </div>

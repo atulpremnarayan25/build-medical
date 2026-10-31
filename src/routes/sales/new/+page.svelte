@@ -6,7 +6,9 @@
 	import CustomerSearch from '$lib/components/billing/CustomerSearch.svelte';
 	import KeyboardShortcutsModal from '$lib/components/billing/KeyboardShortcutsModal.svelte';
 	import HoldBillsModal, { type HeldBill } from '$lib/components/billing/HoldBillsModal.svelte';
-	import PrintableInvoice, { type PrintableInvoiceData } from '$lib/components/billing/PrintableInvoice.svelte';
+	import PrintableInvoice, {
+		type PrintableInvoiceData
+	} from '$lib/components/billing/PrintableInvoice.svelte';
 	import SalesHistoryPanel from '$lib/components/billing/SalesHistoryPanel.svelte';
 
 	import type {
@@ -83,9 +85,7 @@
 
 	// Active Item for Bottom Inspector Strip
 	let activeItem = $derived(
-		items.length > 0
-			? items[Math.min(activeItemIndex, items.length - 1)] ?? null
-			: null
+		items.length > 0 ? (items[Math.min(activeItemIndex, items.length - 1)] ?? null) : null
 	);
 
 	// H1 tracking fields & field-anchored validation
@@ -267,7 +267,7 @@
 			freeQuantity: 0,
 			schemeApplied: '',
 			mrp: batch.mrp,
-			rate: customerType === 'wholesale' ? (batch.purchaseRate * 1.1) : batch.sellingRate,
+			rate: customerType === 'wholesale' ? batch.purchaseRate * 1.1 : batch.sellingRate,
 			discount: 0,
 			gstRate: product.gstRate,
 			drugSchedule: product.drugSchedule,
@@ -336,7 +336,9 @@
 				customerType === 'retail'
 					? paymentType === 'credit'
 						? 0
-						: (amountTendered > 0 ? amountTendered : grandTotal)
+						: amountTendered > 0
+							? amountTendered
+							: grandTotal
 					: Math.min(amountTendered || 0, grandTotal);
 
 			const h1Notes = hasH1Item
@@ -476,7 +478,9 @@
 			prescriberName,
 			prescriberRegNo,
 			items: [...items],
-			totalAmount: grandTotal || items.reduce((sum, i) => sum + i.quantity * i.rate * (1 - i.discount / 100), 0)
+			totalAmount:
+				grandTotal ||
+				items.reduce((sum, i) => sum + i.quantity * i.rate * (1 - i.discount / 100), 0)
 		};
 
 		saveHeldBills([newHeldBill, ...heldBills]);
@@ -512,7 +516,10 @@
 
 		saveHeldBills(heldBills.filter((b) => b.id !== bill.id));
 		holdBillsOpen = false;
-		addToast('success', `Recalled parked bill for ${bill.customer ? bill.customer.name : 'Walk-in Customer'}`);
+		addToast(
+			'success',
+			`Recalled parked bill for ${bill.customer ? bill.customer.name : 'Walk-in Customer'}`
+		);
 		tick().then(() => searchInputRef?.focus());
 	}
 
@@ -557,7 +564,10 @@
 		} else if (e.key === 'F10') {
 			e.preventDefault();
 			handleSaveSale();
-		} else if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+		} else if (
+			e.key === '?' &&
+			!['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)
+		) {
 			e.preventDefault();
 			shortcutsOpen = !shortcutsOpen;
 		}
@@ -567,9 +577,11 @@
 <svelte:window onkeydown={handleWindowKeydown} />
 
 <!-- POS SCREEN LAYOUT: 65/35 Ergonomic Split Screen (Viewport Constrained for 1366x768) -->
-<div class="pos-screen-layout flex flex-col gap-2 h-[calc(100dvh-4.25rem)] overflow-hidden">
+<div class="pos-screen-layout flex h-[calc(100dvh-4.25rem)] flex-col gap-2 overflow-hidden">
 	<!-- Top Bar / Terminal Navigation -->
-	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-border bg-surface px-4 py-2 shadow-2xs shrink-0">
+	<div
+		class="flex shrink-0 flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-2 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="flex items-center gap-3">
 			<a
 				href="/sales"
@@ -580,31 +592,39 @@
 			</a>
 			<div>
 				<div class="flex items-center gap-2">
-					<h1 class="text-xs sm:text-sm font-bold text-text-primary">POS Terminal</h1>
+					<h1 class="text-xs font-bold text-text-primary sm:text-sm">POS Terminal</h1>
 					<div class="flex items-center gap-1">
 						<select
 							bind:value={billSeries}
 							onchange={() => generateInvoiceNumber(billSeries)}
-							class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-xs font-bold text-accent focus:border-accent focus:outline-none cursor-pointer"
+							class="cursor-pointer rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-xs font-bold text-accent focus:border-accent focus:outline-none"
 							title="Bill Series: T (Tax Invoice / B2B) or R (Retail Cash Memo)"
 						>
 							<option value="T">T (Tax)</option>
 							<option value="R">R (Retail)</option>
 						</select>
-						<span class="rounded border border-accent/20 bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent">
+						<span
+							class="rounded border border-accent/20 bg-accent-light px-2 py-0.5 font-mono text-xs font-bold text-accent"
+						>
 							{invoiceNumber}
 						</span>
 					</div>
 					{#if customerType === 'wholesale'}
-						<span class="rounded bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent border border-accent/30">
+						<span
+							class="rounded border border-accent/30 bg-accent/15 px-2 py-0.5 font-mono text-[10px] font-bold text-accent"
+						>
 							PTR
 						</span>
 					{:else}
-						<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
+						<span
+							class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted"
+						>
 							MRP
 						</span>
 					{/if}
-					<span class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted">
+					<span
+						class="rounded bg-surface-secondary px-1.5 py-0.5 text-[10px] font-semibold text-text-muted"
+					>
 						{data.currentUser?.name || 'Cashier'}
 					</span>
 				</div>
@@ -614,12 +634,15 @@
 		<!-- Action bar & shortcut toggles -->
 		<div class="flex items-center gap-2">
 			<!-- Print format switch (Thermal 80mm vs A4 Tax Invoice) -->
-			<div class="flex items-center rounded-lg border border-border bg-surface-secondary p-0.5 text-xs font-semibold">
+			<div
+				class="flex items-center rounded-lg border border-border bg-surface-secondary p-0.5 text-xs font-semibold"
+			>
 				<button
 					type="button"
 					onclick={() => (printMode = 'thermal')}
-					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode === 'thermal'
-						? 'bg-surface text-accent shadow-2xs font-bold'
+					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode ===
+					'thermal'
+						? 'bg-surface font-bold text-accent shadow-2xs'
 						: 'text-text-muted hover:text-text-primary'}"
 				>
 					<Printer size={12} />
@@ -628,8 +651,9 @@
 				<button
 					type="button"
 					onclick={() => (printMode = 'tax-invoice')}
-					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode === 'tax-invoice'
-						? 'bg-surface text-accent shadow-2xs font-bold'
+					class="flex items-center gap-1 rounded-md px-2 py-1 transition-colors {printMode ===
+					'tax-invoice'
+						? 'bg-surface font-bold text-accent shadow-2xs'
 						: 'text-text-muted hover:text-text-primary'}"
 				>
 					<FileText size={12} />
@@ -645,7 +669,7 @@
 			>
 				<Keyboard size={13} class="text-accent" />
 				<span class="hidden sm:inline">Shortcuts</span>
-				<kbd class="font-mono text-[10px] text-text-muted border border-border rounded px-1">?</kbd>
+				<kbd class="rounded border border-border px-1 font-mono text-[10px] text-text-muted">?</kbd>
 			</button>
 
 			<button
@@ -656,7 +680,9 @@
 				<Clock size={13} class="text-warning" />
 				<span>Hold (F6)</span>
 				{#if heldBills.length > 0}
-					<span class="rounded-full bg-warning-light border border-warning/20 px-1.5 py-0.2 font-mono text-[10px] font-bold text-warning">
+					<span
+						class="py-0.2 rounded-full border border-warning/20 bg-warning-light px-1.5 font-mono text-[10px] font-bold text-warning"
+					>
 						{heldBills.length}
 					</span>
 				{/if}
@@ -676,7 +702,9 @@
 	</div>
 
 	<!-- High-Visibility Ergonomic Shortcut Legend -->
-	<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/70 px-3 py-1.5 text-xs">
+	<div
+		class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-surface-secondary/70 px-3 py-1.5 text-xs"
+	>
 		<div class="flex flex-wrap items-center gap-3">
 			<button
 				type="button"
@@ -690,36 +718,86 @@
 						searchInputRef?.select();
 					}
 				}}
-				class="flex items-center gap-1 font-semibold hover:underline {isCustomerSelected ? 'text-accent' : 'text-text-muted opacity-75'}"
+				class="flex items-center gap-1 font-semibold hover:underline {isCustomerSelected
+					? 'text-accent'
+					: 'text-text-muted opacity-75'}"
 			>
-				<kbd class="rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-2xs
-					{isCustomerSelected ? 'border-border-strong bg-surface text-accent' : 'border-border bg-surface-secondary text-text-muted'}">
+				<kbd
+					class="rounded border px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-2xs
+					{isCustomerSelected
+						? 'border-border-strong bg-surface text-accent'
+						: 'border-border bg-surface-secondary text-text-muted'}"
+				>
 					F2
 				</kbd>
-				<span>Medicine {#if !isCustomerSelected}(Locked){/if}</span>
+				<span
+					>Medicine {#if !isCustomerSelected}(Locked){/if}</span
+				>
 			</button>
-			<button type="button" onclick={() => customerInputRef?.focus()} class="flex items-center gap-1 text-text-primary font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-primary shadow-2xs">F3</kbd>
+			<button
+				type="button"
+				onclick={() => customerInputRef?.focus()}
+				class="flex items-center gap-1 font-semibold text-text-primary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-primary shadow-2xs"
+					>F3</kbd
+				>
 				<span>Customer</span>
 			</button>
-			<button type="button" onclick={cyclePaymentType} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F4</kbd>
-				<span>Mode: <strong class="uppercase text-accent">{paymentType}</strong></span>
+			<button
+				type="button"
+				onclick={cyclePaymentType}
+				class="flex items-center gap-1 font-semibold text-text-secondary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs"
+					>F4</kbd
+				>
+				<span>Mode: <strong class="text-accent uppercase">{paymentType}</strong></span>
 			</button>
-			<button type="button" onclick={handleHoldSale} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F6</kbd>
+			<button
+				type="button"
+				onclick={handleHoldSale}
+				class="flex items-center gap-1 font-semibold text-text-secondary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs"
+					>F6</kbd
+				>
 				<span>Park Bill</span>
 			</button>
-			<button type="button" onclick={() => (holdBillsOpen = true)} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F7</kbd>
+			<button
+				type="button"
+				onclick={() => (holdBillsOpen = true)}
+				class="flex items-center gap-1 font-semibold text-text-secondary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs"
+					>F7</kbd
+				>
 				<span>Recall Parked</span>
 			</button>
-			<button type="button" onclick={toggleSaleType} class="flex items-center gap-1 text-text-secondary font-semibold hover:underline">
-				<kbd class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs">F8</kbd>
-				<span>Pricing: <strong class="uppercase text-accent">{customerType}</strong></span>
+			<button
+				type="button"
+				onclick={toggleSaleType}
+				class="flex items-center gap-1 font-semibold text-text-secondary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs"
+					>F8</kbd
+				>
+				<span>Pricing: <strong class="text-accent uppercase">{customerType}</strong></span>
 			</button>
-			<button type="button" onclick={handleSaveSale} class="flex items-center gap-1 text-accent font-semibold hover:underline">
-				<kbd class="rounded border border-accent bg-accent text-white px-1.5 py-0.5 font-mono text-[11px] font-bold shadow-2xs">F10 / Ctrl+S</kbd>
+			<button
+				type="button"
+				onclick={handleSaveSale}
+				class="flex items-center gap-1 font-semibold text-accent hover:underline"
+			>
+				<kbd
+					class="rounded border border-accent bg-accent px-1.5 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs"
+					>F10 / Ctrl+S</kbd
+				>
 				<span>Save & Print</span>
 			</button>
 		</div>
@@ -731,23 +809,27 @@
 			</span>
 			<span>•</span>
 			<span class="flex items-center gap-1">
-				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Enter on Qty</kbd>
+				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]"
+					>Enter on Qty</kbd
+				>
 				<span>→ next item</span>
 			</span>
 			<span>•</span>
 			<span class="flex items-center gap-1">
-				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]">Ctrl+Del</kbd>
+				<kbd class="rounded border border-border bg-surface px-1 font-mono text-[10px]"
+					>Ctrl+Del</kbd
+				>
 				<span>→ delete row</span>
 			</span>
 		</div>
 	</div>
 
 	<!-- 65 / 35 ERGONOMIC SPLIT SCREEN CONTAINER -->
-	<div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 flex-1 min-h-0 overflow-hidden items-start">
+	<div class="grid min-h-0 flex-1 grid-cols-1 items-start gap-2.5 overflow-hidden lg:grid-cols-12">
 		<!-- LEFT COLUMN (65% WIDTH = lg:col-span-8 approx 66.6% or flex-[65]) -->
-		<div class="lg:col-span-8 flex flex-col gap-2 h-full min-h-0 overflow-hidden">
+		<div class="flex h-full min-h-0 flex-col gap-2 overflow-hidden lg:col-span-8">
 			<!-- Anchored Medicine Search Bar (Hero on Load) -->
-			<div class="rounded-xl border border-border bg-surface p-2.5 shadow-2xs shrink-0">
+			<div class="shrink-0 rounded-xl border border-border bg-surface p-2.5 shadow-2xs">
 				<ProductSearch
 					onSelectBatch={handleInlineBatchSelect}
 					bind:inputRef={searchInputRef}
@@ -760,8 +842,10 @@
 			</div>
 
 			<!-- Line Items Grid (Flex-Scrollable Viewport) -->
-			<div class="flex flex-col flex-1 min-h-0 rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
-				<div class="flex-1 min-h-0 overflow-y-auto">
+			<div
+				class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-2xs"
+			>
+				<div class="min-h-0 flex-1 overflow-y-auto">
 					<InvoiceItemsTable
 						bind:items
 						bind:activeIndex={activeItemIndex}
@@ -780,33 +864,39 @@
 				</div>
 
 				{#if quoteError}
-					<div class="border-t border-danger/30 bg-danger-light/50 px-3 py-1.5 text-xs font-semibold text-danger shrink-0">
+					<div
+						class="shrink-0 border-t border-danger/30 bg-danger-light/50 px-3 py-1.5 text-xs font-semibold text-danger"
+					>
 						⚠️ {quoteError}
 					</div>
 				{/if}
 
 				<!-- Collapsible Sales History Radar -->
-				<div class="border-t border-border/60 bg-surface-secondary/40 px-3 py-1.5 flex items-center justify-between text-xs shrink-0">
+				<div
+					class="flex shrink-0 items-center justify-between border-t border-border/60 bg-surface-secondary/40 px-3 py-1.5 text-xs"
+				>
 					<button
 						type="button"
-						class="pressable flex items-center gap-1.5 text-[11px] font-semibold text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+						class="pressable flex cursor-pointer items-center gap-1.5 text-[11px] font-semibold text-text-muted transition-colors hover:text-text-primary"
 						onclick={() => (showSalesHistory = !showSalesHistory)}
 					>
 						<Clock size={12} class="text-accent" />
 						<span>Sales History & Rates</span>
-						<span class="rounded bg-surface border border-border px-1.5 py-0.2 text-[10px] font-mono">
+						<span
+							class="py-0.2 rounded border border-border bg-surface px-1.5 font-mono text-[10px]"
+						>
 							{showSalesHistory ? 'Hide ▲' : 'Show ▼'}
 						</span>
 					</button>
 					{#if activeItem}
-						<span class="text-[10px] font-mono text-text-muted truncate max-w-xs">
+						<span class="max-w-xs truncate font-mono text-[10px] text-text-muted">
 							Active: {activeItem.productName} ({activeItem.batchNumber})
 						</span>
 					{/if}
 				</div>
 
 				{#if showSalesHistory}
-					<div class="max-h-40 overflow-y-auto border-t border-border/50 shrink-0">
+					<div class="max-h-40 shrink-0 overflow-y-auto border-t border-border/50">
 						<SalesHistoryPanel
 							productId={activeItem?.productId}
 							productName={activeItem?.productName}
@@ -820,11 +910,17 @@
 			</div>
 
 			<!-- ACTIVE ITEM INSPECTOR STRIP AT BOTTOM -->
-			<div class="rounded-xl border border-border bg-surface p-2.5 shadow-2xs shrink-0">
-				<div class="flex items-center justify-between pb-1.5 mb-2 border-b border-border text-xs">
+			<div class="shrink-0 rounded-xl border border-border bg-surface p-2.5 shadow-2xs">
+				<div class="mb-2 flex items-center justify-between border-b border-border pb-1.5 text-xs">
 					<div class="flex items-center gap-2">
-						<span class="flex h-2 w-2 rounded-full {activeItem ? 'bg-success animate-pulse' : 'bg-text-muted'}"></span>
-						<span class="font-bold text-text-primary uppercase tracking-wider text-[11px]">Active Item Inspector</span>
+						<span
+							class="flex h-2 w-2 rounded-full {activeItem
+								? 'animate-pulse bg-success'
+								: 'bg-text-muted'}"
+						></span>
+						<span class="text-[11px] font-bold tracking-wider text-text-primary uppercase"
+							>Active Item Inspector</span
+						>
 						{#if activeItem}
 							<span class="font-mono text-[11px] text-text-muted">
 								(Row {activeItemIndex + 1} of {items.length})
@@ -841,25 +937,35 @@
 				</div>
 
 				{#if activeItem}
-					<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+					<div class="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
 						<!-- Salt / Generic Name -->
 						<div class="space-y-0.5">
-							<div class="text-[10px] font-semibold uppercase text-text-muted">Generic / Salt Composition</div>
-							<div class="font-bold text-text-primary truncate" title={activeItem.genericName}>
+							<div class="text-[10px] font-semibold text-text-muted uppercase">
+								Generic / Salt Composition
+							</div>
+							<div class="truncate font-bold text-text-primary" title={activeItem.genericName}>
 								{activeItem.genericName || 'Standard Chemical Entity'}
 							</div>
-							<div class="text-[10px] text-text-muted">{activeItem.category || 'Pharmaceuticals'}</div>
+							<div class="text-[10px] text-text-muted">
+								{activeItem.category || 'Pharmaceuticals'}
+							</div>
 						</div>
 
 						<!-- Selected Batch & Expiry -->
 						<div class="space-y-0.5">
-							<div class="text-[10px] font-semibold uppercase text-text-muted">Selected Batch & Expiry</div>
+							<div class="text-[10px] font-semibold text-text-muted uppercase">
+								Selected Batch & Expiry
+							</div>
 							<div class="flex items-center gap-1.5 font-mono">
 								<span class="font-bold text-text-primary">{activeItem.batchNumber}</span>
-								<span class="text-text-muted text-[11px]">Exp: {activeItem.expiryDate?.substring(0, 7) || '-'}</span>
+								<span class="text-[11px] text-text-muted"
+									>Exp: {activeItem.expiryDate?.substring(0, 7) || '-'}</span
+								>
 							</div>
 							{#if activeItem.drugSchedule && activeItem.drugSchedule !== 'none'}
-								<span class="inline-block rounded bg-danger-light border border-danger/20 text-danger text-[9px] font-bold px-1 uppercase">
+								<span
+									class="inline-block rounded border border-danger/20 bg-danger-light px-1 text-[9px] font-bold text-danger uppercase"
+								>
 									Schedule {activeItem.drugSchedule}
 								</span>
 							{/if}
@@ -867,19 +973,23 @@
 
 						<!-- Available Stock -->
 						<div class="space-y-0.5">
-							<div class="text-[10px] font-semibold uppercase text-text-muted">Batch Stock Available</div>
+							<div class="text-[10px] font-semibold text-text-muted uppercase">
+								Batch Stock Available
+							</div>
 							<div class="flex items-center gap-1.5 font-mono">
 								<span class="text-sm font-black text-accent tabular-nums">
 									{activeItem.availableStock !== undefined ? activeItem.availableStock : '—'}
 								</span>
 								<span class="text-[10px] text-text-muted">Units in Hand</span>
 							</div>
-							<div class="text-[10px] text-success font-medium">FEFO Verified</div>
+							<div class="text-[10px] font-medium text-success">FEFO Verified</div>
 						</div>
 
 						<!-- Shelf / Rack Location -->
 						<div class="space-y-0.5">
-							<div class="text-[10px] font-semibold uppercase text-text-muted">Pharmacy Rack / Shelf</div>
+							<div class="text-[10px] font-semibold text-text-muted uppercase">
+								Pharmacy Rack / Shelf
+							</div>
 							<div class="flex items-center gap-1 font-mono font-bold text-text-primary">
 								<MapPin size={12} class="text-accent" />
 								<span>{activeItem.rackLocation || 'Rack A-01'}</span>
@@ -896,11 +1006,11 @@
 		</div>
 
 		<!-- RIGHT COLUMN (35% WIDTH = lg:col-span-4) -->
-		<div class="lg:col-span-4 flex flex-col gap-2.5 h-full overflow-y-auto pr-0.5">
+		<div class="flex h-full flex-col gap-2.5 overflow-y-auto pr-0.5 lg:col-span-4">
 			<!-- CUSTOMER & DOCTOR COMPLIANCE PANEL (F3) -->
-			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-3">
-				<div class="flex items-center justify-between pb-1 border-b border-border">
-					<div class="flex items-center gap-1.5 font-bold text-xs text-text-primary">
+			<div class="space-y-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+				<div class="flex items-center justify-between border-b border-border pb-1">
+					<div class="flex items-center gap-1.5 text-xs font-bold text-text-primary">
 						<User size={14} class="text-accent" />
 						<span>Customer & Doctor (F3)</span>
 					</div>
@@ -912,7 +1022,10 @@
 
 				<!-- Customer Search Box with On-The-Fly Quick Create -->
 				<div>
-					<label for="customer-search-input" class="block text-[11px] font-semibold text-text-secondary mb-1">
+					<label
+						for="customer-search-input"
+						class="mb-1 block text-[11px] font-semibold text-text-secondary"
+					>
 						Search Customer / Mobile (F3)
 					</label>
 					<CustomerSearch
@@ -924,9 +1037,12 @@
 				</div>
 
 				<!-- Pricing & Payment Controls -->
-				<div class="grid grid-cols-2 gap-2 pt-1 border-t border-border-subtle">
+				<div class="grid grid-cols-2 gap-2 border-t border-border-subtle pt-1">
 					<div>
-						<label for="sale-type-sel" class="block text-[10px] font-semibold text-text-muted uppercase mb-0.5">
+						<label
+							for="sale-type-sel"
+							class="mb-0.5 block text-[10px] font-semibold text-text-muted uppercase"
+						>
 							Sale Type (F8)
 						</label>
 						<select
@@ -940,7 +1056,10 @@
 					</div>
 
 					<div>
-						<label for="payment-mode-sel" class="block text-[10px] font-semibold text-text-muted uppercase mb-0.5">
+						<label
+							for="payment-mode-sel"
+							class="mb-0.5 block text-[10px] font-semibold text-text-muted uppercase"
+						>
 							Payment (F4)
 						</label>
 						<select
@@ -957,8 +1076,10 @@
 
 				<!-- Statutory Schedule H / H1 Doctor Register (Mandatory compliance) -->
 				{#if hasH1Item}
-					<div class="rounded-lg border border-warning/40 bg-warning-light/30 p-2.5 text-xs space-y-2 mt-2">
-						<div class="flex items-center gap-1.5 font-bold text-warning text-[11px]">
+					<div
+						class="mt-2 space-y-2 rounded-lg border border-warning/40 bg-warning-light/30 p-2.5 text-xs"
+					>
+						<div class="flex items-center gap-1.5 text-[11px] font-bold text-warning">
 							<ShieldAlert size={13} />
 							<span>Schedule H/H1 Doctor Compliance</span>
 						</div>
@@ -1013,10 +1134,12 @@
 			</div>
 
 			<!-- BILL TOTALS PANEL -->
-			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-2">
-				<div class="flex items-center justify-between pb-1 border-b border-border">
-					<span class="font-bold text-xs text-text-primary">Bill Totals</span>
-					<span class="text-[11px] font-mono text-text-muted">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+			<div class="space-y-2 rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
+				<div class="flex items-center justify-between border-b border-border pb-1">
+					<span class="text-xs font-bold text-text-primary">Bill Totals</span>
+					<span class="font-mono text-[11px] text-text-muted"
+						>{items.length} {items.length === 1 ? 'item' : 'items'}</span
+					>
 				</div>
 
 				<div class="space-y-1.5 text-xs">
@@ -1037,26 +1160,26 @@
 						<span class="font-mono tabular-nums">₹{taxableTotal.toFixed(2)}</span>
 					</div>
 
-					<div class="flex justify-between text-text-muted text-[11px]">
+					<div class="flex justify-between text-[11px] text-text-muted">
 						<span>CGST Output:</span>
 						<span class="font-mono tabular-nums">₹{cgstTotal.toFixed(2)}</span>
 					</div>
 
-					<div class="flex justify-between text-text-muted text-[11px]">
+					<div class="flex justify-between text-[11px] text-text-muted">
 						<span>SGST Output:</span>
 						<span class="font-mono tabular-nums">₹{sgstTotal.toFixed(2)}</span>
 					</div>
 
 					{#if Math.abs(roundOff) > 0.001}
-						<div class="flex justify-between text-text-muted text-[11px]">
+						<div class="flex justify-between text-[11px] text-text-muted">
 							<span>Round-Off:</span>
 							<span class="font-mono tabular-nums">₹{roundOff.toFixed(2)}</span>
 						</div>
 					{/if}
 
 					<!-- Grand Total Highlight -->
-					<div class="flex items-center justify-between pt-2 border-t border-border">
-						<span class="text-xs font-bold uppercase text-text-primary">Grand Total:</span>
+					<div class="flex items-center justify-between border-t border-border pt-2">
+						<span class="text-xs font-bold text-text-primary uppercase">Grand Total:</span>
 						<span class="font-mono text-2xl font-black text-accent tabular-nums">
 							₹{grandTotal.toFixed(2)}
 						</span>
@@ -1065,13 +1188,13 @@
 			</div>
 
 			<!-- TENDERED CASH & GREEN "CHANGE TO RETURN" PANEL -->
-			<div class="rounded-xl border border-border bg-surface p-3.5 shadow-2xs space-y-3">
+			<div class="space-y-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs">
 				<div class="flex items-center justify-between">
 					<label for="amountTendered" class="text-xs font-bold text-text-primary">
 						{customerType === 'retail' ? 'Cash Tendered (₹)' : 'Immediate Payment (₹)'}:
 					</label>
 					{#if isQuoting}
-						<span class="text-[10px] text-accent animate-pulse font-medium">calculating...</span>
+						<span class="animate-pulse text-[10px] font-medium text-accent">calculating...</span>
 					{/if}
 				</div>
 
@@ -1088,7 +1211,7 @@
 					<button
 						type="button"
 						onclick={() => setQuickTender(grandTotal)}
-						class="whitespace-nowrap rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+						class="rounded-md border border-border bg-surface-secondary px-2.5 py-1.5 font-mono text-xs font-semibold whitespace-nowrap text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 					>
 						Exact
 					</button>
@@ -1121,9 +1244,11 @@
 
 				<!-- Real-time Green "Change to Return" Display -->
 				{#if customerType === 'retail'}
-					<div class="rounded-lg border border-success/30 bg-success-light/40 p-2.5 flex items-center justify-between">
+					<div
+						class="flex items-center justify-between rounded-lg border border-success/30 bg-success-light/40 p-2.5"
+					>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-success">
+							<div class="text-[10px] font-bold tracking-wider text-success uppercase">
 								Change to Return
 							</div>
 							<div class="text-[11px] text-text-muted">Return to customer</div>
@@ -1133,9 +1258,11 @@
 						</div>
 					</div>
 				{:else}
-					<div class="rounded-lg border border-warning/30 bg-warning-light/30 p-2.5 flex items-center justify-between">
+					<div
+						class="flex items-center justify-between rounded-lg border border-warning/30 bg-warning-light/30 p-2.5"
+					>
 						<div>
-							<div class="text-[10px] font-bold uppercase tracking-wider text-warning">
+							<div class="text-[10px] font-bold tracking-wider text-warning uppercase">
 								Balance to Ledger (Due)
 							</div>
 							<div class="text-[11px] text-text-muted">Khata outstanding</div>
@@ -1151,10 +1278,12 @@
 					type="button"
 					disabled={isSaving || items.length === 0}
 					onclick={handleSaveSale}
-					class="w-full flex items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-white shadow-lg hover:bg-accent-hover focus:outline-none disabled:opacity-50 transition-all active:scale-[0.99]"
+					class="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-accent-hover focus:outline-none active:scale-[0.99] disabled:opacity-50"
 				>
 					{#if isSaving}
-						<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+						<span
+							class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+						></span>
 						<span>Finalizing Sale...</span>
 					{:else}
 						<CheckCircle2 size={18} />
@@ -1184,10 +1313,7 @@
 />
 
 <!-- KEYBOARD SHORTCUTS REFERENCE MODAL -->
-<KeyboardShortcutsModal
-	bind:open={shortcutsOpen}
-	onclose={() => (shortcutsOpen = false)}
-/>
+<KeyboardShortcutsModal bind:open={shortcutsOpen} onclose={() => (shortcutsOpen = false)} />
 
 <style>
 	@media print {

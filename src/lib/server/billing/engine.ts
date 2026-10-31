@@ -231,7 +231,9 @@ function prepareLines(
 
 		if (
 			(product.drugSchedule === 'H1' || product.drugSchedule === 'X') &&
-			(!input.patientName?.trim() || !input.prescriberName?.trim() || !input.prescriberRegNo?.trim())
+			(!input.patientName?.trim() ||
+				!input.prescriberName?.trim() ||
+				!input.prescriberRegNo?.trim())
 		) {
 			throw new BillingError(
 				'SCHEDULE_H1_COMPLIANCE_REQUIRED',

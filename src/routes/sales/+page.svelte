@@ -100,7 +100,9 @@
 	<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h1 class="text-xl font-bold text-text-primary">Sales & Invoicing Hub</h1>
-			<p class="text-xs text-text-muted">Overview of invoices, cash receipts, and customer ledgers</p>
+			<p class="text-xs text-text-muted">
+				Overview of invoices, cash receipts, and customer ledgers
+			</p>
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="primary" onclick={() => goto('/sales/new')}>
@@ -117,7 +119,9 @@
 			<div class="bezel-inner p-4">
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-semibold text-text-muted">Total Sales Revenue</span>
-					<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light/50 text-accent">
+					<div
+						class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-light/50 text-accent"
+					>
 						<TrendingUp size={16} />
 					</div>
 				</div>
@@ -147,9 +151,7 @@
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span
-						class="font-mono text-2xl font-black text-success tabular-nums"
-					>
+					<span class="font-mono text-2xl font-black text-success tabular-nums">
 						₹{totalPaidAmount.toLocaleString('en-IN', {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2
@@ -195,9 +197,7 @@
 					</div>
 				</div>
 				<div class="mt-2 flex items-baseline gap-2">
-					<span
-						class="font-mono text-2xl font-black text-schedule-h1 tabular-nums"
-					>
+					<span class="font-mono text-2xl font-black text-schedule-h1 tabular-nums">
 						{h1SalesCount}
 					</span>
 				</div>
@@ -211,7 +211,9 @@
 		class="flex flex-col gap-3 rounded-xl border border-border bg-surface p-3.5 shadow-2xs sm:flex-row sm:items-center sm:justify-between"
 	>
 		<div class="relative w-full sm:max-w-md">
-			<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted">
+			<div
+				class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+			>
 				<Search size={16} />
 			</div>
 			<input
@@ -270,15 +272,15 @@
 			items={paginatedSales}
 			stickyHeader={true}
 			columns={[
-				{ header: "Invoice No", align: "left" },
-				{ header: "Date & Time", align: "left" },
-				{ header: "Customer", align: "left" },
-				{ header: "Type", align: "center" },
-				{ header: "Grand Total (₹)", align: "right" },
-				{ header: "Paid (₹)", align: "right" },
-				{ header: "Balance Due (₹)", align: "right" },
-				{ header: "Payment Status", align: "center" },
-				{ header: "Actions", align: "right" }
+				{ header: 'Invoice No', align: 'left' },
+				{ header: 'Date & Time', align: 'left' },
+				{ header: 'Customer', align: 'left' },
+				{ header: 'Type', align: 'center' },
+				{ header: 'Grand Total (₹)', align: 'right' },
+				{ header: 'Paid (₹)', align: 'right' },
+				{ header: 'Balance Due (₹)', align: 'right' },
+				{ header: 'Payment Status', align: 'center' },
+				{ header: 'Actions', align: 'right' }
 			]}
 		>
 			{#snippet row(sale)}
@@ -290,28 +292,25 @@
 						class="flex items-center gap-1 font-mono text-xs font-bold text-accent hover:underline"
 					>
 						<span>{sale.invoiceNumber}</span>
-						<ArrowUpRight
-							size={12}
-							class="opacity-0 transition-opacity group-hover:opacity-100"
-						/>
+						<ArrowUpRight size={12} class="opacity-0 transition-opacity group-hover:opacity-100" />
 					</button>
 				</td>
 
 				<!-- Date -->
-				<td class="px-4 py-3 text-text-secondary whitespace-nowrap">
-					{new Date(sale.date).toLocaleDateString("en-IN", {
-						day: "2-digit",
-						month: "short",
-						year: "numeric"
+				<td class="px-4 py-3 whitespace-nowrap text-text-secondary">
+					{new Date(sale.date).toLocaleDateString('en-IN', {
+						day: '2-digit',
+						month: 'short',
+						year: 'numeric'
 					})}
 				</td>
 
 				<!-- Customer -->
 				<td class="px-4 py-3">
 					<div class="font-semibold text-text-primary">{sale.customerName}</div>
-					{#if sale.notes && sale.notes.includes("H1")}
+					{#if sale.notes && sale.notes.includes('H1')}
 						<div
-							class="mt-0.5 inline-flex items-center gap-1 rounded bg-schedule-h1-light px-1.5 py-0.5 text-[11px] font-bold text-schedule-h1 border border-schedule-h1/20"
+							class="mt-0.5 inline-flex items-center gap-1 rounded border border-schedule-h1/20 bg-schedule-h1-light px-1.5 py-0.5 text-[11px] font-bold text-schedule-h1"
 						>
 							<ShieldAlert size={10} />
 							<span>H1 Reg</span>
@@ -323,34 +322,28 @@
 				<td class="px-3 py-3 text-center">
 					<span
 						class="inline-block rounded px-2 py-0.5 text-[11px] font-bold tracking-wider uppercase
-							{sale.saleType === "wholesale"
-							? "bg-info-light text-info"
-							: "border border-border bg-surface-secondary text-text-muted"}"
+							{sale.saleType === 'wholesale'
+							? 'bg-info-light text-info'
+							: 'border border-border bg-surface-secondary text-text-muted'}"
 					>
-						{sale.saleType || "retail"}
+						{sale.saleType || 'retail'}
 					</span>
 				</td>
 
 				<!-- Grand Total -->
-				<td
-					class="px-4 py-3 text-right font-mono font-bold text-text-primary tabular-nums"
-				>
+				<td class="px-4 py-3 text-right font-mono font-bold text-text-primary tabular-nums">
 					₹{sale.grandTotal.toFixed(2)}
 				</td>
 
 				<!-- Paid -->
-				<td
-					class="px-4 py-3 text-right font-mono text-success tabular-nums"
-				>
+				<td class="px-4 py-3 text-right font-mono text-success tabular-nums">
 					₹{(sale.paidAmount || 0).toFixed(2)}
 				</td>
 
 				<!-- Balance Due -->
 				<td
 					class="px-4 py-3 text-right font-mono font-semibold tabular-nums
-						{(sale.dueAmount || 0) > 0
-						? "text-warning"
-						: "text-text-muted"}"
+						{(sale.dueAmount || 0) > 0 ? 'text-warning' : 'text-text-muted'}"
 				>
 					₹{(sale.dueAmount || 0).toFixed(2)}
 				</td>
@@ -358,11 +351,11 @@
 				<!-- Status Badge -->
 				<td class="px-3 py-3 text-center">
 					<Badge
-						variant={sale.paymentStatus === "paid"
-							? "success"
-							: sale.paymentStatus === "partial"
-								? "warning"
-								: "danger"}
+						variant={sale.paymentStatus === 'paid'
+							? 'success'
+							: sale.paymentStatus === 'partial'
+								? 'warning'
+								: 'danger'}
 						size="sm"
 					>
 						{sale.paymentStatus}

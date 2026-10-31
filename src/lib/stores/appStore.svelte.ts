@@ -16,10 +16,12 @@ let currentSubscription: SubscriptionDetails = $state(subscriptionService.getSub
 if (browser) {
 	try {
 		const savedTheme = localStorage.getItem('theme') as Theme | null;
-		if (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system') {
-			theme = savedTheme;
-		}
-		applyTheme(theme);
+		const initialTheme: Theme =
+			savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system'
+				? savedTheme
+				: 'light';
+		theme = initialTheme;
+		applyTheme(initialTheme);
 	} catch (e) {
 		// Ignore storage errors
 	}
@@ -90,7 +92,9 @@ export function setTheme(newTheme: Theme): void {
 	if (browser) {
 		try {
 			localStorage.setItem('theme', newTheme);
-		} catch (e) {}
+		} catch {
+			// Ignore storage errors
+		}
 		applyTheme(newTheme);
 	}
 }

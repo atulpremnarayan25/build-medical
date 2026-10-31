@@ -25,19 +25,25 @@
 
 <Modal {open} {onclose} title="Billing Keyboard Shortcuts (High-Speed POS)" size="md">
 	<div class="space-y-4">
-		<div class="flex items-center gap-2 rounded-md bg-accent-light/50 p-2.5 text-xs text-text-primary">
-			<Keyboard size={18} class="text-accent shrink-0" />
+		<div
+			class="flex items-center gap-2 rounded-md bg-accent-light/50 p-2.5 text-xs text-text-primary"
+		>
+			<Keyboard size={18} class="shrink-0 text-accent" />
 			<span>Use keyboard shortcuts for 100% mouse-free rapid invoice generation.</span>
 		</div>
 
 		<div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
 			{#each shortcuts as sc}
-				<div class="flex items-center justify-between rounded-md border border-border bg-surface-secondary px-3 py-2">
+				<div
+					class="flex items-center justify-between rounded-md border border-border bg-surface-secondary px-3 py-2"
+				>
 					<div>
 						<div class="text-xs font-semibold text-text-primary">{sc.label}</div>
 						<div class="text-[11px] text-text-muted">{sc.desc}</div>
 					</div>
-					<kbd class="rounded border border-border-strong bg-surface px-2 py-0.5 font-mono text-xs font-bold text-accent shadow-2xs">
+					<kbd
+						class="rounded border border-border-strong bg-surface px-2 py-0.5 font-mono text-xs font-bold text-accent shadow-2xs"
+					>
 						{sc.key}
 					</kbd>
 				</div>

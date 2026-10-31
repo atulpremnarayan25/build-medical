@@ -31,6 +31,11 @@ function isRateLimited(key: string): boolean {
 
 function recordFailure(key: string) {
 	const now = Date.now();
+	if (loginAttempts.size > 500) {
+		for (const [k, v] of loginAttempts.entries()) {
+			if (now - v.firstAttempt > WINDOW_MS) loginAttempts.delete(k);
+		}
+	}
 	const record = loginAttempts.get(key);
 	if (!record || now - record.firstAttempt > WINDOW_MS) {
 		loginAttempts.set(key, { count: 1, firstAttempt: now });
