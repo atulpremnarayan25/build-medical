@@ -33,9 +33,3 @@ export type {
 export type { GSTSummaryRow, GSTReportResponse, SalesReportRow, StockReportRow } from './report.js';
 export type { UserRole, User } from './user.js';
 export type { SyncStatus, AppState, BusinessInfo, Theme } from './app.js';
-export type {
-	SubscriptionStatus,
-	SubscriptionPlanId,
-	SubscriptionPlan,
-	SubscriptionDetails
-} from './subscription.js';

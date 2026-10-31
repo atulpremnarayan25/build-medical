@@ -866,7 +866,6 @@ build-medical/
 │   │   │   ├── productService.ts
 │   │   │   ├── purchaseService.ts
 │   │   │   ├── saleService.ts
-│   │   │   ├── subscriptionService.ts
 │   │   │   └── supplierService.ts
 │   │   ├── stores/              # Shared client-side reactive state (Svelte 5 Runes)
 │   │   │   ├── appStore.svelte.ts # Global application state (Store info, sync status)

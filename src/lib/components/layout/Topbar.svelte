@@ -4,9 +4,8 @@
 		getPendingChanges,
 		toggleSidebar,
 		setSidebarOpen,
-		isSubscriptionActive
+		isSidebarCollapsed
 	} from '$lib/stores/appStore.svelte.js';
-	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import GlobalSearch from '../common/GlobalSearch.svelte';
 	import ThemeToggle from '../common/ThemeToggle.svelte';
 	import PharmaMenuBar from './PharmaMenuBar.svelte';
@@ -14,21 +13,16 @@
 		Menu,
 		PanelLeftClose,
 		PanelLeftOpen,
-		Search,
 		Bell,
 		LogOut,
 		ChevronDown,
-		ShieldCheck,
-		AlertTriangle,
 		Receipt
 	} from '@lucide/svelte';
-	import { isSidebarCollapsed } from '$lib/stores/appStore.svelte.js';
 	import type { SyncStatus } from '$lib/types/app.js';
 
 	import { page } from '$app/stores';
 
 	let userMenuOpen = $state(false);
-	let subActive = $derived(isSubscriptionActive());
 
 	let user = $derived($page.data.user || { name: 'Guest', role: 'Not Logged In' });
 	let notifications = $derived($page.data.notifications || []);
@@ -109,24 +103,6 @@
 
 		<!-- Theme Toggle -->
 		<ThemeToggle compact={true} />
-
-		<!-- Subscription status link -->
-		<a
-			href="/subscription"
-			class="hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors sm:flex
-			{subActive
-				? 'bg-success-light text-success hover:opacity-90'
-				: 'bg-danger-light text-danger hover:opacity-90'}"
-			title={subActive ? 'Subscription Active' : 'Subscription Expired - Click to Pay'}
-		>
-			{#if subActive}
-				<ShieldCheck size={14} />
-				<span>Subscribed</span>
-			{:else}
-				<AlertTriangle size={14} />
-				<span>Pay to Unlock</span>
-			{/if}
-		</a>
 
 		<!-- Sync status -->
 		<div

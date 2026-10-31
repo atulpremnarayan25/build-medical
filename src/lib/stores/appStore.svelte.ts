@@ -1,6 +1,4 @@
 import type { SyncStatus, Theme } from '$lib/types/app.js';
-import type { SubscriptionDetails } from '$lib/types/subscription.js';
-import { subscriptionService } from '$lib/services/subscriptionService.js';
 import { browser } from '$app/environment';
 
 // Reactive state
@@ -10,7 +8,6 @@ let lastSyncAt: string | null = $state(null);
 let theme: Theme = $state('light');
 let sidebarCollapsed: boolean = $state(false);
 let sidebarOpen: boolean = $state(false); // for mobile overlay
-let currentSubscription: SubscriptionDetails = $state(subscriptionService.getSubscription());
 
 // Initialize theme from localStorage on client
 if (browser) {
@@ -22,7 +19,7 @@ if (browser) {
 				: 'light';
 		theme = initialTheme;
 		applyTheme(initialTheme);
-	} catch (e) {
+	} catch {
 		// Ignore storage errors
 	}
 }
@@ -46,18 +43,6 @@ function applyTheme(t: Theme): void {
 }
 
 // Getter functions
-export function getSubscription(): SubscriptionDetails {
-	return currentSubscription;
-}
-export function isSubscriptionActive(): boolean {
-	return currentSubscription.status === 'active' || currentSubscription.status === 'trialing';
-}
-export function refreshSubscription(): void {
-	currentSubscription = subscriptionService.getSubscription();
-}
-export function setSubscription(details: SubscriptionDetails): void {
-	currentSubscription = details;
-}
 export function getSyncStatus(): SyncStatus {
 	return syncStatus;
 }

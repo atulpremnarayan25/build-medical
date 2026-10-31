@@ -3,8 +3,7 @@
 	import {
 		isSidebarCollapsed,
 		isSidebarOpen,
-		setSidebarOpen,
-		isSubscriptionActive
+		setSidebarOpen
 	} from '$lib/stores/appStore.svelte.js';
 	import {
 		LayoutDashboard,
@@ -16,12 +15,9 @@
 		Undo2,
 		BarChart3,
 		Settings,
-		ShieldCheck,
 		X
 	} from '@lucide/svelte';
 	import type { Component } from 'svelte';
-
-	let activeSub = $derived(isSubscriptionActive());
 
 	interface NavItem {
 		label: string;
@@ -30,7 +26,7 @@
 		badge?: string;
 	}
 
-	let navItems = $derived<NavItem[]>([
+	const navItems: NavItem[] = [
 		{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
 		{ label: 'Sales', href: '/sales', icon: ShoppingCart },
 		{ label: 'Inventory', href: '/inventory', icon: Warehouse },
@@ -39,14 +35,8 @@
 		{ label: 'Suppliers', href: '/suppliers', icon: Truck },
 		{ label: 'Returns', href: '/returns', icon: Undo2 },
 		{ label: 'Reports', href: '/reports', icon: BarChart3 },
-		{ label: 'Settings', href: '/settings', icon: Settings },
-		{
-			label: 'Subscription',
-			href: '/subscription',
-			icon: ShieldCheck,
-			badge: activeSub ? undefined : 'PAY'
-		}
-	]);
+		{ label: 'Settings', href: '/settings', icon: Settings }
+	];
 
 	function isActive(href: string): boolean {
 		const pathname = page.url.pathname;
