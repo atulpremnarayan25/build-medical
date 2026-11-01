@@ -96,7 +96,7 @@
 			</p>
 		</div>
 		<div class="flex items-center gap-2">
-			<Button variant="primary" size="sm" onclick={() => goto('/purchases/new')}>
+			<Button variant="primary" size="sm" aria-label="New Purchase" onclick={() => goto('/purchases/new')}>
 				<Plus size={14} class="mr-1" />
 				<span>+ Inward GRN (Purchase)</span>
 			</Button>

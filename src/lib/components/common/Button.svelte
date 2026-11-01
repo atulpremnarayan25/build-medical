@@ -13,9 +13,12 @@
 		type?: 'button' | 'submit' | 'reset';
 		class?: string;
 		'data-testid'?: string;
+		'aria-label'?: string;
+		title?: string;
 		onclick?: (e: MouseEvent) => void;
 		icon?: Snippet;
 		children?: Snippet;
+		[key: string]: any;
 	}
 
 	let {
@@ -26,9 +29,12 @@
 		type = 'button',
 		class: className = '',
 		'data-testid': dataTestId,
+		'aria-label': ariaLabel,
+		title,
 		onclick,
 		icon,
-		children
+		children,
+		...restProps
 	}: ButtonProps = $props();
 
 	const variantClasses: Record<ButtonVariant, string> = {
@@ -54,10 +60,13 @@
 	{type}
 	disabled={disabled || loading}
 	data-testid={dataTestId}
+	aria-label={ariaLabel}
+	{title}
 	class="pressable inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:pointer-events-none disabled:cursor-not-allowed {variantClasses[
 		variant
 	]} {sizeClasses[size]} {className}"
 	{onclick}
+	{...restProps}
 >
 	{#if loading}
 		<Loader2 class="h-4 w-4 shrink-0 animate-spin text-current" />

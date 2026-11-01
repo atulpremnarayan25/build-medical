@@ -125,6 +125,7 @@ export async function POST(event: RequestEvent) {
 		const invoice = await finalizeSale(input, {
 			today: todayIso(),
 			userId: event.locals.user.id,
+			storeId: event.locals.user.storeId,
 			allowExpiredOverride
 		});
 		return jsonResponse(invoice, 201);

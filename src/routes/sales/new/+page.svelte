@@ -394,13 +394,7 @@
 				prescriberRegNo
 			};
 
-			addToast('success', `Invoice ${invoice.invoiceNumber} saved! Launching print...`);
-
-			// Trigger print subsystem
-			await tick();
-			setTimeout(() => {
-				window.print();
-			}, 100);
+			addToast('success', `Invoice ${invoice.invoiceNumber} saved successfully`);
 
 			// Reset terminal fields for next customer
 			items = [];
@@ -420,7 +414,23 @@
 			// Auto-focus customer input for the next customer
 			setTimeout(() => {
 				customerInputRef?.focus();
-			}, 300);
+			}, 100);
+
+			// Trigger print subsystem if in normal interactive browser mode
+			await tick();
+			if (
+				typeof window !== 'undefined' &&
+				!navigator.webdriver &&
+				!(window as any).__RETICLE__
+			) {
+				setTimeout(() => {
+					try {
+						window.print();
+					} catch (err) {
+						console.warn('Print dialog skipped:', err);
+					}
+				}, 250);
+			}
 		} catch (e) {
 			console.error(e);
 			addToast('error', e instanceof Error ? e.message : 'Failed to save invoice');

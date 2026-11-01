@@ -469,7 +469,7 @@
       "file_type": "code",
       "norm_label": "finalizeoptions",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L442"
+      "source_location": "L452"
     },
     {
       "id": "src_lib_server_billing_engine_invoiceitempayload",
@@ -482,7 +482,7 @@
       "file_type": "code",
       "norm_label": "invoiceitempayload",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L400"
+      "source_location": "L410"
     },
     {
       "id": "src_lib_server_billing_engine_invoicepayload",
@@ -495,7 +495,7 @@
       "file_type": "code",
       "norm_label": "invoicepayload",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L417"
+      "source_location": "L427"
     },
     {
       "id": "src_lib_server_billing_engine_loadedcontext",
@@ -521,7 +521,7 @@
       "file_type": "code",
       "norm_label": "preparedline",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L205"
+      "source_location": "L214"
     },
     {
       "id": "src_lib_server_billing_engine_quotelinepayload",
@@ -534,7 +534,7 @@
       "file_type": "code",
       "norm_label": "quotelinepayload",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L305"
+      "source_location": "L314"
     },
     {
       "id": "src_lib_server_billing_engine_quoteresult",
@@ -547,7 +547,7 @@
       "file_type": "code",
       "norm_label": "quoteresult",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L318"
+      "source_location": "L327"
     },
     {
       "id": "src_lib_server_billing_engine_saleinput",
@@ -730,6 +730,19 @@
       "norm_label": "store",
       "source_file": "src/lib/server/db/schema.ts",
       "source_location": "L525"
+    },
+    {
+      "id": "src_lib_utils_dealscheme_dealcalculation",
+      "label": "DealCalculation",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "dealcalculation",
+      "source_file": "src/lib/utils/dealScheme.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_lib_stores_toaststore_svelte_toast",
@@ -1141,23 +1154,10 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batchrepository",
       "source_file": "src/lib/repositories/batchRepository.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository",
-      "label": "ProductRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "productrepository",
-      "source_file": "src/lib/repositories/productRepository.ts",
       "source_location": "L3"
     },
     {
@@ -1167,24 +1167,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "dbbatchrepository",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
       "source_location": "L26"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository",
-      "label": "DbProductRepository",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "dbproductrepository",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L10"
     },
     {
       "id": "src_lib_types_batch_batch",
@@ -1193,7 +1180,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batch",
       "source_file": "src/lib/types/batch.ts",
@@ -1206,7 +1193,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batchstatus",
       "source_file": "src/lib/types/batch.ts",
@@ -1219,37 +1206,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "createbatchinput",
       "source_file": "src/lib/types/batch.ts",
       "source_location": "L19"
-    },
-    {
-      "id": "src_lib_types_product_createproductinput",
-      "label": "CreateProductInput",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "createproductinput",
-      "source_file": "src/lib/types/product.ts",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_lib_types_product_product",
-      "label": "Product",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "product",
-      "source_file": "src/lib/types/product.ts",
-      "source_location": "L3"
     },
     {
       "id": "src_app_d_locals",
@@ -1263,6 +1224,58 @@
       "norm_label": "locals",
       "source_file": "src/app.d.ts",
       "source_location": "L6"
+    },
+    {
+      "id": "src_lib_repositories_productrepository_productrepository",
+      "label": "ProductRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "productrepository",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository",
+      "label": "DbProductRepository",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "dbproductrepository",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "src_lib_types_product_createproductinput",
+      "label": "CreateProductInput",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "createproductinput",
+      "source_file": "src/lib/types/product.ts",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_lib_types_product_product",
+      "label": "Product",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "product",
+      "source_file": "src/lib/types/product.ts",
+      "source_location": "L3"
     },
     {
       "id": "scripts_seed_productseed",
@@ -1525,19 +1538,6 @@
       "source_location": "L9"
     },
     {
-      "id": "src_lib_utils_dealscheme_dealcalculation",
-      "label": "DealCalculation",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "purchases/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "dealcalculation",
-      "source_file": "src/lib/utils/dealScheme.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "src_lib_repositories_salerepository_salerepository",
       "label": "SaleRepository",
       "_callable": true,
@@ -1561,7 +1561,7 @@
       "file_type": "code",
       "norm_label": "dbsalerepository",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L71"
+      "source_location": "L73"
     },
     {
       "id": "src_lib_types_sale_createsaleinput",
@@ -1599,7 +1599,7 @@
       "file_type": "code",
       "norm_label": "aggregatetotals()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L293"
+      "source_location": "L302"
     },
     {
       "id": "src_lib_server_billing_engine_billingerror_constructor",
@@ -1623,7 +1623,7 @@
       "file_type": "code",
       "norm_label": "finalizesale()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L454"
+      "source_location": "L465"
     },
     {
       "id": "src_lib_server_billing_engine_listpricepaise",
@@ -1635,7 +1635,7 @@
       "file_type": "code",
       "norm_label": "listpricepaise()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L179"
+      "source_location": "L188"
     },
     {
       "id": "src_lib_server_billing_engine_loadcontext",
@@ -1659,7 +1659,7 @@
       "file_type": "code",
       "norm_label": "mapallocationerror()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L183"
+      "source_location": "L192"
     },
     {
       "id": "src_lib_server_billing_engine_nextinvoicenumber",
@@ -1671,7 +1671,7 @@
       "file_type": "code",
       "norm_label": "nextinvoicenumber()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L366"
+      "source_location": "L376"
     },
     {
       "id": "src_lib_server_billing_engine_pickunit",
@@ -1683,7 +1683,7 @@
       "file_type": "code",
       "norm_label": "pickunit()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L163"
+      "source_location": "L172"
     },
     {
       "id": "src_lib_server_billing_engine_preparelines",
@@ -1695,7 +1695,7 @@
       "file_type": "code",
       "norm_label": "preparelines()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L222"
+      "source_location": "L231"
     },
     {
       "id": "src_lib_server_billing_engine_quotesale",
@@ -1707,7 +1707,7 @@
       "file_type": "code",
       "norm_label": "quotesale()",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L333"
+      "source_location": "L342"
     },
     {
       "id": "src_lib_server_billing_fefo_allocatefefo",
@@ -1768,6 +1768,30 @@
       "norm_label": "computelinegst()",
       "source_file": "src/lib/server/billing/gst.ts",
       "source_location": "L17"
+    },
+    {
+      "id": "src_lib_utils_dealscheme_calculatedeal",
+      "label": "calculateDeal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "calculatedeal()",
+      "source_file": "src/lib/utils/dealScheme.ts",
+      "source_location": "L38"
+    },
+    {
+      "id": "src_lib_utils_dealscheme_parsedealstring",
+      "label": "parseDealString()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "parsedealstring()",
+      "source_file": "src/lib/utils/dealScheme.ts",
+      "source_location": "L18"
     },
     {
       "id": "src_lib_utils_money_frompaise",
@@ -1950,19 +1974,7 @@
       "source_location": "L161"
     },
     {
-      "id": "src_lib_components_billing_productsearch_expired_batch_cannot_be_billed_select_an_active_batch",
-      "label": "'Expired batch cannot be billed! Select an active batch.'()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "'expired batch cannot be billed! select an active batch.'()",
-      "source_file": "src/lib/components/billing/ProductSearch.svelte",
-      "source_location": "L174"
-    },
-    {
-      "id": "src_lib_components_billing_productsearch_if",
+      "id": "src_lib_components_billing_customersearch_if",
       "label": "if()",
       "_callable": true,
       "_origin": "ast",
@@ -1970,44 +1982,8 @@
       "community_name": "toastStore.svelte.ts",
       "file_type": "code",
       "norm_label": "if()",
-      "source_file": "src/lib/components/billing/ProductSearch.svelte",
-      "source_location": "L208"
-    },
-    {
-      "id": "src_lib_components_billing_productsearch_selectproduct",
-      "label": "selectProduct()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "selectproduct()",
-      "source_file": "src/lib/components/billing/ProductSearch.svelte",
-      "source_location": "L129"
-    },
-    {
-      "id": "src_lib_stores_toaststore_svelte_addtoast",
-      "label": "addToast()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "addtoast()",
-      "source_file": "src/lib/stores/toastStore.svelte.ts",
-      "source_location": "L19"
-    },
-    {
-      "id": "src_lib_stores_toaststore_svelte_generateid",
-      "label": "generateId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "generateid()",
-      "source_file": "src/lib/stores/toastStore.svelte.ts",
-      "source_location": "L14"
+      "source_file": "src/lib/components/billing/CustomerSearch.svelte",
+      "source_location": "L171"
     },
     {
       "id": "src_lib_stores_toaststore_svelte_gettoasts",
@@ -2020,66 +1996,6 @@
       "norm_label": "gettoasts()",
       "source_file": "src/lib/stores/toastStore.svelte.ts",
       "source_location": "L40"
-    },
-    {
-      "id": "src_lib_stores_toaststore_svelte_removetoast",
-      "label": "removeToast()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "removetoast()",
-      "source_file": "src/lib/stores/toastStore.svelte.ts",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_routes_customers_id_page_handlesave",
-      "label": "handleSave()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "handlesave()",
-      "source_file": "src/routes/customers/[id]/+page.svelte",
-      "source_location": "L140"
-    },
-    {
-      "id": "src_routes_customers_id_page_sendwhatsappstatement",
-      "label": "sendWhatsAppStatement()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "sendwhatsappstatement()",
-      "source_file": "src/routes/customers/[id]/+page.svelte",
-      "source_location": "L162"
-    },
-    {
-      "id": "src_routes_suppliers_id_page_handlesave",
-      "label": "handleSave()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "handlesave()",
-      "source_file": "src/routes/suppliers/[id]/+page.svelte",
-      "source_location": "L143"
-    },
-    {
-      "id": "src_routes_suppliers_id_page_sendwhatsappstatement",
-      "label": "sendWhatsAppStatement()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "toastStore.svelte.ts",
-      "file_type": "code",
-      "norm_label": "sendwhatsappstatement()",
-      "source_file": "src/routes/suppliers/[id]/+page.svelte",
-      "source_location": "L165"
     },
     {
       "id": "src_lib_repositories_customerrepository_customerrepository_create",
@@ -3155,7 +3071,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "badge()",
       "source_file": "src/lib/components/common/Card.svelte",
@@ -3167,7 +3083,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "children()",
       "source_file": "src/lib/components/common/Card.svelte",
@@ -3179,7 +3095,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "#each()",
       "source_file": "src/lib/components/layout/Sidebar.svelte",
@@ -3244,6 +3160,18 @@
       "norm_label": "hashpassword()",
       "source_file": "src/lib/server/auth/index.ts",
       "source_location": "L60"
+    },
+    {
+      "id": "src_lib_server_auth_index_invalidateusersessions",
+      "label": "invalidateUserSessions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "errorResponse",
+      "file_type": "code",
+      "norm_label": "invalidateusersessions()",
+      "source_file": "src/lib/server/auth/index.ts",
+      "source_location": "L47"
     },
     {
       "id": "src_routes_api_batches_id_server_get",
@@ -3378,18 +3306,6 @@
       "source_location": "L14"
     },
     {
-      "id": "src_routes_api_inventory_adjustments_server_post",
-      "label": "POST()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "errorResponse",
-      "file_type": "code",
-      "norm_label": "post()",
-      "source_file": "src/routes/api/inventory/adjustments/+server.ts",
-      "source_location": "L65"
-    },
-    {
       "id": "src_routes_api_inventory_low_stock_server_get",
       "label": "GET()",
       "_callable": true,
@@ -3507,7 +3423,7 @@
       "file_type": "code",
       "norm_label": "post()",
       "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
-      "source_location": "L5"
+      "source_location": "L10"
     },
     {
       "id": "src_routes_api_products_id_batches_server_get",
@@ -4374,18 +4290,6 @@
       "source_location": "L6"
     },
     {
-      "id": "src_lib_components_billing_customersearch_if",
-      "label": "if()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "sales/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "if()",
-      "source_file": "src/lib/components/billing/CustomerSearch.svelte",
-      "source_location": "L171"
-    },
-    {
       "id": "src_lib_components_billing_invoiceitemstable_formatexpiry",
       "label": "formatExpiry()",
       "_callable": true,
@@ -4422,6 +4326,42 @@
       "source_location": "L64"
     },
     {
+      "id": "src_lib_components_billing_productsearch_expired_batch_cannot_be_billed_select_an_active_batch",
+      "label": "'Expired batch cannot be billed! Select an active batch.'()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "sales/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "'expired batch cannot be billed! select an active batch.'()",
+      "source_file": "src/lib/components/billing/ProductSearch.svelte",
+      "source_location": "L174"
+    },
+    {
+      "id": "src_lib_components_billing_productsearch_if",
+      "label": "if()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "sales/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "if()",
+      "source_file": "src/lib/components/billing/ProductSearch.svelte",
+      "source_location": "L208"
+    },
+    {
+      "id": "src_lib_components_billing_productsearch_selectproduct",
+      "label": "selectProduct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "sales/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "selectproduct()",
+      "source_file": "src/lib/components/billing/ProductSearch.svelte",
+      "source_location": "L129"
+    },
+    {
       "id": "src_lib_components_billing_saleshistorypanel_loadhistory",
       "label": "loadHistory()",
       "_callable": true,
@@ -4451,7 +4391,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".create()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4463,7 +4403,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getall()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4475,7 +4415,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getbyid()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4487,7 +4427,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getbyproductid()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4499,7 +4439,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getexpired()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4511,7 +4451,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getexpiring()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4523,7 +4463,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getlowstock()",
       "source_file": "src/lib/repositories/batchRepository.ts",
@@ -4535,83 +4475,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".update()",
       "source_file": "src/lib/repositories/batchRepository.ts",
       "source_location": "L8"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_create",
-      "label": ".create()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".create()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L6"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_delete",
-      "label": ".delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".delete()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_getall",
-      "label": ".getAll()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".getall()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L4"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_getbyid",
-      "label": ".getById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".getbyid()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L5"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_search",
-      "label": ".search()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".search()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L9"
-    },
-    {
-      "id": "src_lib_repositories_productrepository_productrepository_update",
-      "label": ".update()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".update()",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L7"
     },
     {
       "id": "src_lib_server_db_mappers_maptobatch",
@@ -4619,35 +4487,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "maptobatch()",
       "source_file": "src/lib/server/db/mappers.ts",
       "source_location": "L94"
-    },
-    {
-      "id": "src_lib_server_db_mappers_maptoproduct",
-      "label": "mapToProduct()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "maptoproduct()",
-      "source_file": "src/lib/server/db/mappers.ts",
-      "source_location": "L74"
-    },
-    {
-      "id": "src_lib_server_db_sync_outbox_logsyncoutbox",
-      "label": "logSyncOutbox()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "logsyncoutbox()",
-      "source_file": "src/lib/server/db/sync/outbox.ts",
-      "source_location": "L20"
     },
     {
       "id": "src_lib_server_repositories_batchrepository_computebatchstatus",
@@ -4655,7 +4499,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "computebatchstatus()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4667,7 +4511,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4679,7 +4523,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".create()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4691,7 +4535,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".delete()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4703,7 +4547,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getall()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4715,7 +4559,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getbyid()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4727,7 +4571,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getbyproductid()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4739,7 +4583,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getexpired()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4751,7 +4595,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getexpiring()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4763,7 +4607,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".getlowstock()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4775,7 +4619,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".update()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
@@ -4787,95 +4631,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": ".updatequantity()",
       "source_file": "src/lib/server/repositories/batchRepository.ts",
       "source_location": "L178"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L13"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_create",
-      "label": ".create()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".create()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L36"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_delete",
-      "label": ".delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".delete()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L115"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_getall",
-      "label": ".getAll()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".getall()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_getbyid",
-      "label": ".getById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".getbyid()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_search",
-      "label": ".search()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".search()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L136"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository_dbproductrepository_update",
-      "label": ".update()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": ".update()",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L83"
     },
     {
       "id": "src_lib_services_batchservice_createbatchservice",
@@ -4883,7 +4643,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "createbatchservice()",
       "source_file": "src/lib/services/batchService.ts",
@@ -4895,23 +4655,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "makebatch()",
       "source_file": "src/lib/services/batchService.spec.ts",
       "source_location": "L6"
-    },
-    {
-      "id": "src_lib_services_productservice_createproductservice",
-      "label": "createProductService()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "createproductservice()",
-      "source_file": "src/lib/services/productService.ts",
-      "source_location": "L4"
     },
     {
       "id": "src_routes_customers_page_handlerowclick",
@@ -4950,40 +4698,184 @@
       "source_location": "L69"
     },
     {
-      "id": "src_lib_server_auth_index_invalidatesession",
-      "label": "invalidateSession()",
+      "id": "src_lib_repositories_productrepository_productrepository_create",
+      "label": ".create()",
       "_callable": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "logout/+page.server.ts",
+      "community_name": "server/repositories/productRepository.ts",
       "file_type": "code",
-      "norm_label": "invalidatesession()",
-      "source_file": "src/lib/server/auth/index.ts",
-      "source_location": "L43"
+      "norm_label": ".create()",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L6"
     },
     {
-      "id": "src_routes_logout_page_server_clearsession",
-      "label": "clearSession()",
+      "id": "src_lib_repositories_productrepository_productrepository_delete",
+      "label": ".delete()",
       "_callable": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "logout/+page.server.ts",
+      "community_name": "server/repositories/productRepository.ts",
       "file_type": "code",
-      "norm_label": "clearsession()",
-      "source_file": "src/routes/logout/+page.server.ts",
+      "norm_label": ".delete()",
+      "source_file": "src/lib/repositories/productRepository.ts",
       "source_location": "L8"
     },
     {
-      "id": "src_routes_logout_page_server_load",
-      "label": "load()",
+      "id": "src_lib_repositories_productrepository_productrepository_getall",
+      "label": ".getAll()",
       "_callable": true,
       "_origin": "ast",
       "community": 78,
-      "community_name": "logout/+page.server.ts",
+      "community_name": "server/repositories/productRepository.ts",
       "file_type": "code",
-      "norm_label": "load()",
-      "source_file": "src/routes/logout/+page.server.ts",
-      "source_location": "L20"
+      "norm_label": ".getall()",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_lib_repositories_productrepository_productrepository_getbyid",
+      "label": ".getById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".getbyid()",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_repositories_productrepository_productrepository_search",
+      "label": ".search()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".search()",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_lib_repositories_productrepository_productrepository_update",
+      "label": ".update()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".update()",
+      "source_file": "src/lib/repositories/productRepository.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_lib_server_db_mappers_maptoproduct",
+      "label": "mapToProduct()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "maptoproduct()",
+      "source_file": "src/lib/server/db/mappers.ts",
+      "source_location": "L74"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_create",
+      "label": ".create()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".create()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_delete",
+      "label": ".delete()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".delete()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L121"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_getall",
+      "label": ".getAll()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".getall()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_getbyid",
+      "label": ".getById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".getbyid()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_search",
+      "label": ".search()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".search()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L142"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository_dbproductrepository_update",
+      "label": ".update()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": ".update()",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L89"
+    },
+    {
+      "id": "src_lib_services_productservice_createproductservice",
+      "label": "createProductService()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "createproductservice()",
+      "source_file": "src/lib/services/productService.ts",
+      "source_location": "L4"
     },
     {
       "id": "scripts_db_check_and_seed_main",
@@ -5082,16 +4974,16 @@
       "source_location": "L9"
     },
     {
-      "id": "src_lib_server_auth_index_invalidateusersessions",
-      "label": "invalidateUserSessions()",
+      "id": "src_lib_server_auth_index_invalidatesession",
+      "label": "invalidateSession()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
       "community_name": "schema.ts",
       "file_type": "code",
-      "norm_label": "invalidateusersessions()",
+      "norm_label": "invalidatesession()",
       "source_file": "src/lib/server/auth/index.ts",
-      "source_location": "L47"
+      "source_location": "L43"
     },
     {
       "id": "src_lib_server_auth_index_purgeexpiredsessions",
@@ -5142,6 +5034,18 @@
       "source_location": "L14"
     },
     {
+      "id": "src_lib_server_db_sync_outbox_logsyncoutbox",
+      "label": "logSyncOutbox()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "logsyncoutbox()",
+      "source_file": "src/lib/server/db/sync/outbox.ts",
+      "source_location": "L20"
+    },
+    {
       "id": "src_routes_api_health_server_formatbytes",
       "label": "formatBytes()",
       "_callable": true,
@@ -5176,6 +5080,18 @@
       "norm_label": "get()",
       "source_file": "src/routes/api/health/+server.ts",
       "source_location": "L26"
+    },
+    {
+      "id": "src_routes_api_inventory_adjustments_server_post",
+      "label": "POST()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "post()",
+      "source_file": "src/routes/api/inventory/adjustments/+server.ts",
+      "source_location": "L65"
     },
     {
       "id": "src_routes_api_reports_expiry_server_get",
@@ -5310,6 +5226,30 @@
       "source_location": "L47"
     },
     {
+      "id": "src_routes_logout_page_server_clearsession",
+      "label": "clearSession()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "clearsession()",
+      "source_file": "src/routes/logout/+page.server.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_routes_logout_page_server_load",
+      "label": "load()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "load()",
+      "source_file": "src/routes/logout/+page.server.ts",
+      "source_location": "L20"
+    },
+    {
       "id": "src_routes_register_page_server_ensuredefaultstore",
       "label": "ensureDefaultStore()",
       "_callable": true,
@@ -5358,28 +5298,40 @@
       "source_location": "L7"
     },
     {
-      "id": "src_lib_utils_dealscheme_calculatedeal",
-      "label": "calculateDeal()",
+      "id": "src_lib_stores_toaststore_svelte_addtoast",
+      "label": "addToast()",
       "_callable": true,
       "_origin": "ast",
       "community": 8,
       "community_name": "purchases/new/+page.svelte",
       "file_type": "code",
-      "norm_label": "calculatedeal()",
-      "source_file": "src/lib/utils/dealScheme.ts",
-      "source_location": "L38"
+      "norm_label": "addtoast()",
+      "source_file": "src/lib/stores/toastStore.svelte.ts",
+      "source_location": "L19"
     },
     {
-      "id": "src_lib_utils_dealscheme_parsedealstring",
-      "label": "parseDealString()",
+      "id": "src_lib_stores_toaststore_svelte_generateid",
+      "label": "generateId()",
       "_callable": true,
       "_origin": "ast",
       "community": 8,
       "community_name": "purchases/new/+page.svelte",
       "file_type": "code",
-      "norm_label": "parsedealstring()",
-      "source_file": "src/lib/utils/dealScheme.ts",
-      "source_location": "L18"
+      "norm_label": "generateid()",
+      "source_file": "src/lib/stores/toastStore.svelte.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_lib_stores_toaststore_svelte_removetoast",
+      "label": "removeToast()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "purchases/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "removetoast()",
+      "source_file": "src/lib/stores/toastStore.svelte.ts",
+      "source_location": "L33"
     },
     {
       "id": "src_routes_purchases_new_page_cyclepaymenttype",
@@ -5464,6 +5416,30 @@
       "norm_label": "handlewindowkeydown()",
       "source_file": "src/routes/purchases/new/+page.svelte",
       "source_location": "L253"
+    },
+    {
+      "id": "src_routes_suppliers_id_page_handlesave",
+      "label": "handleSave()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "purchases/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "handlesave()",
+      "source_file": "src/routes/suppliers/[id]/+page.svelte",
+      "source_location": "L143"
+    },
+    {
+      "id": "src_routes_suppliers_id_page_sendwhatsappstatement",
+      "label": "sendWhatsAppStatement()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "purchases/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "sendwhatsappstatement()",
+      "source_file": "src/routes/suppliers/[id]/+page.svelte",
+      "source_location": "L165"
     },
     {
       "id": "src_lib_components_common_emptystate_icon",
@@ -5622,6 +5598,18 @@
       "source_location": "L154"
     },
     {
+      "id": "src_routes_customers_id_page_handlesave",
+      "label": "handleSave()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "customers/[id]/+page.svelte",
+      "file_type": "code",
+      "norm_label": "handlesave()",
+      "source_file": "src/routes/customers/[id]/+page.svelte",
+      "source_location": "L140"
+    },
+    {
       "id": "src_routes_customers_id_page_printstatement",
       "label": "printStatement()",
       "_callable": true,
@@ -5632,6 +5620,18 @@
       "norm_label": "printstatement()",
       "source_file": "src/routes/customers/[id]/+page.svelte",
       "source_location": "L158"
+    },
+    {
+      "id": "src_routes_customers_id_page_sendwhatsappstatement",
+      "label": "sendWhatsAppStatement()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "customers/[id]/+page.svelte",
+      "file_type": "code",
+      "norm_label": "sendwhatsappstatement()",
+      "source_file": "src/routes/customers/[id]/+page.svelte",
+      "source_location": "L162"
     },
     {
       "id": "src_lib_repositories_salerepository_salerepository_create",
@@ -5751,7 +5751,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L74"
+      "source_location": "L76"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_create",
@@ -5763,7 +5763,7 @@
       "file_type": "code",
       "norm_label": ".create()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L211"
+      "source_location": "L213"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_getall",
@@ -5775,7 +5775,7 @@
       "file_type": "code",
       "norm_label": ".getall()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L78"
+      "source_location": "L80"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_getbycustomerid",
@@ -5787,7 +5787,7 @@
       "file_type": "code",
       "norm_label": ".getbycustomerid()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L169"
+      "source_location": "L171"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_getbydaterange",
@@ -5799,7 +5799,7 @@
       "file_type": "code",
       "norm_label": ".getbydaterange()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L379"
+      "source_location": "L393"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_getbyid",
@@ -5811,7 +5811,7 @@
       "file_type": "code",
       "norm_label": ".getbyid()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L132"
+      "source_location": "L134"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_update",
@@ -5823,7 +5823,7 @@
       "file_type": "code",
       "norm_label": ".update()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L257"
+      "source_location": "L271"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_updatepaymentdetails",
@@ -5835,7 +5835,7 @@
       "file_type": "code",
       "norm_label": ".updatepaymentdetails()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L352"
+      "source_location": "L366"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_updatepaymentstatus",
@@ -5847,7 +5847,7 @@
       "file_type": "code",
       "norm_label": ".updatepaymentstatus()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L344"
+      "source_location": "L358"
     },
     {
       "id": "src_lib_server_repositories_salerepository_dbsalerepository_updatestatus",
@@ -5859,7 +5859,7 @@
       "file_type": "code",
       "norm_label": ".updatestatus()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L261"
+      "source_location": "L275"
     },
     {
       "id": "src_lib_server_repositories_salerepository_mapsalerow",
@@ -5871,7 +5871,7 @@
       "file_type": "code",
       "norm_label": "mapsalerow()",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L17"
+      "source_location": "L19"
     },
     {
       "id": "src_lib_services_saleservice_createsaleservice",
@@ -6020,6 +6020,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_components_purchasing_purchaseitemstable",
+      "label": "PurchaseItemsTable.svelte",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "purchaseitemstable.svelte",
+      "source_file": "src/lib/components/purchasing/PurchaseItemsTable.svelte",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_server_billing_engine",
       "label": "billing/engine.ts",
       "_origin": "ast",
@@ -6097,6 +6108,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_utils_dealscheme",
+      "label": "dealScheme.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "dealscheme.ts",
+      "source_file": "src/lib/utils/dealScheme.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_utils_dealscheme_spec",
+      "label": "dealScheme.spec.ts",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "code",
+      "norm_label": "dealscheme.spec.ts",
+      "source_file": "src/lib/utils/dealScheme.spec.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_utils_money",
       "label": "utils/money.ts",
       "_origin": "ast",
@@ -6117,6 +6150,17 @@
       "norm_label": "quote/+server.ts",
       "source_file": "src/routes/api/sales/quote/+server.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "ref_vitest",
+      "label": "vitest",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "billing/engine.ts",
+      "file_type": "concept",
+      "norm_label": "vitest",
+      "source_file": "package.json",
+      "source_location": "L50"
     },
     {
       "id": "explain_7_1_sub_second_pos_sale_finalization_finalizesale",
@@ -7022,14 +7066,14 @@
       "source_location": "L49"
     },
     {
-      "id": "src_lib_components_billing_productsearch",
-      "label": "ProductSearch.svelte",
+      "id": "src_lib_components_billing_customersearch",
+      "label": "CustomerSearch.svelte",
       "_origin": "ast",
       "community": 14,
       "community_name": "toastStore.svelte.ts",
       "file_type": "code",
-      "norm_label": "productsearch.svelte",
-      "source_file": "src/lib/components/billing/ProductSearch.svelte",
+      "norm_label": "customersearch.svelte",
+      "source_file": "src/lib/components/billing/CustomerSearch.svelte",
       "source_location": "L1"
     },
     {
@@ -7097,28 +7141,6 @@
       "norm_label": "network/+page.svelte",
       "source_file": "src/routes/settings/network/+page.svelte",
       "source_location": "L1"
-    },
-    {
-      "id": "navigation",
-      "label": "$app/navigation",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "$app/navigation",
-      "source_file": "$app/navigation"
-    },
-    {
-      "id": "state",
-      "label": "$app/state",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "confidence": "EXTRACTED",
-      "file_type": "code",
-      "norm_label": "$app/state",
-      "source_file": "$app/state"
     },
     {
       "id": "src_lib_components_dashboard_dashboard",
@@ -7206,50 +7228,6 @@
       "file_type": "code",
       "norm_label": "products/new/+page.svelte",
       "source_file": "src/routes/inventory/products/new/+page.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_inventory_stock_adjustments_page",
-      "label": "stock-adjustments/+page.svelte",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "file_type": "code",
-      "norm_label": "stock-adjustments/+page.svelte",
-      "source_file": "src/routes/inventory/stock-adjustments/+page.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_purchases_id_page",
-      "label": "purchases/[id]/+page.svelte",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "file_type": "code",
-      "norm_label": "purchases/[id]/+page.svelte",
-      "source_file": "src/routes/purchases/[id]/+page.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_sales_id_page",
-      "label": "sales/[id]/+page.svelte",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "file_type": "code",
-      "norm_label": "sales/[id]/+page.svelte",
-      "source_file": "src/routes/sales/[id]/+page.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_routes_settings_page",
-      "label": "settings/+page.svelte",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "services/index.ts",
-      "file_type": "code",
-      "norm_label": "settings/+page.svelte",
-      "source_file": "src/routes/settings/+page.svelte",
       "source_location": "L1"
     },
     {
@@ -8231,6 +8209,17 @@
       "source_location": "L41"
     },
     {
+      "id": "src_lib_server_db_schema_sessionstable",
+      "label": "sessionsTable",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "pairing.ts",
+      "file_type": "code",
+      "norm_label": "sessionstable",
+      "source_file": "src/lib/server/db/schema.ts",
+      "source_location": "L88"
+    },
+    {
       "id": "src_lib_server_network_pairing",
       "label": "pairing.ts",
       "_origin": "ast",
@@ -8297,6 +8286,17 @@
       "source_location": "L1"
     },
     {
+      "id": "src_lib_components_common_badge",
+      "label": "Badge.svelte",
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "svelte",
+      "file_type": "code",
+      "norm_label": "badge.svelte",
+      "source_file": "src/lib/components/common/Badge.svelte",
+      "source_location": "L1"
+    },
+    {
       "id": "src_lib_components_common_globalsearch",
       "label": "GlobalSearch.svelte",
       "_origin": "ast",
@@ -8305,17 +8305,6 @@
       "file_type": "code",
       "norm_label": "globalsearch.svelte",
       "source_file": "src/lib/components/common/GlobalSearch.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_components_common_pageheader",
-      "label": "PageHeader.svelte",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "svelte",
-      "file_type": "code",
-      "norm_label": "pageheader.svelte",
-      "source_file": "src/lib/components/common/PageHeader.svelte",
       "source_location": "L1"
     },
     {
@@ -8638,11 +8627,33 @@
       "source_location": "L2"
     },
     {
+      "id": "navigation",
+      "label": "$app/navigation",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "$app/navigation",
+      "source_file": "$app/navigation"
+    },
+    {
+      "id": "state",
+      "label": "$app/state",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "confidence": "EXTRACTED",
+      "file_type": "code",
+      "norm_label": "$app/state",
+      "source_file": "$app/state"
+    },
+    {
       "id": "src_lib_components_common_card",
       "label": "Card.svelte",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "card.svelte",
       "source_file": "src/lib/components/common/Card.svelte",
@@ -8653,7 +8664,7 @@
       "label": "BottomNav.svelte",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "bottomnav.svelte",
       "source_file": "src/lib/components/layout/BottomNav.svelte",
@@ -8664,7 +8675,7 @@
       "label": "layout/index.ts",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "layout/index.ts",
       "source_file": "src/lib/components/layout/index.ts",
@@ -8675,10 +8686,21 @@
       "label": "Sidebar.svelte",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "sidebar.svelte",
       "source_file": "src/lib/components/layout/Sidebar.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_inventory_stock_adjustments_page",
+      "label": "stock-adjustments/+page.svelte",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "file_type": "code",
+      "norm_label": "stock-adjustments/+page.svelte",
+      "source_file": "src/routes/inventory/stock-adjustments/+page.svelte",
       "source_location": "L1"
     },
     {
@@ -8686,10 +8708,43 @@
       "label": "+layout.svelte",
       "_origin": "ast",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "file_type": "code",
       "norm_label": "+layout.svelte",
       "source_file": "src/routes/+layout.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_purchases_id_page",
+      "label": "purchases/[id]/+page.svelte",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "file_type": "code",
+      "norm_label": "purchases/[id]/+page.svelte",
+      "source_file": "src/routes/purchases/[id]/+page.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_sales_id_page",
+      "label": "sales/[id]/+page.svelte",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "file_type": "code",
+      "norm_label": "sales/[id]/+page.svelte",
+      "source_file": "src/routes/sales/[id]/+page.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_settings_page",
+      "label": "settings/+page.svelte",
+      "_origin": "ast",
+      "community": 26,
+      "community_name": "$app/navigation",
+      "file_type": "code",
+      "norm_label": "settings/+page.svelte",
+      "source_file": "src/routes/settings/+page.svelte",
       "source_location": "L1"
     },
     {
@@ -9166,6 +9221,17 @@
       "source_location": "L32"
     },
     {
+      "id": "src_lib_server_usersettings_test",
+      "label": "userSettings.test.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "errorResponse",
+      "file_type": "code",
+      "norm_label": "usersettings.test.ts",
+      "source_file": "src/lib/server/userSettings.test.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "src_routes_api_batches_id_server",
       "label": "batches/[id]/+server.ts",
       "_origin": "ast",
@@ -9504,6 +9570,17 @@
       "file_type": "code",
       "norm_label": "suppliers/+server.ts",
       "source_file": "src/routes/api/suppliers/+server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_api_users_id_server",
+      "label": "users/[id]/+server.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "errorResponse",
+      "file_type": "code",
+      "norm_label": "users/[id]/+server.ts",
+      "source_file": "src/routes/api/users/[id]/+server.ts",
       "source_location": "L1"
     },
     {
@@ -10368,17 +10445,6 @@
       "source_file": "src/routes/sales/new/$types.js"
     },
     {
-      "id": "src_lib_components_billing_customersearch",
-      "label": "CustomerSearch.svelte",
-      "_origin": "ast",
-      "community": 40,
-      "community_name": "sales/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "customersearch.svelte",
-      "source_file": "src/lib/components/billing/CustomerSearch.svelte",
-      "source_location": "L1"
-    },
-    {
       "id": "src_lib_components_billing_holdbillsmodal",
       "label": "HoldBillsModal.svelte",
       "_origin": "ast",
@@ -10420,6 +10486,17 @@
       "file_type": "code",
       "norm_label": "printableinvoice.svelte",
       "source_file": "src/lib/components/billing/PrintableInvoice.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_components_billing_productsearch",
+      "label": "ProductSearch.svelte",
+      "_origin": "ast",
+      "community": 40,
+      "community_name": "sales/new/+page.svelte",
+      "file_type": "code",
+      "norm_label": "productsearch.svelte",
+      "source_file": "src/lib/components/billing/ProductSearch.svelte",
       "source_location": "L1"
     },
     {
@@ -10526,43 +10603,10 @@
       "label": "lib/repositories/batchRepository.ts",
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "lib/repositories/batchrepository.ts",
       "source_file": "src/lib/repositories/batchRepository.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_repositories_productrepository",
-      "label": "lib/repositories/productRepository.ts",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "lib/repositories/productrepository.ts",
-      "source_file": "src/lib/repositories/productRepository.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_db_mappers",
-      "label": "mappers.ts",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "mappers.ts",
-      "source_file": "src/lib/server/db/mappers.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_server_repositories_productrepository",
-      "label": "server/repositories/productRepository.ts",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "server/repositories/productrepository.ts",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
       "source_location": "L1"
     },
     {
@@ -10570,7 +10614,7 @@
       "label": "batchService.ts",
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batchservice.ts",
       "source_file": "src/lib/services/batchService.ts",
@@ -10581,21 +10625,10 @@
       "label": "batchService.spec.ts",
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batchservice.spec.ts",
       "source_file": "src/lib/services/batchService.spec.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_services_productservice",
-      "label": "productService.ts",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "logSyncOutbox",
-      "file_type": "code",
-      "norm_label": "productservice.ts",
-      "source_file": "src/lib/services/productService.ts",
       "source_location": "L1"
     },
     {
@@ -10603,7 +10636,7 @@
       "label": "batch.ts",
       "_origin": "ast",
       "community": 5,
-      "community_name": "logSyncOutbox",
+      "community_name": "Batch",
       "file_type": "code",
       "norm_label": "batch.ts",
       "source_file": "src/lib/types/batch.ts",
@@ -11660,26 +11693,48 @@
       "source_location": "L246"
     },
     {
-      "id": "src_routes_logout_page_server",
-      "label": "logout/+page.server.ts",
+      "id": "src_lib_repositories_productrepository",
+      "label": "lib/repositories/productRepository.ts",
       "_origin": "ast",
       "community": 78,
-      "community_name": "logout/+page.server.ts",
+      "community_name": "server/repositories/productRepository.ts",
       "file_type": "code",
-      "norm_label": "logout/+page.server.ts",
-      "source_file": "src/routes/logout/+page.server.ts",
+      "norm_label": "lib/repositories/productrepository.ts",
+      "source_file": "src/lib/repositories/productRepository.ts",
       "source_location": "L1"
     },
     {
-      "id": "src_routes_logout_page_server_actions",
-      "label": "actions",
+      "id": "src_lib_server_db_mappers",
+      "label": "mappers.ts",
       "_origin": "ast",
       "community": 78,
-      "community_name": "logout/+page.server.ts",
+      "community_name": "server/repositories/productRepository.ts",
       "file_type": "code",
-      "norm_label": "actions",
-      "source_file": "src/routes/logout/+page.server.ts",
-      "source_location": "L25"
+      "norm_label": "mappers.ts",
+      "source_file": "src/lib/server/db/mappers.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_server_repositories_productrepository",
+      "label": "server/repositories/productRepository.ts",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "server/repositories/productrepository.ts",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_services_productservice",
+      "label": "productService.ts",
+      "_origin": "ast",
+      "community": 78,
+      "community_name": "server/repositories/productRepository.ts",
+      "file_type": "code",
+      "norm_label": "productservice.ts",
+      "source_file": "src/lib/services/productService.ts",
+      "source_location": "L1"
     },
     {
       "id": "scripts_db_check_and_seed",
@@ -12001,17 +12056,6 @@
       "source_location": "L339"
     },
     {
-      "id": "src_lib_server_db_schema_sessionstable",
-      "label": "sessionsTable",
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "schema.ts",
-      "file_type": "code",
-      "norm_label": "sessionstable",
-      "source_file": "src/lib/server/db/schema.ts",
-      "source_location": "L88"
-    },
-    {
       "id": "src_lib_server_db_schema_settingstable",
       "label": "settingsTable",
       "_origin": "ast",
@@ -12221,17 +12265,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_server_usersettings_test",
-      "label": "userSettings.test.ts",
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "schema.ts",
-      "file_type": "code",
-      "norm_label": "usersettings.test.ts",
-      "source_file": "src/lib/server/userSettings.test.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_routes_api_health_server",
       "label": "health/+server.ts",
       "_origin": "ast",
@@ -12430,17 +12463,6 @@
       "source_location": "L8"
     },
     {
-      "id": "src_routes_api_users_id_server",
-      "label": "users/[id]/+server.ts",
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "schema.ts",
-      "file_type": "code",
-      "norm_label": "users/[id]/+server.ts",
-      "source_file": "src/routes/api/users/[id]/+server.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "src_routes_inventory_page",
       "label": "+page.ts",
       "_origin": "ast",
@@ -12483,6 +12505,28 @@
       "norm_label": "loginattempts",
       "source_file": "src/routes/login/+page.server.ts",
       "source_location": "L15"
+    },
+    {
+      "id": "src_routes_logout_page_server",
+      "label": "logout/+page.server.ts",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "logout/+page.server.ts",
+      "source_file": "src/routes/logout/+page.server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_routes_logout_page_server_actions",
+      "label": "actions",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "schema.ts",
+      "file_type": "code",
+      "norm_label": "actions",
+      "source_file": "src/routes/logout/+page.server.ts",
+      "source_location": "L25"
     },
     {
       "id": "src_routes_register_page_server",
@@ -12573,17 +12617,6 @@
       "source_location": "L60"
     },
     {
-      "id": "ref_vitest",
-      "label": "vitest",
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "schema.ts",
-      "file_type": "concept",
-      "norm_label": "vitest",
-      "source_file": "package.json",
-      "source_location": "L50"
-    },
-    {
       "id": "src_lib_components_purchasing_purchasehistorypanel",
       "label": "PurchaseHistoryPanel.svelte",
       "_origin": "ast",
@@ -12595,17 +12628,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_components_purchasing_purchaseitemstable",
-      "label": "PurchaseItemsTable.svelte",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "purchases/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "purchaseitemstable.svelte",
-      "source_file": "src/lib/components/purchasing/PurchaseItemsTable.svelte",
-      "source_location": "L1"
-    },
-    {
       "id": "src_lib_components_purchasing_purchasesummary",
       "label": "PurchaseSummary.svelte",
       "_origin": "ast",
@@ -12614,28 +12636,6 @@
       "file_type": "code",
       "norm_label": "purchasesummary.svelte",
       "source_file": "src/lib/components/purchasing/PurchaseSummary.svelte",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_utils_dealscheme",
-      "label": "dealScheme.ts",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "purchases/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "dealscheme.ts",
-      "source_file": "src/lib/utils/dealScheme.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_lib_utils_dealscheme_spec",
-      "label": "dealScheme.spec.ts",
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "purchases/new/+page.svelte",
-      "file_type": "code",
-      "norm_label": "dealscheme.spec.ts",
-      "source_file": "src/lib/utils/dealScheme.spec.ts",
       "source_location": "L1"
     },
     {
@@ -12826,17 +12826,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_lib_components_common_badge",
-      "label": "Badge.svelte",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "common/index.ts",
-      "file_type": "code",
-      "norm_label": "badge.svelte",
-      "source_file": "src/lib/components/common/Badge.svelte",
-      "source_location": "L1"
-    },
-    {
       "id": "src_lib_components_common_button",
       "label": "Button.svelte",
       "_origin": "ast",
@@ -12922,6 +12911,17 @@
       "file_type": "code",
       "norm_label": "modal.svelte",
       "source_file": "src/lib/components/common/Modal.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_lib_components_common_pageheader",
+      "label": "PageHeader.svelte",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "common/index.ts",
+      "file_type": "code",
+      "norm_label": "pageheader.svelte",
+      "source_file": "src/lib/components/common/PageHeader.svelte",
       "source_location": "L1"
     },
     {
@@ -15087,7 +15087,7 @@
       "label": "src_lib_assets_favicon",
       "_origin": "semantic",
       "community": 26,
-      "community_name": "Sidebar.svelte",
+      "community_name": "$app/navigation",
       "external": true,
       "file_type": "concept",
       "norm_label": "src_lib_assets_favicon",
@@ -15369,48 +15369,12 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L299",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
       "source": "src_lib_server_billing_engine_finalizesale",
       "target": "src_lib_server_billing_engine_loadcontext",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L459",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_billing_engine_finalizesale",
-      "target": "src_lib_server_billing_engine_preparelines",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L460",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_billing_engine_finalizesale",
-      "target": "src_lib_server_billing_engine_billingerror",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L463",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_billing_engine_finalizesale",
-      "target": "src_lib_server_billing_engine_aggregatetotals",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15422,7 +15386,7 @@
     },
     {
       "source": "src_lib_server_billing_engine_finalizesale",
-      "target": "src_lib_server_billing_engine_nextinvoicenumber",
+      "target": "src_lib_server_billing_engine_preparelines",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15434,6 +15398,42 @@
     },
     {
       "source": "src_lib_server_billing_engine_finalizesale",
+      "target": "src_lib_server_billing_engine_billingerror",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/billing/engine.ts",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_billing_engine_finalizesale",
+      "target": "src_lib_server_billing_engine_aggregatetotals",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/billing/engine.ts",
+      "source_location": "L481",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_billing_engine_finalizesale",
+      "target": "src_lib_server_billing_engine_nextinvoicenumber",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/billing/engine.ts",
+      "source_location": "L482",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_billing_engine_finalizesale",
       "target": "src_lib_utils_money_topaise",
       "relation": "calls",
       "_origin": "ast",
@@ -15441,7 +15441,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L475",
+      "source_location": "L486",
       "weight": 1.0
     },
     {
@@ -15453,7 +15453,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L502",
+      "source_location": "L513",
       "weight": 1.0
     },
     {
@@ -15465,7 +15465,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L511",
+      "source_location": "L522",
       "weight": 1.0
     },
     {
@@ -15477,7 +15477,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L534",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -15489,7 +15489,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L180",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -15501,7 +15501,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L93",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -15513,7 +15513,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L194",
+      "source_location": "L203",
       "weight": 1.0
     },
     {
@@ -15525,7 +15525,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L385",
+      "source_location": "L395",
       "weight": 1.0
     },
     {
@@ -15537,7 +15537,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L167",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -15549,7 +15549,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L238",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -15561,7 +15561,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L245",
+      "source_location": "L254",
       "weight": 1.0
     },
     {
@@ -15573,7 +15573,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L254",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -15585,7 +15585,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L260",
+      "source_location": "L269",
       "weight": 1.0
     },
     {
@@ -15597,7 +15597,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L265",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -15609,7 +15609,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L266",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -15621,7 +15621,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L272",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -15633,7 +15633,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L338",
+      "source_location": "L348",
       "weight": 1.0
     },
     {
@@ -15645,7 +15645,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L339",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -15657,7 +15657,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L340",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -15669,7 +15669,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L348",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -16257,7 +16257,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L76",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -16269,7 +16269,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L80",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -16281,7 +16281,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L122",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -16293,7 +16293,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L131",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -16310,6 +16310,18 @@
     },
     {
       "source": "src_lib_server_repositories_productrepository_dbproductrepository_update",
+      "target": "src_lib_server_repositories_productrepository_dbproductrepository_update",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_productrepository_dbproductrepository_update",
       "target": "src_lib_server_db_sync_outbox_logsyncoutbox",
       "relation": "calls",
       "_origin": "ast",
@@ -16317,7 +16329,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L108",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -16329,19 +16341,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L112",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_repositories_productrepository_dbproductrepository_update",
-      "target": "src_lib_server_repositories_productrepository_dbproductrepository_update",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L99",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -16521,7 +16521,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L251",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -16533,7 +16533,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L254",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -16545,7 +16545,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L128",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -16557,7 +16557,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L203",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -16569,7 +16569,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L415",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -16581,7 +16581,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L166",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -16593,7 +16593,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L258",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -16605,7 +16605,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L360",
+      "source_location": "L374",
       "weight": 1.0
     },
     {
@@ -16617,7 +16617,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L369",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -16629,7 +16629,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L376",
+      "source_location": "L390",
       "weight": 1.0
     },
     {
@@ -16641,7 +16641,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L349",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -16653,7 +16653,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L264",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -16665,7 +16665,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L267",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -16677,7 +16677,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L275",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -16689,7 +16689,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L329",
+      "source_location": "L343",
       "weight": 1.0
     },
     {
@@ -17318,18 +17318,6 @@
     },
     {
       "source": "src_routes_api_products_id_batches_batchid_adjust_server_post",
-      "target": "src_lib_server_apiutils_jsonresponse",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
-      "source_location": "L32",
-      "weight": 1.0
-    },
-    {
-      "source": "src_routes_api_products_id_batches_batchid_adjust_server_post",
       "target": "src_lib_server_apiutils_errorresponse",
       "relation": "calls",
       "_origin": "ast",
@@ -17337,7 +17325,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
-      "source_location": "L8",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server_post",
+      "target": "src_lib_server_db_sync_outbox_logsyncoutbox",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server_post",
+      "target": "src_lib_server_apiutils_jsonresponse",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -17757,7 +17769,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/routes/api/sales/+server.ts",
-      "source_location": "L130",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -19101,7 +19113,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L413",
+      "source_location": "L423",
       "weight": 1.0
     },
     {
@@ -19125,7 +19137,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L216",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -19137,7 +19149,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L217",
+      "source_location": "L226",
       "weight": 1.0
     },
     {
@@ -19149,7 +19161,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L313",
+      "source_location": "L322",
       "weight": 1.0
     },
     {
@@ -19161,7 +19173,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L314",
+      "source_location": "L323",
       "weight": 1.0
     },
     {
@@ -19905,7 +19917,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L421",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -20289,7 +20301,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L136",
+      "source_location": "L142",
       "weight": 1.0
     },
     {
@@ -20301,7 +20313,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L83",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -20313,7 +20325,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L83",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -20421,7 +20433,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L211",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -20433,7 +20445,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L78",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -20445,7 +20457,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L169",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -20457,7 +20469,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L379",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -20469,7 +20481,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L132",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -20481,7 +20493,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L257",
+      "source_location": "L271",
       "weight": 1.0
     },
     {
@@ -20493,7 +20505,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L352",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -20505,7 +20517,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L344",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -20517,7 +20529,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L261",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -23234,6 +23246,18 @@
     },
     {
       "source": "src_lib_server_repositories_productrepository",
+      "target": "src_lib_server_db_schema_storestable",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/productRepository.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_productrepository",
       "target": "src_lib_server_db_mappers_maptoproduct",
       "relation": "imports",
       "_origin": "ast",
@@ -23469,7 +23493,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L13",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -23481,7 +23505,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L14",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -23493,7 +23517,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L15",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -23595,6 +23619,30 @@
     {
       "source": "src_lib_server_repositories_salerepository",
       "target": "src_lib_server_db_schema_salestable",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/saleRepository.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_salerepository",
+      "target": "src_lib_server_db_schema_storestable",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/lib/server/repositories/saleRepository.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_repositories_salerepository",
+      "target": "src_lib_server_db_schema_userstable",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -26174,6 +26222,18 @@
     },
     {
       "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_serviceslocator_productservice",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
       "target": "src_lib_server_apiutils_errorresponse",
       "relation": "imports",
       "_origin": "ast",
@@ -26194,6 +26254,54 @@
       "context": "import",
       "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_index_db",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_schema_batchestable",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_schema_batchstockeventstable",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_sync_outbox_logsyncoutbox",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -30214,7 +30322,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L11",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -30226,7 +30334,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L12",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -30238,7 +30346,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L13",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -30250,7 +30358,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L14",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -30262,7 +30370,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L15",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -32705,7 +32813,7 @@
     },
     {
       "source": "src_routes_api_products_id_batches_batchid_adjust_server",
-      "target": "ref_types",
+      "target": "src_lib_server_db_index",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -32713,6 +32821,66 @@
       "context": "import",
       "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_schema",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "src_lib_server_db_sync_outbox",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "ref_drizzle_orm",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "ref_uuid",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_routes_api_products_id_batches_batchid_adjust_server",
+      "target": "ref_types",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
+      "source_location": "L8",
       "type_only": true,
       "weight": 1.0
     },
@@ -35151,7 +35319,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L211",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -36012,7 +36180,7 @@
       "confidence_score": 1.0,
       "context": "type",
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L71",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -39170,7 +39338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L163",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -39181,7 +39349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L179",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -39192,7 +39360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L183",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -39203,7 +39371,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L205",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -39214,7 +39382,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L222",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -39225,18 +39393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L293",
-      "weight": 1.0
-    },
-    {
-      "source": "src_lib_server_billing_engine",
-      "target": "src_lib_server_billing_engine_quotelinepayload",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L305",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -39252,13 +39409,24 @@
     },
     {
       "source": "src_lib_server_billing_engine",
+      "target": "src_lib_server_billing_engine_quotelinepayload",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/server/billing/engine.ts",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_server_billing_engine",
       "target": "src_lib_server_billing_engine_quoteresult",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L318",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -39280,7 +39448,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L333",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -39291,7 +39459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L366",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -39302,7 +39470,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L400",
+      "source_location": "L410",
       "weight": 1.0
     },
     {
@@ -39313,7 +39481,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L417",
+      "source_location": "L427",
       "weight": 1.0
     },
     {
@@ -39324,7 +39492,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L442",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
@@ -39335,7 +39503,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/billing/engine.ts",
-      "source_location": "L454",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -40248,7 +40416,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L17",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -40259,7 +40427,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L71",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -41920,7 +42088,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts",
-      "source_location": "L5",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -43328,7 +43496,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/routes/sales/new/+page.svelte",
-      "source_location": "L461",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -47520,7 +47688,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L115",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -47542,7 +47710,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L136",
+      "source_location": "L142",
       "weight": 1.0
     },
     {
@@ -47586,7 +47754,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L83",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -47685,7 +47853,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L132",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -47696,7 +47864,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L169",
+      "source_location": "L171",
       "weight": 1.0
     },
     {
@@ -47707,7 +47875,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L211",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -47718,7 +47886,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L257",
+      "source_location": "L271",
       "weight": 1.0
     },
     {
@@ -47729,7 +47897,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L261",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -47740,7 +47908,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L344",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -47751,7 +47919,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L352",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -47762,7 +47930,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L379",
+      "source_location": "L393",
       "weight": 1.0
     },
     {
@@ -47773,7 +47941,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L74",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -47784,7 +47952,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/lib/server/repositories/saleRepository.ts",
-      "source_location": "L78",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -47942,7 +48110,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/lib/server/repositories/productRepository.ts",
-      "source_location": "L152",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -49444,5 +49612,5 @@
       "source_file": "build-med-plans/03-TRD.md"
     }
   ],
-  "built_at_commit": "cb04ec53c0ce93d4a5d64bda09962e7bc2ae0989"
+  "built_at_commit": "5a0d495745b6222d87cbb56461447bd0b765c6ca"
 }

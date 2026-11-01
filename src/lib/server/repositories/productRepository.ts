@@ -1,6 +1,6 @@
 import type { ProductRepository } from '$lib/repositories/productRepository.js';
 import type { Product, CreateProductInput } from '$lib/types/index.js';
-import { productsTable, productUnitsTable } from '../db/schema.js';
+import { productsTable, productUnitsTable, storesTable } from '../db/schema.js';
 import { eq, and, ilike, or } from 'drizzle-orm';
 import { mapToProduct } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -38,9 +38,15 @@ export class DbProductRepository implements ProductRepository {
 		const now = new Date();
 		const unitId = uuidv4();
 
+		let storeId = (input as any).storeId;
+		if (!storeId || storeId === '00000000-0000-0000-0000-000000000000') {
+			const [firstStore] = await this._db.select({ id: storesTable.id }).from(storesTable).limit(1);
+			storeId = firstStore?.id;
+		}
+
 		const values = {
 			id,
-			storeId: '00000000-0000-0000-0000-000000000000',
+			storeId,
 			originNode: 'local',
 			name: input.name,
 			genericName: input.genericName || '',

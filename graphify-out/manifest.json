@@ -126,9 +126,9 @@
     "semantic_hash": "835779d75f0b7918a64bc1e400bcc599"
   },
   "src/hooks.server.ts": {
-    "mtime": 1793548505.698465,
-    "seen": 1793548998.948212,
-    "ast_hash": "779af3a7d88f5fe93c4a4040a293bfd7",
+    "mtime": 1793554023.011775,
+    "seen": 1793554338.179463,
+    "ast_hash": "7026dfad1101fc1bec8a32fdceb8ab1a",
     "semantic_hash": ""
   },
   "src/lib/components/billing/BatchSelector.svelte": {
@@ -180,9 +180,9 @@
     "semantic_hash": "334067fc172050b8f14d603e5dd771d3"
   },
   "src/lib/components/common/Button.svelte": {
-    "mtime": 1793526045.1612458,
-    "seen": 1793540107.104341,
-    "ast_hash": "8e4a0e7cb4e3d4910596a8b1e17f2641",
+    "mtime": 1793552747.6210074,
+    "seen": 1793554338.179605,
+    "ast_hash": "93bf677d2c03dee90e1d7538053cd1b5",
     "semantic_hash": ""
   },
   "src/lib/components/common/ConfirmDialog.svelte": {
@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "src/lib/components/forms/ProductForm.svelte": {
-    "mtime": 1793526045.1664507,
-    "seen": 1793540107.104526,
-    "ast_hash": "7c2607a00b12578dec80cc0f9e9f691d",
+    "mtime": 1793553458.079403,
+    "seen": 1793554338.179809,
+    "ast_hash": "a2808c926f74b13a1b44c905398a76c7",
     "semantic_hash": ""
   },
   "src/lib/components/forms/SupplierForm.svelte": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "src/lib/server/billing/engine.ts": {
-    "mtime": 1793526045.173252,
-    "seen": 1793540107.1049001,
-    "ast_hash": "2cf285904b63d9ec00379416cdb1abf0",
+    "mtime": 1793553934.8451478,
+    "seen": 1793554338.180168,
+    "ast_hash": "35df567347a297a40586d3fc3db09d14",
     "semantic_hash": ""
   },
   "src/lib/server/billing/fefo.test.ts": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "src/lib/server/billing/returns.ts": {
-    "mtime": 1793548442.5831041,
-    "seen": 1793548998.949124,
-    "ast_hash": "86c44e829daa2ef739eeabe04cb381ab",
+    "mtime": 1793553832.833354,
+    "seen": 1793554338.1802518,
+    "ast_hash": "4bef941452d7b880986582e46d75a8d7",
     "semantic_hash": ""
   },
   "src/lib/server/db/index.ts": {
@@ -516,10 +516,10 @@
     "semantic_hash": ""
   },
   "src/lib/server/repositories/productRepository.ts": {
-    "mtime": 1790453913.2308571,
-    "seen": 1790792341.748207,
-    "ast_hash": "2bfeece7f056463581dcee67711643aa",
-    "semantic_hash": "2bfeece7f056463581dcee67711643aa"
+    "mtime": 1793552978.5311267,
+    "seen": 1793554338.1804311,
+    "ast_hash": "baeb8f85fd42adceec9c9ba29ee52003",
+    "semantic_hash": ""
   },
   "src/lib/server/repositories/purchaseRepository.ts": {
     "mtime": 1793526045.1790326,
@@ -528,9 +528,9 @@
     "semantic_hash": ""
   },
   "src/lib/server/repositories/saleRepository.ts": {
-    "mtime": 1793526045.1794753,
-    "seen": 1793540107.105176,
-    "ast_hash": "b59fcdd4ff41668106f4a18cd4ab1cb3",
+    "mtime": 1793553028.8491662,
+    "seen": 1793554338.180445,
+    "ast_hash": "8be85d8fbec730b994306adceb98bbbc",
     "semantic_hash": ""
   },
   "src/lib/server/repositories/supplierRepository.ts": {
@@ -906,9 +906,9 @@
     "semantic_hash": ""
   },
   "src/routes/api/products/[id]/batches/[batchId]/adjust/+server.ts": {
-    "mtime": 1793551558.0174344,
-    "seen": 1793552002.8948631,
-    "ast_hash": "f6af1741a70a3f6cddcac6a70c155741",
+    "mtime": 1793554202.8934615,
+    "seen": 1793554338.18137,
+    "ast_hash": "b4ebca08681591225c6dce4f5987c6e2",
     "semantic_hash": ""
   },
   "src/routes/api/purchases/+server.ts": {
@@ -978,9 +978,9 @@
     "semantic_hash": ""
   },
   "src/routes/api/sales/+server.ts": {
-    "mtime": 1793551445.395545,
-    "seen": 1793552002.8950531,
-    "ast_hash": "760b2e0420d38eec871664395343d885",
+    "mtime": 1793553983.1138933,
+    "seen": 1793554338.181577,
+    "ast_hash": "0ae801630c0cddbc2687ab19b1a22da5",
     "semantic_hash": ""
   },
   "src/routes/api/sales/[id]/+server.ts": {
@@ -996,9 +996,9 @@
     "semantic_hash": ""
   },
   "src/routes/api/sales/quote/+server.ts": {
-    "mtime": 1793551456.3990855,
-    "seen": 1793552002.8950982,
-    "ast_hash": "80ce0bc986e343dbd6f4247fcdabdb2a",
+    "mtime": 1793553992.5790882,
+    "seen": 1793554338.18162,
+    "ast_hash": "a29d1654cb202de7beabf98d95064122",
     "semantic_hash": ""
   },
   "src/routes/api/sales/summary/+server.ts": {
@@ -1038,9 +1038,9 @@
     "semantic_hash": ""
   },
   "src/routes/customers/+page.svelte": {
-    "mtime": 1793526045.2022007,
-    "seen": 1793540107.106694,
-    "ast_hash": "ffa599977920916c3430bd986a2e8ff9",
+    "mtime": 1793554133.8570733,
+    "seen": 1793554338.181798,
+    "ast_hash": "a158c5018832e1aa5d4b040d1119be7d",
     "semantic_hash": ""
   },
   "src/routes/customers/[id]/+page.svelte": {
@@ -1074,9 +1074,9 @@
     "semantic_hash": ""
   },
   "src/routes/inventory/products/+page.svelte": {
-    "mtime": 1793526045.204189,
-    "seen": 1793540107.1067798,
-    "ast_hash": "90d87c1ab9e00a35f435f57ba1bd5f21",
+    "mtime": 1793552774.931936,
+    "seen": 1793554338.1818671,
+    "ast_hash": "0d322db40c81141d2c4f187392b7892c",
     "semantic_hash": ""
   },
   "src/routes/inventory/products/[id]/+page.svelte": {
@@ -1140,9 +1140,9 @@
     "semantic_hash": ""
   },
   "src/routes/purchases/+page.svelte": {
-    "mtime": 1793526045.2088406,
-    "seen": 1793540107.1068769,
-    "ast_hash": "c4469d0d50fef0b39eed076a6f62bb2c",
+    "mtime": 1793554145.5446813,
+    "seen": 1793554338.1820061,
+    "ast_hash": "6e0e11f99e71a553e8b45ad64d3cf425",
     "semantic_hash": ""
   },
   "src/routes/purchases/[id]/+page.svelte": {
@@ -1224,9 +1224,9 @@
     "semantic_hash": ""
   },
   "src/routes/sales/+page.svelte": {
-    "mtime": 1793548706.1988106,
-    "seen": 1793548998.951127,
-    "ast_hash": "a182b81e042f66af739a067422e15a60",
+    "mtime": 1793554157.823051,
+    "seen": 1793554338.1822011,
+    "ast_hash": "b60e3e4b474c8024a8d5e9337b2ba676",
     "semantic_hash": ""
   },
   "src/routes/sales/[id]/+page.svelte": {
@@ -1236,9 +1236,9 @@
     "semantic_hash": ""
   },
   "src/routes/sales/new/+page.svelte": {
-    "mtime": 1793526045.2225292,
-    "seen": 1793540107.1068952,
-    "ast_hash": "3bd7db27bbbe9627c0712e7a245fe9fd",
+    "mtime": 1793552509.801162,
+    "seen": 1793554338.18223,
+    "ast_hash": "829833ffd60744b3686712b861016f97",
     "semantic_hash": ""
   },
   "src/routes/settings/+page.svelte": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "src/routes/suppliers/+page.svelte": {
-    "mtime": 1793526045.2252584,
-    "seen": 1793540107.1069,
-    "ast_hash": "a70418b53b86efeb9a5932b9591843d7",
+    "mtime": 1793554137.8230493,
+    "seen": 1793554338.182283,
+    "ast_hash": "d489893737d94975fa3805692901abdb",
     "semantic_hash": ""
   },
   "src/routes/suppliers/[id]/+page.svelte": {

@@ -105,7 +105,7 @@
 			</p>
 		</div>
 		<div class="flex items-center gap-2">
-			<Button variant="primary" onclick={() => goto('/sales/new')}>
+			<Button variant="primary" aria-label="New Sale" onclick={() => goto('/sales/new')}>
 				<Plus size={16} class="mr-1.5" />
 				<span>+ New Sale (POS)</span>
 			</Button>

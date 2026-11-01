@@ -72,7 +72,7 @@
 	}
 </script>
 
-<form onsubmit={handleSubmit} class="space-y-4">
+<form onsubmit={handleSubmit} data-testid="product-form" class="space-y-4">
 	<!-- Basic Information -->
 	<div class="rounded-xl border border-border bg-surface p-4 shadow-2xs">
 		<h3 class="mb-3 text-xs font-bold tracking-wider text-text-muted uppercase">

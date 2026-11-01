@@ -88,11 +88,20 @@ type Executor = Pick<typeof db, 'select' | 'insert' | 'update'>;
 async function loadContext(
 	tx: Executor,
 	input: SaleInput,
-	lockBatches: boolean
+	lockBatches: boolean,
+	storeId?: string
 ): Promise<LoadedContext> {
 	if (!input.items.length) throw new BillingError('EMPTY_SALE', 'Sale has no items');
 
-	const [store] = await tx.select().from(storesTable).limit(1);
+	let store: Store | undefined;
+	if (storeId) {
+		const [s] = await tx.select().from(storesTable).where(eq(storesTable.id, storeId)).limit(1);
+		store = s;
+	}
+	if (!store) {
+		const [firstStore] = await tx.select().from(storesTable).limit(1);
+		store = firstStore;
+	}
 	if (!store) throw new BillingError('NO_STORE', 'No store configured', 500);
 
 	const productIds = [...new Set(input.items.map((i) => i.productId))];
@@ -333,9 +342,10 @@ export interface QuoteResult {
 export async function quoteSale(
 	input: SaleInput,
 	today: string,
-	allowExpiredOverride = false
+	allowExpiredOverride = false,
+	storeId?: string
 ): Promise<QuoteResult> {
-	const ctx = await loadContext(db, input, false);
+	const ctx = await loadContext(db, input, false, storeId);
 	const lines = prepareLines(ctx, input, today, allowExpiredOverride);
 	const totals = aggregateTotals(lines);
 	return {
@@ -442,6 +452,7 @@ export interface InvoicePayload {
 export interface FinalizeOptions {
 	today: string;
 	userId?: string;
+	storeId?: string;
 	allowExpiredOverride?: boolean;
 }
 
@@ -456,7 +467,7 @@ export async function finalizeSale(
 	opts: FinalizeOptions
 ): Promise<InvoicePayload> {
 	return db.transaction(async (tx) => {
-		const ctx = await loadContext(tx, input, true);
+		const ctx = await loadContext(tx, input, true, opts.storeId);
 		const lines = prepareLines(ctx, input, opts.today, opts.allowExpiredOverride === true);
 
 		if (lines.some((l) => l.usedExpiredBatch) && opts.allowExpiredOverride !== true) {

@@ -44,16 +44,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 			pathname.startsWith('/api/users') ||
 			pathname.startsWith('/api/sync') ||
 			pathname.startsWith('/api/settings/backup') ||
+			pathname.startsWith('/api/settings/network') ||
+			(method === 'POST' && pathname.startsWith('/api/settings')) ||
 			pathname.startsWith('/api/reports/audit') ||
 			pathname.startsWith('/api/inventory/adjustments') ||
 			pathname.endsWith('/cancel') ||
+			pathname.endsWith('/adjust') ||
 			(method === 'POST' && pathname === '/api/purchases') ||
 			(method === 'POST' && pathname === '/api/suppliers') ||
 			(method === 'PATCH' && pathname.startsWith('/api/suppliers')) ||
 			(method === 'POST' && pathname === '/api/products') ||
 			(method === 'PATCH' && pathname.startsWith('/api/products')) ||
 			(method === 'POST' && pathname === '/api/batches') ||
-			(method === 'PATCH' && pathname.startsWith('/api/batches'));
+			(method === 'PATCH' && pathname.startsWith('/api/batches')) ||
+			method === 'DELETE';
 
 		if (isAdminOnly) {
 			return new Response(JSON.stringify({ error: 'Forbidden: Admin role required' }), {

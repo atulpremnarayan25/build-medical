@@ -6,7 +6,9 @@ import {
 	productsTable,
 	batchesTable,
 	batchStockEventsTable,
-	customersTable
+	customersTable,
+	storesTable,
+	usersTable
 } from '$lib/server/db/schema.js';
 import { eq, desc, and, gte, lte, inArray } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
@@ -213,9 +215,21 @@ export class DbSaleRepository implements SaleRepository {
 		const now = new Date();
 		const _input = input as any;
 
+		let storeId = _input.storeId;
+		if (!storeId || storeId === '00000000-0000-0000-0000-000000000000') {
+			const [firstStore] = await this._db.select({ id: storesTable.id }).from(storesTable).limit(1);
+			storeId = firstStore?.id;
+		}
+
+		let createdBy = _input.createdBy;
+		if (!createdBy || createdBy === '00000000-0000-0000-0000-000000000000') {
+			const [firstUser] = await this._db.select({ id: usersTable.id }).from(usersTable).limit(1);
+			createdBy = firstUser?.id || null;
+		}
+
 		const saleValues = {
 			id,
-			storeId: '00000000-0000-0000-0000-000000000000',
+			storeId,
 			invoiceNumber: _input.invoiceNumber || 'INV-' + Math.floor(Math.random() * 1000000),
 			customerId: _input.customerId || null,
 			saleType: _input.saleType || 'retail',
@@ -224,7 +238,7 @@ export class DbSaleRepository implements SaleRepository {
 			totalAmount: String(_input.grandTotal || 0),
 			amountPaidAtSale: String(_input.paidAmount || 0),
 			paymentStatus: _input.paymentStatus || 'paid',
-			createdBy: _input.createdBy || '00000000-0000-0000-0000-000000000000',
+			createdBy,
 			originNode: 'local',
 			createdAt: now,
 			updatedAt: now

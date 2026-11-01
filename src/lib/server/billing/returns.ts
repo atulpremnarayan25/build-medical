@@ -56,6 +56,25 @@ export async function processReturn(input: CreateReturnInput, storeId: string, u
 			// stock delta: sales_return brings stock IN (+), purchase_return takes stock OUT (-)
 			const delta = input.returnType === 'sales_return' ? item.quantity : -item.quantity;
 
+			const [batch] = await tx
+				.select()
+				.from(batchesTable)
+				.where(eq(batchesTable.id, item.batchId))
+				.limit(1);
+
+			if (!batch) {
+				throw new Error(`Batch ID ${item.batchId} not found`);
+			}
+
+			if (
+				input.returnType === 'purchase_return' &&
+				Number(batch.quantityRemaining || 0) < item.quantity
+			) {
+				throw new Error(
+					`Insufficient stock in batch ${batch.batchNo} for purchase return (Available: ${batch.quantityRemaining}, Returning: ${item.quantity})`
+				);
+			}
+
 			const [retItem] = await tx
 				.insert(returnItemsTable)
 				.values({

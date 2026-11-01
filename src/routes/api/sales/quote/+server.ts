@@ -66,7 +66,7 @@ export async function POST(event: RequestEvent) {
 		body.includeExpiredBatches === true && event.locals.user?.role === 'owner_admin';
 
 	try {
-		const quote = await quoteSale(input, todayIso(), allowExpiredOverride);
+		const quote = await quoteSale(input, todayIso(), allowExpiredOverride, event.locals.user?.storeId);
 		return jsonResponse(quote);
 	} catch (err) {
 		if (err instanceof BillingError) return errorResponse(err.code, err.message, err.status);
