@@ -9,7 +9,7 @@ import {
 	returnsTable,
 	returnItemsTable
 } from '../db/schema.js';
-import { eq, and, or, sql } from 'drizzle-orm';
+import { eq, ne, and, or, sql } from 'drizzle-orm';
 
 export class DbLedgerRepository implements LedgerRepository {
 	private _db;
@@ -43,7 +43,7 @@ export class DbLedgerRepository implements LedgerRepository {
 			const rawSales = await this._db
 				.select()
 				.from(salesTable)
-				.where(eq(salesTable.customerId, partyId));
+				.where(and(eq(salesTable.customerId, partyId), ne(salesTable.status, 'cancelled')));
 
 			for (const sale of rawSales) {
 				const dateStr = sale.createdAt
@@ -143,7 +143,7 @@ export class DbLedgerRepository implements LedgerRepository {
 			const rawPurchases = await this._db
 				.select()
 				.from(purchasesTable)
-				.where(eq(purchasesTable.supplierId, partyId));
+				.where(and(eq(purchasesTable.supplierId, partyId), ne(purchasesTable.status, 'cancelled')));
 
 			for (const purchase of rawPurchases) {
 				const dateStr = purchase.createdAt

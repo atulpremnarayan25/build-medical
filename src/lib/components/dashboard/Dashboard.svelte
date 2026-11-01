@@ -406,14 +406,16 @@
 										</td>
 										<td class="px-3 py-2.5 text-center">
 											<Badge
-												variant={sale.paymentStatus === 'paid'
-													? 'success'
-													: sale.paymentStatus === 'partial'
-														? 'warning'
-														: 'danger'}
+												variant={sale.status === 'cancelled'
+													? 'danger'
+													: sale.paymentStatus === 'paid'
+														? 'success'
+														: sale.paymentStatus === 'partial'
+															? 'warning'
+															: 'danger'}
 												size="sm"
 											>
-												{sale.paymentStatus}
+												{sale.status === 'cancelled' ? 'cancelled' : sale.paymentStatus}
 											</Badge>
 										</td>
 									</tr>
@@ -474,14 +476,16 @@
 										</td>
 										<td class="px-3 py-2.5 text-center">
 											<Badge
-												variant={purchase.paymentStatus === 'paid'
-													? 'success'
-													: purchase.paymentStatus === 'partial'
-														? 'warning'
-														: 'danger'}
+												variant={purchase.status === 'cancelled'
+													? 'danger'
+													: purchase.paymentStatus === 'paid'
+														? 'success'
+														: purchase.paymentStatus === 'partial'
+															? 'warning'
+															: 'danger'}
 												size="sm"
 											>
-												{purchase.paymentStatus}
+												{purchase.status === 'cancelled' ? 'cancelled' : purchase.paymentStatus}
 											</Badge>
 										</td>
 									</tr>

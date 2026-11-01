@@ -12,6 +12,22 @@ import { PATCH as updateSupplier } from '../../routes/api/suppliers/[id]/+server
 import { POST as createPurchase } from '../../routes/api/purchases/+server.js';
 import { POST as createReturn } from '../../routes/api/returns/+server.js';
 import { PATCH as updateCustomer } from '../../routes/api/customers/[id]/+server.js';
+import { GET as getSale } from '../../routes/api/sales/[id]/+server.js';
+import { GET as getPurchase } from '../../routes/api/purchases/[id]/+server.js';
+import { GET as getPayment } from '../../routes/api/payments/[id]/+server.js';
+import { GET as getCustomerLedger } from '../../routes/api/customers/[id]/ledger/+server.js';
+import { GET as getSupplierLedger } from '../../routes/api/suppliers/[id]/ledger/+server.js';
+import { GET as getNetworkTopology } from '../../routes/api/settings/network/+server.js';
+import { GET as getProductBatches } from '../../routes/api/products/[id]/batches/+server.js';
+import { GET as getLowStock } from '../../routes/api/inventory/low-stock/+server.js';
+import { GET as getNearExpiry } from '../../routes/api/inventory/near-expiry/+server.js';
+import { GET as getBatchesSummary } from '../../routes/api/batches/summary/+server.js';
+import { GET as getSalesSummary } from '../../routes/api/sales/summary/+server.js';
+import { GET as getPurchasesSummary } from '../../routes/api/purchases/summary/+server.js';
+import { GET as getSalesHistory } from '../../routes/api/sales/history/+server.js';
+import { GET as getPurchasesHistory } from '../../routes/api/purchases/history/+server.js';
+import { createSaleService } from '../services/saleService.js';
+import { createPurchaseService } from '../services/purchaseService.js';
 
 describe('Security Remediation & Role Boundary Checks', () => {
 	const billerUser = {
@@ -210,5 +226,89 @@ describe('Security Remediation & Role Boundary Checks', () => {
 			locals: { user: billerUser }
 		} as any);
 		expect(res.status).toBe(403);
+	});
+
+	it('should reject unauthenticated access to single resource and ledger endpoints with 401', async () => {
+		const noAuthLocals = { user: null };
+		expect((await getSale({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPurchase({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPayment({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getCustomerLedger({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSupplierLedger({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+	});
+
+	it('should reject unauthenticated access to inventory and history endpoints with 401/403', async () => {
+		const noAuthLocals = { user: null };
+		const dummyUrl = new URL('http://localhost/api');
+
+		expect((await getNetworkTopology({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(403);
+		expect((await getNetworkTopology({ url: dummyUrl, locals: { user: billerUser } } as any)).status).toBe(403);
+		expect((await getProductBatches({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getLowStock({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getNearExpiry({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getBatchesSummary({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSalesSummary({ locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPurchasesSummary({ locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSalesHistory({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPurchasesHistory({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+	});
+
+	it('should exclude cancelled sales from getDashboardSummary', async () => {
+		const today = new Date().toISOString().split('T')[0];
+		const mockSaleRepo = {
+			getAll: async () => [
+				{
+					id: 's1',
+					date: `${today}T10:00:00.000Z`,
+					grandTotal: 500,
+					dueAmount: 200,
+					status: 'completed',
+					items: [{ quantity: 2 }]
+				},
+				{
+					id: 's2',
+					date: `${today}T11:00:00.000Z`,
+					grandTotal: 1000,
+					dueAmount: 500,
+					status: 'cancelled',
+					items: [{ quantity: 5 }]
+				}
+			]
+		};
+		const svc = createSaleService(mockSaleRepo as any);
+		const summary = await svc.getDashboardSummary();
+		expect(summary.todaySalesCount).toBe(1);
+		expect(summary.todaySalesTotal).toBe(500);
+		expect(summary.todayItemsSold).toBe(2);
+		expect(summary.totalReceivables).toBe(200);
+	});
+
+	it('should exclude cancelled purchases from getDashboardSummary', async () => {
+		const today = new Date().toISOString().split('T')[0];
+		const mockPurchaseRepo = {
+			getAll: async () => [
+				{
+					id: 'p1',
+					invoiceDate: `${today}T10:00:00.000Z`,
+					grandTotal: 800,
+					dueAmount: 300,
+					status: 'received',
+					items: []
+				},
+				{
+					id: 'p2',
+					invoiceDate: `${today}T11:00:00.000Z`,
+					grandTotal: 2000,
+					dueAmount: 1000,
+					status: 'cancelled',
+					items: []
+				}
+			]
+		};
+		const svc = createPurchaseService(mockPurchaseRepo as any);
+		const summary = await svc.getDashboardSummary();
+		expect(summary.todayPurchasesCount).toBe(1);
+		expect(summary.todayPurchasesTotal).toBe(800);
+		expect(summary.totalPayables).toBe(300);
 	});
 });

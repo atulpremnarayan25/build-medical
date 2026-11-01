@@ -81,13 +81,14 @@ export function createSaleService(
 		}> {
 			const today = new Date().toISOString().split('T')[0];
 			const allSales = await repo.getAll();
-			const todaySales = allSales.filter((s) => s.date.startsWith(today));
+			const activeSales = allSales.filter((s) => s.status !== 'cancelled');
+			const todaySales = activeSales.filter((s) => s.date.startsWith(today));
 
 			const todayItemsSold = todaySales.reduce((total, sale) => {
 				return total + sale.items.reduce((sum, item) => sum + item.quantity, 0);
 			}, 0);
 
-			const totalReceivables = allSales.reduce((sum, s) => sum + s.dueAmount, 0);
+			const totalReceivables = activeSales.reduce((sum, s) => sum + s.dueAmount, 0);
 
 			return {
 				todaySalesCount: todaySales.length,

@@ -9,6 +9,7 @@
 		date: string;
 		supplierInvoiceRef: string;
 		supplierInvoiceDate: string | null;
+		status?: string;
 		supplierId: string;
 		supplierName: string | null;
 		supplierGstin: string | null;
@@ -25,6 +26,7 @@
 	let datePreset = $state('month');
 	let fromDate = $state('');
 	let toDate = $state('');
+	let statusFilter = $state('all');
 
 	function setDateRange(preset: string) {
 		datePreset = preset;
@@ -59,6 +61,7 @@
 			const params = new URLSearchParams();
 			if (fromDate) params.append('from', fromDate);
 			if (toDate) params.append('to', toDate);
+			if (statusFilter !== 'all') params.append('status', statusFilter);
 
 			const res = await fetch(`/api/reports/purchases?${params.toString()}`);
 			if (res.ok) {
@@ -88,9 +91,10 @@
 		})
 	);
 
-	let totalPurchasesAmount = $derived(filteredPurchases.reduce((acc, p) => acc + p.totalAmount, 0));
-	let totalItemsReceived = $derived(filteredPurchases.reduce((acc, p) => acc + p.itemsCount, 0));
-	let uniqueSuppliers = $derived(new Set(filteredPurchases.map((p) => p.supplierId)).size);
+	let activePurchases = $derived(filteredPurchases.filter((p) => p.status !== 'cancelled'));
+	let totalPurchasesAmount = $derived(activePurchases.reduce((acc, p) => acc + p.totalAmount, 0));
+	let totalItemsReceived = $derived(activePurchases.reduce((acc, p) => acc + p.itemsCount, 0));
+	let uniqueSuppliers = $derived(new Set(activePurchases.map((p) => p.supplierId)).size);
 
 	function exportCSV() {
 		const headers = [
@@ -101,7 +105,8 @@
 			'Supplier GSTIN',
 			'Phone',
 			'Items Count',
-			'Total Bill Amount (₹)'
+			'Total Bill Amount (₹)',
+			'Status'
 		];
 		const rows = filteredPurchases.map((p) => [
 			formatDate(p.date),
@@ -111,7 +116,8 @@
 			p.supplierGstin || '-',
 			p.supplierPhone || '-',
 			p.itemsCount,
-			p.totalAmount.toFixed(2)
+			p.totalAmount.toFixed(2),
+			(p.status || 'received').toUpperCase()
 		]);
 
 		const csvContent =
@@ -227,6 +233,18 @@
 						class="rounded-md border border-border bg-surface px-2 py-1 font-mono text-xs text-text-primary focus:border-accent focus:outline-none"
 					/>
 				</div>
+				<div class="flex items-center gap-1.5">
+					<span class="text-text-muted">Status:</span>
+					<select
+						bind:value={statusFilter}
+						onchange={loadReport}
+						class="rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-text-primary focus:border-accent focus:outline-none"
+					>
+						<option value="all">All Inwards (Active & Void)</option>
+						<option value="active">Active Only</option>
+						<option value="cancelled">Cancelled Only</option>
+					</select>
+				</div>
 			</div>
 		</div>
 
@@ -311,7 +329,7 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredPurchases as purchase}
-						<tr class="transition-colors hover:bg-surface-hover">
+						<tr class="transition-colors hover:bg-surface-hover {purchase.status === 'cancelled' ? 'opacity-60 bg-surface-secondary/40' : ''}">
 							<td class="px-3 py-2 font-mono text-[11px] text-text-secondary">
 								{formatDate(purchase.date)}
 							</td>
@@ -320,9 +338,14 @@
 									href={`/purchases/${purchase.id}`}
 									class="flex items-center gap-1 hover:underline"
 								>
-									<span>{purchase.supplierInvoiceRef}</span>
+									<span class={purchase.status === 'cancelled' ? 'line-through text-text-muted' : ''}>{purchase.supplierInvoiceRef}</span>
 									<ArrowUpRight size={10} class="opacity-60" />
 								</a>
+								{#if purchase.status === 'cancelled'}
+									<span class="mt-0.5 inline-block rounded bg-danger-light px-1 py-0.2 text-[9px] font-bold tracking-wider text-danger uppercase">
+										VOID / CANCELLED
+									</span>
+								{/if}
 							</td>
 							<td class="px-3 py-2 font-mono text-[11px] text-text-muted">
 								{purchase.supplierInvoiceDate ? formatDate(purchase.supplierInvoiceDate) : '-'}

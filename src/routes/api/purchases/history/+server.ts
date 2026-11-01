@@ -7,18 +7,28 @@ import {
 	suppliersTable,
 	productsTable
 } from '$lib/server/db/schema.js';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, ne, desc, and, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types.js';
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const productId = url.searchParams.get('productId');
 		if (!productId) {
 			return errorResponse('BAD_REQUEST', 'productId query parameter is required', 400);
 		}
 
 		const supplierId = url.searchParams.get('supplierId');
-		const conditions = [eq(batchesTable.productId, productId)];
+		const conditions = [
+			eq(batchesTable.productId, productId),
+			ne(purchasesTable.status, 'cancelled')
+		];
+		if (locals.user.storeId) {
+			conditions.push(eq(purchasesTable.storeId, locals.user.storeId));
+		}
 		if (supplierId) {
 			conditions.push(eq(purchasesTable.supplierId, supplierId));
 		}

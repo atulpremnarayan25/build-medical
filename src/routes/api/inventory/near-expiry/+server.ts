@@ -2,8 +2,12 @@ import { inventoryService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const days = parseInt(url.searchParams.get('days') || '90', 10);
 		const nearExpiryBatches = await inventoryService.getExpiringBatches(days);
 		return jsonResponse(nearExpiryBatches);

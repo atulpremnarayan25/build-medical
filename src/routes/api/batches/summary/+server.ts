@@ -1,7 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { inventoryService } from '$lib/server/servicesLocator.js';
+import type { RequestEvent } from './$types.js';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }: RequestEvent) {
+	if (!locals.user) {
+		return new Response('Unauthorized', { status: 401 });
+	}
+
 	const type = url.searchParams.get('type');
 	if (type === 'low-stock') {
 		const threshold = parseInt(url.searchParams.get('threshold') || '10');

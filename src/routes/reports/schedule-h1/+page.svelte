@@ -25,6 +25,7 @@
 		date: string;
 		invoiceNumber: string;
 		saleType: 'retail' | 'wholesale';
+		status?: string;
 		patientName: string | null;
 		patientDisplayName: string;
 		patientFullAddress: string;
@@ -554,11 +555,16 @@
 					</thead>
 					<tbody class="divide-y divide-border font-sans">
 						{#each entries as row}
-							<tr class="transition-colors hover:bg-surface-hover">
+							<tr class="transition-colors hover:bg-surface-hover {row.status === 'cancelled' ? 'opacity-60 bg-surface-secondary/40' : ''}">
 								<!-- 1. Date -->
 								<td class="px-3 py-2.5 whitespace-nowrap">
 									<div class="font-mono text-text-primary">{formatDate(row.date)}</div>
-									<div class="font-mono text-[10px] text-accent">{row.invoiceNumber}</div>
+									<div class="font-mono text-[10px] text-accent flex items-center gap-1">
+										<span class={row.status === 'cancelled' ? 'line-through text-text-muted' : ''}>{row.invoiceNumber}</span>
+										{#if row.status === 'cancelled'}
+											<span class="rounded bg-danger-light px-1 py-0.2 text-[8px] font-bold tracking-wider text-danger uppercase">VOID</span>
+										{/if}
+									</div>
 								</td>
 
 								<!-- 2. Patient Name & Address -->

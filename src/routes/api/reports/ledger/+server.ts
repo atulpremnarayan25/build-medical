@@ -9,7 +9,7 @@ import {
 	returnsTable,
 	returnItemsTable
 } from '$lib/server/db/schema.js';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, ne, and, desc, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
 
 export async function GET(event: RequestEvent) {
@@ -50,7 +50,11 @@ export async function GET(event: RequestEvent) {
 				})
 				.from(salesTable)
 				.where(
-					and(eq(salesTable.customerId, partyId), eq(salesTable.storeId, event.locals.user.storeId))
+					and(
+						eq(salesTable.customerId, partyId),
+						eq(salesTable.storeId, event.locals.user.storeId),
+						ne(salesTable.status, 'cancelled')
+					)
 				);
 
 			// Payments (Cr: Customer payment reduces debt)
@@ -133,7 +137,7 @@ export async function GET(event: RequestEvent) {
 					gstin: customersTable.gstin,
 					creditLimit: customersTable.creditLimit,
 					customerType: customersTable.customerType,
-					totalSales: sql`COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM sales WHERE sales.customer_id = ${customersTable.id}), 0)`,
+					totalSales: sql`COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM sales WHERE sales.customer_id = ${customersTable.id} AND sales.status != 'cancelled'), 0)`,
 					totalPaid: sql`COALESCE((SELECT SUM(CAST(amount AS NUMERIC)) FROM payments WHERE payments.customer_id = ${customersTable.id} AND payments.direction = 'customer_payment'), 0)`,
 					totalReturns: sql`COALESCE((SELECT SUM(CAST(ri.line_amount AS NUMERIC)) FROM returns r JOIN return_items ri ON r.id = ri.return_id JOIN sales s ON r.original_sale_id = s.id WHERE s.customer_id = ${customersTable.id} AND r.return_type = 'sales_return'), 0)`
 				})
@@ -191,7 +195,8 @@ export async function GET(event: RequestEvent) {
 				.where(
 					and(
 						eq(purchasesTable.supplierId, partyId),
-						eq(purchasesTable.storeId, event.locals.user.storeId)
+						eq(purchasesTable.storeId, event.locals.user.storeId),
+						ne(purchasesTable.status, 'cancelled')
 					)
 				);
 
@@ -277,7 +282,7 @@ export async function GET(event: RequestEvent) {
 					name: suppliersTable.name,
 					phone: suppliersTable.contactPhone,
 					gstin: suppliersTable.gstin,
-					totalPurchases: sql`COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM purchases WHERE purchases.supplier_id = ${suppliersTable.id}), 0)`,
+					totalPurchases: sql`COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM purchases WHERE purchases.supplier_id = ${suppliersTable.id} AND purchases.status != 'cancelled'), 0)`,
 					totalPaid: sql`COALESCE((SELECT SUM(CAST(amount AS NUMERIC)) FROM payments WHERE payments.supplier_id = ${suppliersTable.id} AND payments.direction = 'supplier_payment'), 0)`,
 					totalReturns: sql`COALESCE((SELECT SUM(CAST(ri.line_amount AS NUMERIC)) FROM returns r JOIN return_items ri ON r.id = ri.return_id JOIN purchases p ON r.original_purchase_id = p.id WHERE p.supplier_id = ${suppliersTable.id} AND r.return_type = 'purchase_return'), 0)`
 				})

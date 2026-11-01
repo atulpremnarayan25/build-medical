@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { salesTable, saleItemsTable, customersTable } from '$lib/server/db/schema.js';
-import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
+import { eq, ne, and, desc, gte, lte, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
 
 export async function GET(event: RequestEvent) {
@@ -15,6 +15,7 @@ export async function GET(event: RequestEvent) {
 	const customerId = url.searchParams.get('customerId');
 	const saleType = url.searchParams.get('saleType');
 	const paymentStatus = url.searchParams.get('paymentStatus');
+	const status = url.searchParams.get('status');
 
 	const filters = [eq(salesTable.storeId, event.locals.user.storeId)];
 
@@ -35,6 +36,13 @@ export async function GET(event: RequestEvent) {
 	if (paymentStatus && paymentStatus !== 'all') {
 		filters.push(eq(salesTable.paymentStatus, paymentStatus));
 	}
+	if (status && status !== 'all') {
+		if (status === 'active') {
+			filters.push(ne(salesTable.status, 'cancelled'));
+		} else {
+			filters.push(eq(salesTable.status, status));
+		}
+	}
 
 	const salesData = await db
 		.select({
@@ -42,6 +50,7 @@ export async function GET(event: RequestEvent) {
 			date: salesTable.createdAt,
 			invoiceNumber: salesTable.invoiceNumber,
 			saleType: salesTable.saleType,
+			status: salesTable.status,
 			customerId: salesTable.customerId,
 			customerName: customersTable.name,
 			customerGstin: customersTable.gstin,

@@ -10,7 +10,7 @@ import {
 	productsTable,
 	storesTable
 } from '$lib/server/db/schema.js';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, ne, and, gte, lte, desc } from 'drizzle-orm';
 import { toPaise, paiseToRupees } from '$lib/utils/money.js';
 import type { RequestEvent } from './$types';
 
@@ -71,7 +71,13 @@ export async function GET(event: RequestEvent) {
 		})
 		.from(salesTable)
 		.leftJoin(customersTable, eq(salesTable.customerId, customersTable.id))
-		.where(and(eq(salesTable.storeId, storeId), ...salesDateFilters))
+		.where(
+			and(
+				eq(salesTable.storeId, storeId),
+				ne(salesTable.status, 'cancelled'),
+				...salesDateFilters
+			)
+		)
 		.orderBy(desc(salesTable.createdAt));
 
 	// 2. Fetch all sale items with product HSN within period
@@ -92,7 +98,13 @@ export async function GET(event: RequestEvent) {
 		.from(saleItemsTable)
 		.innerJoin(salesTable, eq(saleItemsTable.saleId, salesTable.id))
 		.innerJoin(productsTable, eq(saleItemsTable.productId, productsTable.id))
-		.where(and(eq(salesTable.storeId, storeId), ...salesDateFilters));
+		.where(
+			and(
+				eq(salesTable.storeId, storeId),
+				ne(salesTable.status, 'cancelled'),
+				...salesDateFilters
+			)
+		);
 
 	// Map items by saleId
 	const itemsBySaleId = new Map<string, typeof saleItems>();
@@ -379,7 +391,13 @@ export async function GET(event: RequestEvent) {
 		.innerJoin(purchaseItemsTable, eq(purchasesTable.id, purchaseItemsTable.purchaseId))
 		.innerJoin(batchesTable, eq(purchaseItemsTable.batchId, batchesTable.id))
 		.innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
-		.where(and(eq(purchasesTable.storeId, storeId), ...purchaseDateFilters));
+		.where(
+			and(
+				eq(purchasesTable.storeId, storeId),
+				ne(purchasesTable.status, 'cancelled'),
+				...purchaseDateFilters
+			)
+		);
 
 	const itcSlabsMap = new Map<
 		number,

@@ -19,6 +19,7 @@
 		date: string;
 		invoiceNumber: string;
 		saleType: string;
+		status?: string;
 		customerId: string | null;
 		customerName: string | null;
 		customerGstin: string | null;
@@ -42,6 +43,7 @@
 	let toDate = $state('');
 	let saleTypeFilter = $state('all');
 	let paymentStatusFilter = $state('all');
+	let statusFilter = $state('all');
 
 	function setDateRange(preset: string) {
 		datePreset = preset;
@@ -78,6 +80,7 @@
 			if (toDate) params.append('to', toDate);
 			if (saleTypeFilter !== 'all') params.append('saleType', saleTypeFilter);
 			if (paymentStatusFilter !== 'all') params.append('paymentStatus', paymentStatusFilter);
+			if (statusFilter !== 'all') params.append('status', statusFilter);
 
 			const res = await fetch(`/api/reports/sales?${params.toString()}`);
 			if (res.ok) {
@@ -107,11 +110,12 @@
 		})
 	);
 
-	let totalTurnover = $derived(filteredSales.reduce((acc, s) => acc + s.totalAmount, 0));
-	let totalTaxable = $derived(filteredSales.reduce((acc, s) => acc + s.subtotal, 0));
-	let totalGst = $derived(filteredSales.reduce((acc, s) => acc + s.gstAmount, 0));
-	let totalCollected = $derived(filteredSales.reduce((acc, s) => acc + s.amountPaidAtSale, 0));
-	let totalDue = $derived(filteredSales.reduce((acc, s) => acc + s.dueAmount, 0));
+	let activeSales = $derived(filteredSales.filter((s) => s.status !== 'cancelled'));
+	let totalTurnover = $derived(activeSales.reduce((acc, s) => acc + s.totalAmount, 0));
+	let totalTaxable = $derived(activeSales.reduce((acc, s) => acc + s.subtotal, 0));
+	let totalGst = $derived(activeSales.reduce((acc, s) => acc + s.gstAmount, 0));
+	let totalCollected = $derived(activeSales.reduce((acc, s) => acc + s.amountPaidAtSale, 0));
+	let totalDue = $derived(activeSales.reduce((acc, s) => acc + s.dueAmount, 0));
 
 	function exportToCSV() {
 		const headers = [
@@ -126,7 +130,8 @@
 			'Total Amount',
 			'Paid Amount',
 			'Due Amount',
-			'Status'
+			'Payment Status',
+			'Invoice Status'
 		];
 		const rows = filteredSales.map((s) => [
 			s.invoiceNumber,
@@ -140,7 +145,8 @@
 			s.totalAmount.toFixed(2),
 			s.amountPaidAtSale.toFixed(2),
 			s.dueAmount.toFixed(2),
-			s.paymentStatus.toUpperCase()
+			s.paymentStatus.toUpperCase(),
+			(s.status || 'completed').toUpperCase()
 		]);
 
 		const csvContent =
@@ -277,6 +283,16 @@
 					<option value="partial">Partially Paid</option>
 					<option value="credit">Unpaid / Khata Credit</option>
 				</select>
+
+				<select
+					bind:value={statusFilter}
+					onchange={loadReport}
+					class="rounded-md border border-border bg-surface px-2.5 py-1 text-xs text-text-primary focus:border-accent focus:outline-none"
+				>
+					<option value="all">All Invoices (Active & Void)</option>
+					<option value="active">Active Only</option>
+					<option value="cancelled">Cancelled Only</option>
+				</select>
 			</div>
 		</div>
 
@@ -375,12 +391,17 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filteredSales as sale}
-						<tr class="transition-colors hover:bg-surface-hover">
+						<tr class="transition-colors hover:bg-surface-hover {sale.status === 'cancelled' ? 'opacity-60 bg-surface-secondary/40' : ''}">
 							<td class="px-3 py-2 font-mono font-bold text-accent">
 								<a href={`/sales/${sale.id}`} class="flex items-center gap-1 hover:underline">
-									<span>{sale.invoiceNumber}</span>
+									<span class={sale.status === 'cancelled' ? 'line-through text-text-muted' : ''}>{sale.invoiceNumber}</span>
 									<ArrowUpRight size={10} class="opacity-60" />
 								</a>
+								{#if sale.status === 'cancelled'}
+									<span class="mt-0.5 inline-block rounded bg-danger-light px-1 py-0.2 text-[9px] font-bold tracking-wider text-danger uppercase">
+										VOID / CANCELLED
+									</span>
+								{/if}
 							</td>
 							<td class="px-3 py-2 font-mono text-[11px] text-text-secondary">
 								{formatDate(sale.date)}

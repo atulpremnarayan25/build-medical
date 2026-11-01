@@ -80,6 +80,7 @@ export async function GET(event: RequestEvent) {
 			date: salesTable.createdAt,
 			invoiceNumber: salesTable.invoiceNumber,
 			saleType: salesTable.saleType,
+			status: salesTable.status,
 			patientName: salesTable.patientName,
 			prescriberName: salesTable.prescriberName,
 			prescriberRegNo: salesTable.prescriberRegNo,
@@ -129,14 +130,15 @@ export async function GET(event: RequestEvent) {
 		};
 	});
 
+	const activeRows = formattedRows.filter((r) => r.status !== 'cancelled');
 	const summary = {
 		totalEntries: formattedRows.length,
 		distinctInvoices: new Set(formattedRows.map((r) => r.invoiceNumber)).size,
-		totalQuantity: formattedRows.reduce((acc, r) => acc + r.quantity, 0),
-		totalValue: formattedRows.reduce((acc, r) => acc + r.lineTotal, 0),
-		h1Count: formattedRows.filter((r) => r.drugSchedule === 'H1').length,
-		hCount: formattedRows.filter((r) => r.drugSchedule === 'H').length,
-		xCount: formattedRows.filter((r) => r.drugSchedule === 'X').length
+		totalQuantity: activeRows.reduce((acc, r) => acc + r.quantity, 0),
+		totalValue: activeRows.reduce((acc, r) => acc + r.lineTotal, 0),
+		h1Count: activeRows.filter((r) => r.drugSchedule === 'H1').length,
+		hCount: activeRows.filter((r) => r.drugSchedule === 'H').length,
+		xCount: activeRows.filter((r) => r.drugSchedule === 'X').length
 	};
 
 	return json({

@@ -97,9 +97,10 @@ export function createPurchaseService(
 		}> {
 			const today = new Date().toISOString().split('T')[0];
 			const allPurchases = await repo.getAll();
-			const todayPurchases = allPurchases.filter((p) => p.invoiceDate.startsWith(today));
+			const activePurchases = allPurchases.filter((p) => p.status !== 'cancelled');
+			const todayPurchases = activePurchases.filter((p) => p.invoiceDate.startsWith(today));
 
-			const totalPayables = allPurchases.reduce((sum, p) => sum + p.dueAmount, 0);
+			const totalPayables = activePurchases.reduce((sum, p) => sum + p.dueAmount, 0);
 
 			return {
 				todayPurchasesCount: todayPurchases.length,

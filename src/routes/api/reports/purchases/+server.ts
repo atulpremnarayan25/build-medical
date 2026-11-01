@@ -7,7 +7,7 @@ import {
 	batchesTable,
 	productsTable
 } from '$lib/server/db/schema.js';
-import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
+import { eq, ne, and, desc, gte, lte, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
 
 export async function GET(event: RequestEvent) {
@@ -19,6 +19,7 @@ export async function GET(event: RequestEvent) {
 	const from = url.searchParams.get('from');
 	const to = url.searchParams.get('to');
 	const supplierId = url.searchParams.get('supplierId');
+	const status = url.searchParams.get('status');
 
 	const filters = [eq(purchasesTable.storeId, event.locals.user.storeId)];
 
@@ -33,6 +34,13 @@ export async function GET(event: RequestEvent) {
 	if (supplierId) {
 		filters.push(eq(purchasesTable.supplierId, supplierId));
 	}
+	if (status && status !== 'all') {
+		if (status === 'active') {
+			filters.push(ne(purchasesTable.status, 'cancelled'));
+		} else {
+			filters.push(eq(purchasesTable.status, status));
+		}
+	}
 
 	const purchasesData = await db
 		.select({
@@ -40,6 +48,7 @@ export async function GET(event: RequestEvent) {
 			date: purchasesTable.createdAt,
 			supplierInvoiceRef: purchasesTable.supplierInvoiceRef,
 			supplierInvoiceDate: purchasesTable.supplierInvoiceDate,
+			status: purchasesTable.status,
 			supplierId: purchasesTable.supplierId,
 			supplierName: suppliersTable.name,
 			supplierGstin: suppliersTable.gstin,

@@ -4,6 +4,10 @@ import { getNetworkTopology } from '$lib/server/network/pairing.js';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
+		if (!locals.user || locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Administrative privilege required', 403);
+		}
+
 		const portParam = url.searchParams.get('port');
 		const ipParam = url.searchParams.get('ip') || undefined;
 

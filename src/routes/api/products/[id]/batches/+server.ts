@@ -2,8 +2,12 @@ import { inventoryService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ params }: RequestEvent) {
+export async function GET({ params, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const { id } = params;
 		const batches = await inventoryService.getBatchesByProduct(id);
 
