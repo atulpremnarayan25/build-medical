@@ -5,6 +5,9 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 import { reticle } from '@reticlehq/vite-plugin';
 export default defineConfig({
+	server: {
+		host: true
+	},
 	plugins: [
 		reticle({ captureNetworkBodies: false }),
 		tailwindcss(),
