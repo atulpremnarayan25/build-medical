@@ -1,7 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { inventoryService } from '$lib/server/servicesLocator.js';
+import { errorResponse } from '$lib/server/apiUtils.js';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }: any) {
+	if (!locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+
 	const productId = url.searchParams.get('productId');
 	const active = url.searchParams.get('active');
 
@@ -17,9 +22,12 @@ export async function GET({ url }) {
 	return json(batches);
 }
 
-export async function POST({ request, locals }) {
-	if (!locals.user || locals.user.role !== 'owner_admin') {
-		return json({ error: 'Forbidden: Admin role required' }, { status: 403 });
+export async function POST({ request, locals }: any) {
+	if (!locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+	if (locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Forbidden: Admin role required', 403);
 	}
 	const data = await request.json();
 	const batch = await inventoryService.createBatch(data);

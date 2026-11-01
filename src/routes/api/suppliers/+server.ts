@@ -2,8 +2,12 @@ import { supplierService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const q = url.searchParams.get('q') || url.searchParams.get('search');
 		let suppliers = await supplierService.getSuppliers();
 

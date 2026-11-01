@@ -11,7 +11,11 @@ import type { RequestEvent } from './$types';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
+	if (!locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+
 	const customerId = url.searchParams.get('customerId');
 	if (customerId) {
 		const sales = await salesService.getSalesByCustomer(customerId);

@@ -22,6 +22,10 @@ function todayIso(): string {
  *   batchId?(pin), rate?(snapshot), discount? }] }
  */
 export async function POST(event: RequestEvent) {
+	if (!event.locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+
 	let body: Record<string, unknown>;
 	try {
 		body = await event.request.json();

@@ -1,7 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { purchaseService } from '$lib/server/servicesLocator.js';
+import { errorResponse, jsonResponse } from '$lib/server/apiUtils.js';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }: any) {
+	if (!locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+
 	const supplierId = url.searchParams.get('supplierId');
 	if (supplierId) {
 		const purchases = await purchaseService.getPurchasesBySupplier(supplierId);

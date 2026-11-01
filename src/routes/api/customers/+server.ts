@@ -2,8 +2,12 @@ import { customerService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const q = url.searchParams.get('q') || url.searchParams.get('search');
 		// The API Spec mentions "sortable by balance (UI §4.5)" - we can manually sort here or assume it's in service
 		let customers = await customerService.getCustomers();

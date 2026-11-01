@@ -4,7 +4,11 @@ import type { RequestEvent } from './$types';
 
 export async function POST({ params, request, locals }: RequestEvent) {
 	try {
-		if (!locals.user || locals.user.role !== 'owner_admin') {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
+		if (locals.user.role !== 'owner_admin') {
 			return errorResponse('FORBIDDEN', 'Only owner_admin can adjust batch stock', 403);
 		}
 

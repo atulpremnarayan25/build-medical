@@ -2,13 +2,21 @@ import { productService, inventoryService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ params }: RequestEvent) {
+export async function GET({ params, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const { id } = params;
 		const product = await productService.getProduct(id);
 
 		if (!product) {
 			return errorResponse('NOT_FOUND', 'Product not found', 404);
+		}
+
+		if (locals.user.storeId && (product as any).storeId && (product as any).storeId !== locals.user.storeId) {
+			return errorResponse('FORBIDDEN', 'Cross-tenant access denied', 403);
 		}
 
 		const batches = await inventoryService.getBatchesByProduct(id);
@@ -41,6 +49,10 @@ export async function PATCH({ params, request, locals }: RequestEvent) {
 
 		if (!product) {
 			return errorResponse('NOT_FOUND', 'Product not found', 404);
+		}
+
+		if (locals.user.storeId && (product as any).storeId && (product as any).storeId !== locals.user.storeId) {
+			return errorResponse('FORBIDDEN', 'Cross-tenant access denied', 403);
 		}
 
 		const updatedProduct = await productService.updateProduct(id, input);

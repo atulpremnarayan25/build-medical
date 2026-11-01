@@ -26,6 +26,19 @@ import { GET as getSalesSummary } from '../../routes/api/sales/summary/+server.j
 import { GET as getPurchasesSummary } from '../../routes/api/purchases/summary/+server.js';
 import { GET as getSalesHistory } from '../../routes/api/sales/history/+server.js';
 import { GET as getPurchasesHistory } from '../../routes/api/purchases/history/+server.js';
+import { GET as getSalesList } from '../../routes/api/sales/+server.js';
+import { POST as quoteSale } from '../../routes/api/sales/quote/+server.js';
+import { GET as getPurchasesList } from '../../routes/api/purchases/+server.js';
+import { GET as getProductsList } from '../../routes/api/products/+server.js';
+import { GET as getProduct } from '../../routes/api/products/[id]/+server.js';
+import { GET as getCustomersList } from '../../routes/api/customers/+server.js';
+import { GET as getCustomer } from '../../routes/api/customers/[id]/+server.js';
+import { GET as getSuppliersList } from '../../routes/api/suppliers/+server.js';
+import { GET as getSupplier } from '../../routes/api/suppliers/[id]/+server.js';
+import { GET as getPaymentsList } from '../../routes/api/payments/+server.js';
+import { GET as getBatchesList } from '../../routes/api/batches/+server.js';
+import { GET as getBatch } from '../../routes/api/batches/[id]/+server.js';
+import { GET as getAdjustments } from '../../routes/api/inventory/adjustments/+server.js';
 import { createSaleService } from '../services/saleService.js';
 import { createPurchaseService } from '../services/purchaseService.js';
 
@@ -251,6 +264,19 @@ describe('Security Remediation & Role Boundary Checks', () => {
 		expect((await getPurchasesSummary({ locals: noAuthLocals } as any)).status).toBe(401);
 		expect((await getSalesHistory({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
 		expect((await getPurchasesHistory({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSalesList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await quoteSale({ request: new Request('http://localhost/api/sales/quote', { method: 'POST' }), locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPurchasesList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getProductsList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getProduct({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getCustomersList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getCustomer({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSuppliersList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getSupplier({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getPaymentsList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getBatchesList({ url: dummyUrl, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getBatch({ params: { id: '1' }, locals: noAuthLocals } as any)).status).toBe(401);
+		expect((await getAdjustments({ locals: noAuthLocals } as any)).status).toBe(401);
 	});
 
 	it('should exclude cancelled sales from getDashboardSummary', async () => {

@@ -2,8 +2,12 @@ import { productService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function GET({ url }: RequestEvent) {
+export async function GET({ url, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+
 		const q = url.searchParams.get('q') || url.searchParams.get('search');
 		const category = url.searchParams.get('category');
 		// const barcode = url.searchParams.get('barcode');
@@ -37,6 +41,9 @@ export async function POST({ request, locals }: RequestEvent) {
 		const input = await request.json();
 		if (!input?.name || typeof input.name !== 'string' || !input.name.trim()) {
 			return errorResponse('VALIDATION_ERROR', 'Product name is required', 400);
+		}
+		if (locals.user.storeId) {
+			input.storeId = locals.user.storeId;
 		}
 		const newProduct = await productService.createProduct(input);
 		return jsonResponse(newProduct, 201);

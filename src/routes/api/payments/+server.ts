@@ -1,7 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { paymentService } from '$lib/server/servicesLocator.js';
+import { errorResponse } from '$lib/server/apiUtils.js';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }: any) {
+	if (!locals.user) {
+		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+	}
+
 	const partyId = url.searchParams.get('partyId');
 	if (partyId) {
 		const payments = await paymentService.getPaymentsByParty(partyId);

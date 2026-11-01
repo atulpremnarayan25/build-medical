@@ -8,7 +8,7 @@ import {
 	usersTable
 } from '$lib/server/db/schema.js';
 import { logSyncOutbox } from '$lib/server/db/sync/outbox.js';
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, and, sql } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
 
 export async function GET(event: RequestEvent) {
@@ -17,6 +17,12 @@ export async function GET(event: RequestEvent) {
 	}
 
 	try {
+		const storeId = event.locals.user.storeId;
+		const whereConditions = [eq(batchStockEventsTable.eventType, 'adjustment')];
+		if (storeId) {
+			whereConditions.push(eq(productsTable.storeId, storeId));
+		}
+
 		const adjustments = await db
 			.select({
 				id: batchStockEventsTable.id,
@@ -38,7 +44,7 @@ export async function GET(event: RequestEvent) {
 			.leftJoin(batchesTable, eq(batchStockEventsTable.batchId, batchesTable.id))
 			.leftJoin(productsTable, eq(batchesTable.productId, productsTable.id))
 			.leftJoin(usersTable, eq(batchStockEventsTable.createdBy, usersTable.id))
-			.where(eq(batchStockEventsTable.eventType, 'adjustment'))
+			.where(and(...whereConditions))
 			.orderBy(desc(batchStockEventsTable.createdAt))
 			.limit(100);
 
@@ -79,6 +85,7 @@ export async function POST(event: RequestEvent) {
 
 	try {
 		const userId = event.locals.user.id;
+		const storeId = event.locals.user.storeId;
 
 		const result = await db.transaction(async (tx) => {
 			const recordedEvents = [];
@@ -99,10 +106,19 @@ export async function POST(event: RequestEvent) {
 					throw new Error(`Mandatory reason is required for adjusting batch ${batchId}`);
 				}
 
+				const batchConditions = [eq(batchesTable.id, batchId)];
+				if (storeId) {
+					batchConditions.push(eq(productsTable.storeId, storeId));
+				}
 				const [existingBatch] = await tx
-					.select()
+					.select({
+						id: batchesTable.id,
+						batchNo: batchesTable.batchNo,
+						quantityRemaining: batchesTable.quantityRemaining
+					})
 					.from(batchesTable)
-					.where(eq(batchesTable.id, batchId));
+					.innerJoin(productsTable, eq(batchesTable.productId, productsTable.id))
+					.where(and(...batchConditions));
 
 				if (!existingBatch) {
 					throw new Error(`Batch ID ${batchId} not found`);
