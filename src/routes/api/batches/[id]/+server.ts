@@ -7,7 +7,10 @@ export async function GET({ params }) {
 	return json(batch);
 }
 
-export async function PATCH({ params, request }) {
+export async function PATCH({ params, request, locals }) {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return json({ error: 'Forbidden: Admin role required' }, { status: 403 });
+	}
 	const data = await request.json();
 	const batch = await inventoryService.updateBatch(params.id, data);
 	return json(batch);

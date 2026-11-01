@@ -17,7 +17,10 @@ export async function GET({ url }) {
 	return json(batches);
 }
 
-export async function POST({ request }) {
+export async function POST({ request, locals }) {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return json({ error: 'Forbidden: Admin role required' }, { status: 403 });
+	}
 	const data = await request.json();
 	const batch = await inventoryService.createBatch(data);
 	return json(batch);

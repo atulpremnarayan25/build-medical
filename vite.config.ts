@@ -6,7 +6,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { reticle } from '@reticlehq/vite-plugin';
 export default defineConfig({
 	server: {
-		host: true
+		host: true,
+		allowedHosts: true
 	},
 	plugins: [
 		reticle({ captureNetworkBodies: false }),

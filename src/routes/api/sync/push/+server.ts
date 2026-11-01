@@ -26,6 +26,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
+	if (locals.user.role !== 'owner_admin') {
+		return json({ error: 'Forbidden: Admin role required for database sync operations' }, { status: 403 });
+	}
+
 	const body = await request.json();
 	const items: schema.SyncOutboxEntry[] = body.items || [];
 

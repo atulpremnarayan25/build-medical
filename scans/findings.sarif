@@ -1,0 +1,1092 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Strix",
+          "informationUri": "https://strix.ai",
+          "rules": [
+            {
+              "id": "CWE-862",
+              "name": "Broken Function Level Authorization and IDOR in /api/sales/[id]/cancel",
+              "shortDescription": {
+                "text": "Broken Function Level Authorization and IDOR in /api/sales/[id]/cancel"
+              },
+              "fullDescription": {
+                "text": "The sales invoice cancellation endpoint does not enforce role-based access control or tenant isolation, allowing low-privilege counter billers to cancel any sales invoice across the system."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "help": {
+                "text": "The sales invoice cancellation endpoint does not enforce role-based access control or tenant isolation, allowing low-privilege counter billers to cancel any sales invoice across the system.\n\nAn authenticated attacker with the low-privilege `biller` role can cancel arbitrary confirmed sales invoices without administrative authorization. Cancelling an invoice restores inventory batch quantities, creates adjustment stock events, updates outbox synchronization, and alters statutory audit logs without store owner approval.\n\nIn `src/routes/api/sales/[id]/cancel/+server.ts`, verify that `locals.user.role === 'owner_admin'`. If not, return a 403 Forbidden response. Additionally, ensure the sale belongs to the user's `storeId` before executing the cancellation.",
+                "markdown": "The sales invoice cancellation endpoint does not enforce role-based access control or tenant isolation, allowing low-privilege counter billers to cancel any sales invoice across the system.\n\nAn authenticated attacker with the low-privilege `biller` role can cancel arbitrary confirmed sales invoices without administrative authorization. Cancelling an invoice restores inventory batch quantities, creates adjustment stock events, updates outbox synchronization, and alters statutory audit logs without store owner approval.\n\nIn `src/routes/api/sales/[id]/cancel/+server.ts`, verify that `locals.user.role === 'owner_admin'`. If not, return a 403 Forbidden response. Additionally, ensure the sale belongs to the user's `storeId` before executing the cancellation."
+              },
+              "properties": {
+                "security-severity": "6.5",
+                "tags": [
+                  "security",
+                  "CWE-862",
+                  "stride:E"
+                ]
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/862.html"
+            },
+            {
+              "id": "CWE-200",
+              "name": "CVE-2026-92708 in devalue 5.9.1 (Process Memory Disclosure)",
+              "shortDescription": {
+                "text": "CVE-2026-92708 in devalue 5.9.1 (Process Memory Disclosure)"
+              },
+              "fullDescription": {
+                "text": "Svelte devalue versions 5.1.0 through 5.9.2 contain a cross-request process memory disclosure vulnerability where stringify and uneval serialize a typed array by emitting its entire backing ArrayBuffer rather than the slice view. When serializing a Node Buffer sharing a process-wide pool, up to 64 KB of uninitialized or unrelated process memory may be leaked."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "help": {
+                "text": "Svelte devalue versions 5.1.0 through 5.9.2 contain a cross-request process memory disclosure vulnerability where stringify and uneval serialize a typed array by emitting its entire backing ArrayBuffer rather than the slice view. When serializing a Node Buffer sharing a process-wide pool, up to 64 KB of uninitialized or unrelated process memory may be leaked.\n\nIn vulnerable configurations returning Node Buffers in SSR load() functions, up to 64 KB of shared memory from other concurrent requests could be leaked in rendered HTML responses. In this codebase, devalue is not directly imported.\n\nRun `npm update devalue` or update `@sveltejs/kit` to ensure `devalue` resolves to `>= 5.9.3`.",
+                "markdown": "Svelte devalue versions 5.1.0 through 5.9.2 contain a cross-request process memory disclosure vulnerability where stringify and uneval serialize a typed array by emitting its entire backing ArrayBuffer rather than the slice view. When serializing a Node Buffer sharing a process-wide pool, up to 64 KB of uninitialized or unrelated process memory may be leaked.\n\nIn vulnerable configurations returning Node Buffers in SSR load() functions, up to 64 KB of shared memory from other concurrent requests could be leaked in rendered HTML responses. In this codebase, devalue is not directly imported.\n\nRun `npm update devalue` or update `@sveltejs/kit` to ensure `devalue` resolves to `>= 5.9.3`."
+              },
+              "properties": {
+                "security-severity": "0.0",
+                "tags": [
+                  "security",
+                  "CWE-200",
+                  "CVE-2026-92708",
+                  "stride:I"
+                ]
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/200.html"
+            },
+            {
+              "id": "strix-coverage/static-application-security-testing-sast-code-injection",
+              "name": "Static Application Security Testing (SAST) & Code Injection",
+              "shortDescription": {
+                "text": "Coverage: Static Application Security Testing (SAST) & Code Injection"
+              },
+              "fullDescription": {
+                "text": "Coverage of Static Application Security Testing (SAST) & Code Injection across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Static Application Security Testing (SAST) & Code Injection across the assessed attack surface.",
+                "markdown": "Coverage of Static Application Security Testing (SAST) & Code Injection across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/hardcoded-secrets-and-credential-exposure",
+              "name": "Hardcoded Secrets and Credential Exposure",
+              "shortDescription": {
+                "text": "Coverage: Hardcoded Secrets and Credential Exposure"
+              },
+              "fullDescription": {
+                "text": "Coverage of Hardcoded Secrets and Credential Exposure across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Hardcoded Secrets and Credential Exposure across the assessed attack surface.",
+                "markdown": "Coverage of Hardcoded Secrets and Credential Exposure across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/path-traversal-arbitrary-file-access",
+              "name": "Path Traversal & Arbitrary File Access",
+              "shortDescription": {
+                "text": "Coverage: Path Traversal & Arbitrary File Access"
+              },
+              "fullDescription": {
+                "text": "Coverage of Path Traversal & Arbitrary File Access across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Path Traversal & Arbitrary File Access across the assessed attack surface.",
+                "markdown": "Coverage of Path Traversal & Arbitrary File Access across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/authentication-bypass-open-registration",
+              "name": "Authentication Bypass & Open Registration",
+              "shortDescription": {
+                "text": "Coverage: Authentication Bypass & Open Registration"
+              },
+              "fullDescription": {
+                "text": "Coverage of Authentication Bypass & Open Registration across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Authentication Bypass & Open Registration across the assessed attack surface.",
+                "markdown": "Coverage of Authentication Bypass & Open Registration across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/path-traversal-arbitrary-file-read",
+              "name": "Path Traversal / Arbitrary File Read",
+              "shortDescription": {
+                "text": "Coverage: Path Traversal / Arbitrary File Read"
+              },
+              "fullDescription": {
+                "text": "Coverage of Path Traversal / Arbitrary File Read across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Path Traversal / Arbitrary File Read across the assessed attack surface.",
+                "markdown": "Coverage of Path Traversal / Arbitrary File Read across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/command-argument-injection",
+              "name": "Command / Argument Injection",
+              "shortDescription": {
+                "text": "Coverage: Command / Argument Injection"
+              },
+              "fullDescription": {
+                "text": "Coverage of Command / Argument Injection across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Command / Argument Injection across the assessed attack surface.",
+                "markdown": "Coverage of Command / Argument Injection across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/sql-injection",
+              "name": "SQL injection",
+              "shortDescription": {
+                "text": "Coverage: SQL injection"
+              },
+              "fullDescription": {
+                "text": "Coverage of SQL injection across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of SQL injection across the assessed attack surface.",
+                "markdown": "Coverage of SQL injection across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/remote-code-execution",
+              "name": "Remote Code Execution",
+              "shortDescription": {
+                "text": "Coverage: Remote Code Execution"
+              },
+              "fullDescription": {
+                "text": "Coverage of Remote Code Execution across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Remote Code Execution across the assessed attack surface.",
+                "markdown": "Coverage of Remote Code Execution across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/bfla-privilege-escalation",
+              "name": "BFLA / Privilege Escalation",
+              "shortDescription": {
+                "text": "Coverage: BFLA / Privilege Escalation"
+              },
+              "fullDescription": {
+                "text": "Coverage of BFLA / Privilege Escalation across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of BFLA / Privilege Escalation across the assessed attack surface.",
+                "markdown": "Coverage of BFLA / Privilege Escalation across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/idor-tenant-isolation",
+              "name": "IDOR / Tenant Isolation",
+              "shortDescription": {
+                "text": "Coverage: IDOR / Tenant Isolation"
+              },
+              "fullDescription": {
+                "text": "Coverage of IDOR / Tenant Isolation across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of IDOR / Tenant Isolation across the assessed attack surface.",
+                "markdown": "Coverage of IDOR / Tenant Isolation across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/information-disclosure-bfla",
+              "name": "Information Disclosure / BFLA",
+              "shortDescription": {
+                "text": "Coverage: Information Disclosure / BFLA"
+              },
+              "fullDescription": {
+                "text": "Coverage of Information Disclosure / BFLA across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Information Disclosure / BFLA across the assessed attack surface.",
+                "markdown": "Coverage of Information Disclosure / BFLA across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            }
+          ],
+          "version": "1.5.3"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CWE-862",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Broken Function Level Authorization and IDOR in /api/sales/[id]/cancel\n\nThe sales invoice cancellation endpoint does not enforce role-based access control or tenant isolation, allowing low-privilege counter billers to cancel any sales invoice across the system."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/routes/api/sales/[id]/cancel/+server.ts"
+                },
+                "region": {
+                  "startLine": 4,
+                  "endLine": 11,
+                  "snippet": {
+                    "text": "export async function POST({ params, locals }) {\n\tif (!locals.user) {\n\t\treturn new Response('Unauthorized', { status: 401 });\n\t}\n\n\tconst sale = await salesService.cancelSale(params.id);\n\treturn json(sale);\n}"
+                  }
+                }
+              },
+              "message": {
+                "text": "Enforce owner_admin role check on sales cancellation"
+              }
+            },
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/api/sales/[id]/cancel",
+                  "kind": "endpoint"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/routes/api/sales/[id]/cancel/+server.ts"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 4,
+                        "endLine": 11
+                      },
+                      "insertedContent": {
+                        "text": "export async function POST({ params, locals }) {\n\tif (!locals.user) {\n\t\treturn new Response('Unauthorized', { status: 401 });\n\t}\n\n\tif (locals.user.role !== 'owner_admin') {\n\t\treturn new Response(JSON.stringify({ error: 'Forbidden: Admin role required' }), {\n\t\t\tstatus: 403,\n\t\t\theaders: { 'Content-Type': 'application/json' }\n\t\t});\n\t}\n\n\tconst sale = await salesService.cancelSale(params.id);\n\treturn json(sale);\n}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "description": {
+                "text": "In `src/routes/api/sales/[id]/cancel/+server.ts`, verify that `locals.user.role === 'owner_admin'`. If not, return a 403 Forbidden response. Additionally, ensure the sale belongs to the user's `storeId` before executing the cancellation.",
+                "markdown": "In `src/routes/api/sales/[id]/cancel/+server.ts`, verify that `locals.user.role === 'owner_admin'`. If not, return a 403 Forbidden response. Additionally, ensure the sale belongs to the user's `storeId` before executing the cancellation."
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "14dbe49491a884ad6fd63864f4cb642039dcfeb6e21000e7467c15ade07b9463"
+          },
+          "properties": {
+            "security-severity": "6.5",
+            "strix_vuln_class_hash": "3174e38e6c72ef9ffcecc7abfdfb44ac425908b43bf07eeb479e0aacf5dcaf79",
+            "strix": {
+              "id": "vuln-0001",
+              "severity": "medium",
+              "cvss": 6.5,
+              "timestamp": "2026-11-01 13:02:27 UTC",
+              "target": "http://host.docker.internal:5173",
+              "endpoint": "/api/sales/[id]/cancel",
+              "method": "POST",
+              "cwe": "CWE-862",
+              "impact": "An authenticated attacker with the low-privilege `biller` role can cancel arbitrary confirmed sales invoices without administrative authorization. Cancelling an invoice restores inventory batch quantities, creates adjustment stock events, updates outbox synchronization, and alters statutory audit logs without store owner approval.",
+              "technical_analysis": "In `src/routes/api/sales/[id]/cancel/+server.ts`:\nThe handler only verifies that a session exists (`if (!locals.user)`). Unlike `src/routes/api/purchases/[id]/cancel/+server.ts`, which restricts cancellation to `owner_admin`, `src/routes/api/sales/[id]/cancel/+server.ts` completely omits any role check. Furthermore, neither the route handler nor `salesService.cancelSale(params.id)` validates that the target invoice belongs to the caller's store (`sale.storeId === locals.user.storeId`). Consequently, any biller can cancel any sale by ID.\n\nWhen `cancelSale` executes, `DbSaleRepository.updateStatus` marks the invoice as `'cancelled'`, restores batch stock quantities in `batchesTable`, inserts adjustment records in `batchStockEventsTable`, logs sync events in `syncOutboxTable`, and records a cancellation entry in `auditLogTable`.",
+              "remediation_steps": "In `src/routes/api/sales/[id]/cancel/+server.ts`, verify that `locals.user.role === 'owner_admin'`. If not, return a 403 Forbidden response. Additionally, ensure the sale belongs to the user's `storeId` before executing the cancellation.",
+              "counterevidence": "Checked whether hooks.server.ts or salesService enforces role restrictions on sales cancellation. Confirmed that hooks.server.ts only validates session existence, and neither the route handler nor DbSaleRepository.updateStatus validates role or tenant ownership. Dynamically executed cancellation using the biller account and confirmed invoice cancellation, stock restoration, and audit log mutation.",
+              "confidence": "high",
+              "severity_change_conditions": "If counter billers were granted explicit business authority to void retail tickets under store policy, severity would decrease to Medium; however, missing multi-tenant storeId validation still allows unauthorized cross-tenant cancellation.",
+              "fix_verification": "Gate 1 (Applicability): Verified line numbers 4-11 match verbatim in src/routes/api/sales/[id]/cancel/+server.ts.\nGate 2 (Security closure): With the check added, requests from biller receive HTTP 403 Forbidden before salesService.cancelSale is reached.\nGate 3 (Bypass review): Mirrors the working authorization guard in src/routes/api/purchases/[id]/cancel/+server.ts.\nGate 4 (Preserved behavior): Administrative users (owner_admin) can still cancel sales invoices as expected.\nGate 5 (Repository checks): Syntactically valid TypeScript matching SvelteKit RequestHandler convention.",
+              "poc": {
+                "description": "1. Log in as an administrator (owner_admin) and create a sales invoice via `POST /api/sales`.\n2. Note the generated invoice ID (e.g. `88aac12a-89c2-45e0-a8d7-4c86a3c8df3d`).\n3. Log in as a low-privilege counter biller (`role: biller`) to obtain a biller session cookie.\n4. Send a `POST` request to `/api/sales/<sale_id>/cancel` using the biller's session cookie.\n5. Observe that the server returns HTTP 200 OK with the sale status updated to `cancelled`, and batch stock restored.",
+                "script_available": true
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "CWE-862",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Broken Function Level Authorization in /api/sync/push Allows Arbitrary Database Manipulation\n\nThe database synchronization push endpoint allows low-privilege counter billers to insert, update, and delete arbitrary records across transactional and master database tables, bypassing application authorization controls."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/routes/api/sync/push/+server.ts"
+                },
+                "region": {
+                  "startLine": 24,
+                  "endLine": 28,
+                  "snippet": {
+                    "text": "export const POST: RequestHandler = async ({ request, locals }) => {\n\tif (!locals.user) {\n\t\treturn json({ error: 'Unauthorized' }, { status: 401 });\n\t}\n\n\tconst body = await request.json();"
+                  }
+                }
+              },
+              "message": {
+                "text": "Enforce owner_admin role check on sync push endpoint"
+              }
+            },
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/api/sync/push",
+                  "kind": "endpoint"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/routes/api/sync/push/+server.ts"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 24,
+                        "endLine": 28
+                      },
+                      "insertedContent": {
+                        "text": "export const POST: RequestHandler = async ({ request, locals }) => {\n\tif (!locals.user) {\n\t\treturn json({ error: 'Unauthorized' }, { status: 401 });\n\t}\n\n\tif (locals.user.role !== 'owner_admin') {\n\t\treturn json({ error: 'Forbidden: Admin role required for database sync operations' }, { status: 403 });\n\t}\n\n\tconst body = await request.json();"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "description": {
+                "text": "Restrict `POST /api/sync/push` to `owner_admin` or a dedicated system sync token:\n```typescript\nif (locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```",
+                "markdown": "Restrict `POST /api/sync/push` to `owner_admin` or a dedicated system sync token:\n```typescript\nif (locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```"
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "34869b57030014b2918dcba1d550d8e00baeaa88c025a925f73f53006f2cb0d1"
+          },
+          "properties": {
+            "security-severity": "7.1",
+            "strix_vuln_class_hash": "d7c920010c9f23b94628a4bff3313ffa3e22ab46a013b2f4cf84bc58c51bf50c",
+            "strix": {
+              "id": "vuln-0002",
+              "severity": "high",
+              "cvss": 7.1,
+              "timestamp": "2026-11-01 13:02:58 UTC",
+              "target": "http://host.docker.internal:5173",
+              "endpoint": "/api/sync/push",
+              "method": "POST",
+              "cwe": "CWE-862",
+              "impact": "A counter biller, restricted from editing products, supplier balances, batches, or deleting transactions through standard UI and API routes, can craft arbitrary sync events via `/api/sync/push` to insert, overwrite, or delete master products, batches, stock event deltas, customer balances, supplier balances, and purchase orders directly in the database.",
+              "technical_analysis": "In `src/routes/api/sync/push/+server.ts`:\nThe endpoint is intended for store server to cloud synchronization. However, it only requires `if (!locals.user) { return json({ error: 'Unauthorized' }, { status: 401 }); }` without verifying user roles.\nAny authenticated user (such as a counter biller) can send raw sync entries affecting:\n- `products`\n- `product_units`\n- `batches`\n- `batch_stock_events`\n- `suppliers`\n- `customers`\n- `purchases`\n- `purchase_items`\n- `sales`\n- `sale_items`\n- `payments`\n- `returns`\n- `return_items`\n\nThe handler executes a direct database transaction applying `insert`, `update`, or `delete` on the corresponding table or applying stock adjustments to `batchesTable`. This allows complete bypass of application-level business constraints and role authorization.",
+              "remediation_steps": "Restrict `POST /api/sync/push` to `owner_admin` or a dedicated system sync token:\n```typescript\nif (locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```",
+              "counterevidence": "Checked if any gateway or hook limits access to /api/sync/push. Confirmed that hooks.server.ts permits any authenticated user. Examined POST /api/sync/push and confirmed it only requires locals.user without role validation. Tested dynamically by injecting and deleting a product record using the biller session cookie, and confirmed direct database modification.",
+              "confidence": "high",
+              "severity_change_conditions": "If the endpoint was unauthenticated, severity would increase to High/Critical; since authentication as a valid user is required, severity is High.",
+              "fix_verification": "Gate 1 (Applicability): Verified line numbers 24-28 in src/routes/api/sync/push/+server.ts match verbatim.\nGate 2 (Security closure): With the check added, requests from biller receive HTTP 403 Forbidden before any database transaction is initiated.\nGate 3 (Bypass review): All operation types (insert, update, delete) across all tableMap entities are protected by this single entrypoint gate.\nGate 4 (Preserved behavior): Store server synchronization processes running with administrator credentials or appropriate sync credentials can still push sync events.\nGate 5 (Repository checks): Syntactically valid TypeScript matching SvelteKit RequestHandler convention.",
+              "poc": {
+                "description": "1. Log in as a low-privilege counter biller (`role: biller`) to obtain a valid session cookie.\n2. Send a `POST` request to `/api/sync/push` with a crafted `SyncOutboxEntry` inserting a new product or modifying an existing batch.\n3. Observe that the server returns HTTP 200 OK with `status: \"ok\"`.\n4. Verify by querying `GET /api/products/<injected_id>` that the product was directly inserted into the store database.\n5. Send a `POST` request to `/api/sync/push` with operation `'delete'` to verify deletion.",
+                "script_available": true
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "CWE-862",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Broken Function Level Authorization in /api/sync/pull Exposes Sync Outbox Records\n\nThe database synchronization pull endpoint lacks role authorization, allowing low-privilege counter billers to read internal replication outbox records containing complete transactional and business data."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/routes/api/sync/pull/+server.ts"
+                },
+                "region": {
+                  "startLine": 7,
+                  "endLine": 8,
+                  "snippet": {
+                    "text": "export const GET: RequestHandler = async ({ url }) => {\n\tconst since = url.searchParams.get('since');"
+                  }
+                }
+              },
+              "message": {
+                "text": "Enforce owner_admin role check on sync pull endpoint"
+              }
+            },
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/api/sync/pull",
+                  "kind": "endpoint"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/routes/api/sync/pull/+server.ts"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 7,
+                        "endLine": 8
+                      },
+                      "insertedContent": {
+                        "text": "export const GET: RequestHandler = async ({ url, locals }) => {\n\tif (!locals.user || locals.user.role !== 'owner_admin') {\n\t\treturn json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n\t}\n\n\tconst since = url.searchParams.get('since');"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "description": {
+                "text": "In `src/routes/api/sync/pull/+server.ts`, restrict access to `owner_admin` or a dedicated synchronization credential:\n```typescript\nif (!locals.user || locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```",
+                "markdown": "In `src/routes/api/sync/pull/+server.ts`, restrict access to `owner_admin` or a dedicated synchronization credential:\n```typescript\nif (!locals.user || locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```"
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "bfef590e4af6352f2b5f513c52ed2a883846aa0345a4aa48bedcf1b4f82aa991"
+          },
+          "properties": {
+            "security-severity": "6.5",
+            "strix_vuln_class_hash": "d7c920010c9f23b94628a4bff3313ffa3e22ab46a013b2f4cf84bc58c51bf50c",
+            "strix": {
+              "id": "vuln-0003",
+              "severity": "medium",
+              "cvss": 6.5,
+              "timestamp": "2026-11-01 13:03:21 UTC",
+              "target": "http://host.docker.internal:5173",
+              "endpoint": "/api/sync/pull",
+              "method": "GET",
+              "cwe": "CWE-862",
+              "impact": "Low-privilege counter staff can harvest raw business event data queued for cloud sync, including internal batch updates, sales records, customer identifiers, supplier transaction details, and audit metadata.",
+              "technical_analysis": "In `src/routes/api/sync/pull/+server.ts`:\nThe handler defines `export const GET: RequestHandler = async ({ url }) => { ... }`. It does not check `locals.user.role`.\nThe query filters `syncOutboxTable` by `targetNode = callerNode`. By supplying `?clientId=cloud` or `?clientId=store_server`, any authenticated caller can query and receive all outbox records, exposing raw database row payloads across multiple domain tables (`sales`, `batches`, `batch_stock_events`, `suppliers`, etc.).",
+              "remediation_steps": "In `src/routes/api/sync/pull/+server.ts`, restrict access to `owner_admin` or a dedicated synchronization credential:\n```typescript\nif (!locals.user || locals.user.role !== 'owner_admin') {\n    return json({ error: 'Forbidden: Admin role required' }, { status: 403 });\n}\n```",
+              "counterevidence": "Checked if /api/sync/pull restricts callers. While hooks.server.ts ensures session authentication, the route handler GET in src/routes/api/sync/pull/+server.ts completely lacks any role check. By passing ?clientId=cloud, any low-privilege biller can dump synchronization outbox records containing transactions, batches, products, and customer details.",
+              "confidence": "high",
+              "severity_change_conditions": "If unauthenticated access were possible, severity would be High; since authentication is required, severity is Medium.",
+              "fix_verification": "Gate 1 (Applicability): Verified line numbers 7-8 match verbatim in src/routes/api/sync/pull/+server.ts.\nGate 2 (Security closure): With the check added, requests from biller receive HTTP 403 Forbidden and no outbox rows are queried or leaked.\nGate 3 (Bypass review): Ensures both store_server and cloud targetNode pull queries are protected.\nGate 4 (Preserved behavior): System administration and authorized sync services can still pull sync events.\nGate 5 (Repository checks): Syntactically valid TypeScript matching SvelteKit RequestHandler convention.",
+              "poc": {
+                "description": "1. Log in as a low-privilege counter biller (`role: biller`).\n2. Send a `GET` request to `/api/sync/pull?clientId=cloud`.\n3. Observe that the server returns HTTP 200 OK with all queued replication items across the store.",
+                "script_available": true
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "CWE-200",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "CVE-2026-92708 in devalue 5.9.1 (Process Memory Disclosure)\n\nSvelte devalue versions 5.1.0 through 5.9.2 contain a cross-request process memory disclosure vulnerability where stringify and uneval serialize a typed array by emitting its entire backing ArrayBuffer rather than the slice view. When serializing a Node Buffer sharing a process-wide pool, up to 64 KB of uninitialized or unrelated process memory may be leaked."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SECURITY.md"
+                }
+              }
+            },
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/workspace/build-medical",
+                  "kind": "resource"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "b4b408be49ea5fa67e1c4aa2117cb0e1aea1c4cc25ec6a5b3c1847811c70f95f"
+          },
+          "properties": {
+            "security-severity": "0.0",
+            "strix_vuln_class_hash": "f643d890dfbac71a5601480d3f201ebad491313b9dffd07b069b4502c5a64431",
+            "synthetic_location": true,
+            "strix": {
+              "id": "vuln-0004",
+              "severity": "info",
+              "cvss": 0.0,
+              "timestamp": "2026-11-01 13:06:10 UTC",
+              "target": "/workspace/build-medical",
+              "cve": "CVE-2026-92708",
+              "cwe": "CWE-200",
+              "impact": "In vulnerable configurations returning Node Buffers in SSR load() functions, up to 64 KB of shared memory from other concurrent requests could be leaked in rendered HTML responses. In this codebase, devalue is not directly imported.",
+              "technical_analysis": "In devalue 5.1.0-5.9.2, Node Buffers allocated from the shared 64 KB pool retain the entire pool buffer reference during serialization. When rendered into SSR payloads, adjacent memory bytes from prior requests sharing the pool may be serialized into the output HTML.",
+              "remediation_steps": "Run `npm update devalue` or update `@sveltejs/kit` to ensure `devalue` resolves to `>= 5.9.3`.",
+              "dependency_metadata": {
+                "package_name": "devalue",
+                "installed_version": "5.9.1",
+                "advisory_cvss": 7.5,
+                "package_ecosystem": "npm",
+                "manifest_path": "package-lock.json",
+                "fixed_version": "5.9.3",
+                "introduced_by": "@sveltejs/kit@2.70.3",
+                "dependency_path": "@sveltejs/kit@2.70.3 > devalue@5.9.1",
+                "reachability": "not_imported",
+                "reachability_evidence": "Searched src/ for imports of devalue using rg 'devalue' src/. No direct import or symbol usage was found in application source code. The package is pulled in transitively by @sveltejs/kit (v2.70.3) and svelte (v5.56.10).",
+                "contextual_cvss_breakdown": {
+                  "scope": "U",
+                  "availability": "N",
+                  "privileges_required": "N",
+                  "user_interaction": "N",
+                  "reason": "Contextual CVSS adjustment based on lack of direct import and absence of Node Buffer serialization in load functions",
+                  "integrity": "N",
+                  "attack_vector": "N",
+                  "confidentiality": "N",
+                  "attack_complexity": "H"
+                },
+                "contextual_cvss_score": 0.0,
+                "contextual_cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:N",
+                "contextual_cvss_reasoning": "The application codebase does not directly import devalue or pass Node Buffer objects through page load() functions. While @sveltejs/kit@2.70.3 transitively depends on devalue@5.9.1, no application route handler (src/routes/*) constructs or returns pooled raw Node Buffers. Consequently, impact metrics are set to None."
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/static-application-security-testing-sast-code-injection",
+          "ruleIndex": 2,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Static Application Security Testing (SAST) & Code Injection — No issue identified: Codebase /workspace/build-medical (AST & SAST)\n\nSemgrep scan with default, golang, and secrets configs and AST-grep structural scan completed across all 348 tracked repository files. Verified that SQL queries use Drizzle ORM parameterized templates and no command injection or unsafe eval sinks exist."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Codebase /workspace/build-medical (AST & SAST)"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "no_issue_found",
+              "risk_area": "Static Application Security Testing (SAST) & Code Injection",
+              "surface": "Codebase /workspace/build-medical (AST & SAST)",
+              "recorded_by": "SAST and Secrets Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/hardcoded-secrets-and-credential-exposure",
+          "ruleIndex": 3,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Hardcoded Secrets and Credential Exposure — Ruled out: Repository Git History and Filesystem Secrets\n\nGitleaks (17 commits scanned) and Trufflehog filesystem scan triaged. 26 Gitleaks hits in graphify-out/cache/stat-index.json were SHA-256 document hashes, and Trufflehog hits were documentation examples (.claude/agents) or mock test strings in node_modules. No real API keys, cloud tokens, or live production credentials committed."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Repository Git History and Filesystem Secrets"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Hardcoded Secrets and Credential Exposure",
+              "surface": "Repository Git History and Filesystem Secrets",
+              "recorded_by": "SAST and Secrets Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/path-traversal-arbitrary-file-access",
+          "ruleIndex": 4,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Path Traversal & Arbitrary File Access — Ruled out: src/lib/server/backup/engine.ts\n\nSemgrep flagged path.join in src/lib/server/backup/engine.ts:70 and 133. Analysis revealed listBackups reads directory entries filtered by medstock_backup_ prefix and .sql.gz extension; createBackup generates hardcoded timestamp filenames; download route validates with path.basename against existing backups list. Path traversal is ruled out by strict prefix, extension, and allowlist controls."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "src/lib/server/backup/engine.ts"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Path Traversal & Arbitrary File Access",
+              "surface": "src/lib/server/backup/engine.ts",
+              "recorded_by": "SAST and Secrets Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/authentication-bypass-open-registration",
+          "ruleIndex": 5,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Authentication Bypass & Open Registration — Ruled out: src/routes/register and src/hooks.server.ts\n\nReviewed src/routes/register/+page.server.ts and src/hooks.server.ts. Registration is strictly gated by existingUsers.length > 0 check which denies further registrations once the initial admin is created. Unauthenticated routes are restricted to login, register, and healthcheck."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "src/routes/register and src/hooks.server.ts"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Authentication Bypass & Open Registration",
+              "surface": "src/routes/register and src/hooks.server.ts",
+              "recorded_by": "SAST and Secrets Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/path-traversal-arbitrary-file-read",
+          "ruleIndex": 6,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Path Traversal / Arbitrary File Read — Ruled out: GET /api/settings/backup/download\n\nThe ?file= parameter in /api/settings/backup/download is sanitized using path.basename(requestedFilename) and strictly matched against backups.find((b) => b.filename === safeName). Arbitrary directory traversal (e.g. ../../etc/passwd) fails the lookup and returns 404 BACKUP_NOT_FOUND. Furthermore, the endpoint is strictly restricted to owner_admin role."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/settings/backup/download"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Path Traversal / Arbitrary File Read",
+              "surface": "GET /api/settings/backup/download",
+              "recorded_by": "Command and Injection Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/command-argument-injection",
+          "ruleIndex": 7,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Command / Argument Injection — Ruled out: src/lib/server/backup/engine.ts (createBackup / restoreBackup)\n\nIn src/lib/server/backup/engine.ts, pg_dump and psql are executed via child_process.spawn with an array of arguments (no shell interpolation). The dbUrl is sourced directly from process.env.DATABASE_URL and all options are hardcoded flags. No user-supplied parameters are passed to the command or arguments array."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "src/lib/server/backup/engine.ts (createBackup / restoreBackup)"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Command / Argument Injection",
+              "surface": "src/lib/server/backup/engine.ts (createBackup / restoreBackup)",
+              "recorded_by": "Command and Injection Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/sql-injection",
+          "ruleIndex": 8,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "SQL injection — Ruled out: Reports API (/api/reports/*)\n\nAudited report routes (/api/reports/audit, /api/reports/schedule-h1, /api/reports/gst, /api/reports/sales, /api/reports/stock, /api/reports/purchases, /api/reports/ledger) and verified that all user-supplied filter parameters are passed into Drizzle ORM expression builders (eq, gte, lte, ilike) using parameterized queries. Raw sql template interpolations only embed table column definitions and constant literals, preventing SQL injection."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Reports API (/api/reports/*)"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "SQL injection",
+              "surface": "Reports API (/api/reports/*)",
+              "recorded_by": "Command and Injection Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/sql-injection",
+          "ruleIndex": 8,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "SQL injection — Ruled out: Sync API (/api/sync/*)\n\nAudited /api/sync/pull and /api/sync/push. Sync outbox queries use Drizzle ORM query builders with parameterized conditions. Table names in sync push are strictly validated against a hardcoded tableMap dictionary whitelist. Tenant validation ensures payload.storeId matches locals.user.storeId. No raw SQL or query injection vectors exist."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Sync API (/api/sync/*)"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "SQL injection",
+              "surface": "Sync API (/api/sync/*)",
+              "recorded_by": "Command and Injection Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/remote-code-execution",
+          "ruleIndex": 9,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Remote Code Execution — Ruled out: scripts/restore.ts / restoreBackup\n\nAudited scripts/restore.ts and engine.ts restoreBackup. Restore functionality is an offline CLI maintenance script not exposed as a public web route. In addition, psql is invoked via spawn with -q -X and the input is streamed via gunzip directly to stdin with no shell invocation. Untrusted users cannot invoke restore remotely."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "scripts/restore.ts / restoreBackup"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "Remote Code Execution",
+              "surface": "scripts/restore.ts / restoreBackup",
+              "recorded_by": "Command and Injection Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/bfla-privilege-escalation",
+          "ruleIndex": 10,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "BFLA / Privilege Escalation — Ruled out: /api/settings/backup and /api/settings/backup/download\n\nVerified in src/routes/api/settings/backup/+server.ts and download/+server.ts; requests from low-privilege biller return 403 Forbidden ('Access restricted to owner/admin')."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/api/settings/backup and /api/settings/backup/download"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "BFLA / Privilege Escalation",
+              "surface": "/api/settings/backup and /api/settings/backup/download",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/bfla-privilege-escalation",
+          "ruleIndex": 10,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "BFLA / Privilege Escalation — Ruled out: POST /api/settings\n\nVerified in src/routes/api/settings/+server.ts; POST requests from low-privilege biller return 403 Forbidden ('Only owner_admin can modify store settings')."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "POST /api/settings"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "BFLA / Privilege Escalation",
+              "surface": "POST /api/settings",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/bfla-privilege-escalation",
+          "ruleIndex": 10,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "BFLA / Privilege Escalation — Ruled out: /api/users and /api/users/{id}\n\nVerified in src/routes/api/users/+server.ts and [id]/+server.ts; GET, POST, and PATCH requests from biller return 403 Forbidden ('Only owner_admin can view/create/modify users')."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "/api/users and /api/users/{id}"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "BFLA / Privilege Escalation",
+              "surface": "/api/users and /api/users/{id}",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/bfla-privilege-escalation",
+          "ruleIndex": 10,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "BFLA / Privilege Escalation — Ruled out: POST /api/purchases/{id}/cancel\n\nVerified in src/routes/api/purchases/[id]/cancel/+server.ts; POST requests from biller return 403 Forbidden ('Forbidden: Admin role required')."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "POST /api/purchases/{id}/cancel"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "BFLA / Privilege Escalation",
+              "surface": "POST /api/purchases/{id}/cancel",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/bfla-privilege-escalation",
+          "ruleIndex": 10,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "BFLA / Privilege Escalation — Ruled out: GET /api/reports/audit\n\nVerified in src/routes/api/reports/audit/+server.ts; requests from biller return 403 Forbidden ('Only owner_admin can access the statutory audit log')."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/reports/audit"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "BFLA / Privilege Escalation",
+              "surface": "GET /api/reports/audit",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/idor-tenant-isolation",
+          "ruleIndex": 11,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "IDOR / Tenant Isolation — No issue identified: GET /api/reports/schedule-h1\n\nTested GET /api/reports/schedule-h1; returns 200 with entries strictly scoped to the caller's storeId (eq(salesTable.storeId, event.locals.user.storeId)). Dispensary staff requires access for statutory Form 35 compliance."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/reports/schedule-h1"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "no_issue_found",
+              "risk_area": "IDOR / Tenant Isolation",
+              "surface": "GET /api/reports/schedule-h1",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/information-disclosure-bfla",
+          "ruleIndex": 12,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Information Disclosure / BFLA — No issue identified: GET /api/settings/network\n\nGET /api/settings/network requires authentication (unauthenticated returns 401). Authenticated counter billers can view LAN pairing topology and QR codes needed for POS counter terminal pairing."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/settings/network"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "no_issue_found",
+              "risk_area": "Information Disclosure / BFLA",
+              "surface": "GET /api/settings/network",
+              "recorded_by": "Auth and Access Control Specialist",
+              "source": "agent_reported"
+            }
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "properties": {
+        "syntheticLocationCount": 1
+      }
+    }
+  ]
+}

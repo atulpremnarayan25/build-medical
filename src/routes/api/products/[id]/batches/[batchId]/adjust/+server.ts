@@ -2,8 +2,12 @@ import { inventoryService } from '$lib/server/servicesLocator';
 import { jsonResponse, errorResponse } from '$lib/server/apiUtils';
 import type { RequestEvent } from './$types';
 
-export async function POST({ params, request }: RequestEvent) {
+export async function POST({ params, request, locals }: RequestEvent) {
 	try {
+		if (!locals.user || locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can adjust batch stock', 403);
+		}
+
 		const { id, batchId } = params;
 		const { delta, reason } = await request.json();
 

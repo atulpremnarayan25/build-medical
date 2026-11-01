@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-01 13:07:26 UTC",
+  "run_id": "build-medical_94f6",
+  "run_name": "build-medical_94f6",
+  "scope": {
+    "targets": [
+      {
+        "type": "local_code",
+        "details": {
+          "target_path": "/Users/atul/develop/build-medical",
+          "workspace_subdir": "build-medical"
+        },
+        "original": "/Users/atul/develop/build-medical"
+      },
+      {
+        "type": "web_application",
+        "details": {
+          "target_url": "http://host.docker.internal:5173"
+        },
+        "original": "http://localhost:5173"
+      }
+    ],
+    "scan_mode": "quick",
+    "scope_mode": "auto",
+    "diff_scope": {
+      "active": false,
+      "mode": "auto"
+    },
+    "instruction": ""
+  },
+  "summary": {
+    "surfaces_reviewed": 20,
+    "outcomes": {
+      "reported": 4,
+      "no_issue_found": 3,
+      "ruled_out": 13
+    },
+    "findings_filed": 4,
+    "gaps": 0
+  },
+  "machine_observed": {
+    "agents": [
+      {
+        "agent_id": "1c9e2f25",
+        "agent_name": "Auth and Access Control Specialist",
+        "status": "completed",
+        "skills": [
+          "broken_function_level_authorization",
+          "idor"
+        ],
+        "task": "Test authentication, role boundaries (biller vs owner_admin), broken function level authorization (BFLA), and IDOR across all API endpoints on http://host.docker.internal:5173 and the underlying codebase at /workspace/build-medical.\n\nBaseline Threat Model: Call get_threat_model on /workspace/build-medical.\nTest credentials:\n- biller / biller123 (role: biller)\n- admin / admin123 (role: owner_admin)\n\nKey Focus Areas:\n1. BFLA / Privilege Escalation:\n   - Check if biller can access or modify endpoints intended only for owner_admin:\n     - /api/settings/backup and /api/settings/backup/download\n     - /api/settings (store master settings update)\n     - /api/settings/network (topology, connected devices)\n     - /api/users and /api/users/[id] (can biller escalate to owner_admin, change passwords, or create new users?)\n     - /api/sales/[id]/cancel and /api/purchases/[id]/cancel (can biller cancel arbitrary sales/purchases without authorization or tenant checks?)\n     - /api/sync/pull and /api/sync/push (can biller pull outbox events or push arbitrary updates?)\n     - /api/reports/audit and /api/reports/schedule-h1\n2. IDOR:\n   - Can biller or any user access/cancel transactions, ledger entries, or customer records of other tenants or unauthorized objects?\n3. For any confirmed vulnerability:\n   - Create a working dynamic PoC.\n   - Run the counterevidence pass.\n   - Generate the code fix (fix_before / fix_after).\n   - Report via create_vulnerability_report or spawn a reporting child.\n   - Record coverage for all surfaces tested.",
+        "is_root": false
+      },
+      {
+        "agent_id": "f52e5ec7",
+        "agent_name": "Command and Injection Specialist",
+        "status": "completed",
+        "skills": [
+          "rce",
+          "path_traversal_lfi_rfi",
+          "argument_injection"
+        ],
+        "task": "Test for Remote Code Execution, command/argument injection, path traversal, and database injection across the application on http://host.docker.internal:5173 and /workspace/build-medical.\n\nBaseline Threat Model: Call get_threat_model on /workspace/build-medical.\nTest credentials:\n- admin / admin123 (owner_admin)\n- biller / biller123 (biller)\n\nSpecific targets to audit & dynamically test:\n1. /api/settings/backup and /api/settings/backup/download:\n   - Check if the ?file= parameter in /api/settings/backup/download is vulnerable to path traversal, arbitrary file read, or symlink bypass.\n   - Check how pg_dump and psql are spawned in src/lib/server/backup/engine.ts. Can parameters or environment variables lead to command injection or argument smuggling?\n   - Check restore mechanisms (scripts/restore.ts, engine.ts). Can untrusted SQL files trigger code execution or arbitrary file writes?\n2. SQL / Query Injection:\n   - Audit all routes using raw SQL or dynamic sql template interpolations (e.g. in reports: /api/reports/audit, /api/reports/schedule-h1, /api/reports/gst, /api/reports/sales, /api/reports/stock, /api/sync/*).\n   - Check if user-controlled search/filter inputs can alter query semantics or leak unauthorized data.\n3. For any confirmed vulnerability:\n   - Build a working dynamic PoC.\n   - Run the counterevidence pass.\n   - Develop the exact fix_before / fix_after code patch.\n   - File the report with create_vulnerability_report or spawn a reporting child.\n   - Record coverage for surfaces reviewed.",
+        "is_root": false
+      },
+      {
+        "agent_id": "e95205e4",
+        "agent_name": "Root Agent",
+        "status": "completed",
+        "skills": [],
+        "task": "\n\nLocal Codebases: - /Users/atul/develop/build-medical (available at: /workspace/build-medical; this is the user's real directory, mounted live and writable — .git/.agents/.codex are read-only) \n\nURLs: - http://host.docker.internal:5173",
+        "is_root": true
+      },
+      {
+        "agent_id": "8f5e23aa",
+        "agent_name": "SAST and Secrets Specialist",
+        "status": "completed",
+        "skills": [
+          "source_aware_sast"
+        ],
+        "task": "Run the full baseline source-aware security scan on /workspace/build-medical.\nStore all scanner outputs in /workspace/.source-aware.\nExecute:\n1. Semgrep scan: semgrep scan --config p/default --config p/golang --config p/secrets --metrics=off --json --output /workspace/.source-aware/semgrep.json .\n2. Build sg-targets.txt and run AST-grep (sg) structural pass.\n3. Gitleaks scan: gitleaks detect --source . --report-format json --report-path /workspace/.source-aware/gitleaks.json\n4. Trufflehog filesystem scan.\n5. Trivy fs scan: trivy fs --scanners vuln,misconfig --timeout 15m --offline-scan --format json --output /workspace/.source-aware/trivy-fs.json .\n6. Analyze and triage the results for real, actionable vulnerabilities (e.g. command injection, secret leakage, SQL injection, unsafe deserialization, path traversal).\nCall get_threat_model on /workspace/build-medical. Report verified findings or proof gaps upon completion.",
+        "is_root": false
+      }
+    ],
+    "skills_exercised": [
+      "argument_injection",
+      "broken_function_level_authorization",
+      "idor",
+      "path_traversal_lfi_rfi",
+      "rce",
+      "source_aware_sast"
+    ],
+    "findings_filed": 4,
+    "source": "runtime"
+  },
+  "completeness": {
+    "complete": true,
+    "scan_status": "completed",
+    "exit_reason": "finished_by_tool",
+    "caveats": []
+  },
+  "entries": [
+    {
+      "surface": "Codebase /workspace/build-medical (AST & SAST)",
+      "risk_area": "Static Application Security Testing (SAST) & Code Injection",
+      "outcome": "no_issue_found",
+      "outcome_label": "No issue identified",
+      "evidence": "Semgrep scan with default, golang, and secrets configs and AST-grep structural scan completed across all 348 tracked repository files. Verified that SQL queries use Drizzle ORM parameterized templates and no command injection or unsafe eval sinks exist.",
+      "recorded_by": "SAST and Secrets Specialist",
+      "recorded_at": "2026-11-01 12:56:46 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "Repository Git History and Filesystem Secrets",
+      "risk_area": "Hardcoded Secrets and Credential Exposure",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Gitleaks (17 commits scanned) and Trufflehog filesystem scan triaged. 26 Gitleaks hits in graphify-out/cache/stat-index.json were SHA-256 document hashes, and Trufflehog hits were documentation examples (.claude/agents) or mock test strings in node_modules. No real API keys, cloud tokens, or live production credentials committed.",
+      "recorded_by": "SAST and Secrets Specialist",
+      "recorded_at": "2026-11-01 12:56:51 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "package-lock.json (devalue@5.9.1)",
+      "risk_area": "Software Supply Chain & Dependency Vulnerabilities",
+      "outcome": "reported",
+      "outcome_label": "Finding reported",
+      "evidence": "Audited package-lock.json and application imports. Confirmed devalue@5.9.1 is pulled in transitively by @sveltejs/kit@2.70.3. Filed dependency CVE report vuln-0004 with reachability=not_imported and contextual impact adjustments.",
+      "recorded_by": "Root Agent",
+      "recorded_at": "2026-11-01 12:56:57 UTC",
+      "updated_at": "2026-11-01 13:06:17 UTC",
+      "previous_outcomes": [
+        "needs_follow_up"
+      ],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "src/lib/server/backup/engine.ts",
+      "risk_area": "Path Traversal & Arbitrary File Access",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Semgrep flagged path.join in src/lib/server/backup/engine.ts:70 and 133. Analysis revealed listBackups reads directory entries filtered by medstock_backup_ prefix and .sql.gz extension; createBackup generates hardcoded timestamp filenames; download route validates with path.basename against existing backups list. Path traversal is ruled out by strict prefix, extension, and allowlist controls.",
+      "recorded_by": "SAST and Secrets Specialist",
+      "recorded_at": "2026-11-01 12:57:01 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "src/routes/register and src/hooks.server.ts",
+      "risk_area": "Authentication Bypass & Open Registration",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Reviewed src/routes/register/+page.server.ts and src/hooks.server.ts. Registration is strictly gated by existingUsers.length > 0 check which denies further registrations once the initial admin is created. Unauthenticated routes are restricted to login, register, and healthcheck.",
+      "recorded_by": "SAST and Secrets Specialist",
+      "recorded_at": "2026-11-01 12:57:07 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "GET /api/settings/backup/download",
+      "risk_area": "Path Traversal / Arbitrary File Read",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "The ?file= parameter in /api/settings/backup/download is sanitized using path.basename(requestedFilename) and strictly matched against backups.find((b) => b.filename === safeName). Arbitrary directory traversal (e.g. ../../etc/passwd) fails the lookup and returns 404 BACKUP_NOT_FOUND. Furthermore, the endpoint is strictly restricted to owner_admin role.",
+      "recorded_by": "Command and Injection Specialist",
+      "recorded_at": "2026-11-01 12:57:13 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "src/lib/server/backup/engine.ts (createBackup / restoreBackup)",
+      "risk_area": "Command / Argument Injection",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "In src/lib/server/backup/engine.ts, pg_dump and psql are executed via child_process.spawn with an array of arguments (no shell interpolation). The dbUrl is sourced directly from process.env.DATABASE_URL and all options are hardcoded flags. No user-supplied parameters are passed to the command or arguments array.",
+      "recorded_by": "Command and Injection Specialist",
+      "recorded_at": "2026-11-01 12:57:17 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "Reports API (/api/reports/*)",
+      "risk_area": "SQL injection",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Audited report routes (/api/reports/audit, /api/reports/schedule-h1, /api/reports/gst, /api/reports/sales, /api/reports/stock, /api/reports/purchases, /api/reports/ledger) and verified that all user-supplied filter parameters are passed into Drizzle ORM expression builders (eq, gte, lte, ilike) using parameterized queries. Raw sql template interpolations only embed table column definitions and constant literals, preventing SQL injection.",
+      "recorded_by": "Command and Injection Specialist",
+      "recorded_at": "2026-11-01 12:57:23 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "Sync API (/api/sync/*)",
+      "risk_area": "SQL injection",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Audited /api/sync/pull and /api/sync/push. Sync outbox queries use Drizzle ORM query builders with parameterized conditions. Table names in sync push are strictly validated against a hardcoded tableMap dictionary whitelist. Tenant validation ensures payload.storeId matches locals.user.storeId. No raw SQL or query injection vectors exist.",
+      "recorded_by": "Command and Injection Specialist",
+      "recorded_at": "2026-11-01 12:57:29 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "scripts/restore.ts / restoreBackup",
+      "risk_area": "Remote Code Execution",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Audited scripts/restore.ts and engine.ts restoreBackup. Restore functionality is an offline CLI maintenance script not exposed as a public web route. In addition, psql is invoked via spawn with -q -X and the input is streamed via gunzip directly to stdin with no shell invocation. Untrusted users cannot invoke restore remotely.",
+      "recorded_by": "Command and Injection Specialist",
+      "recorded_at": "2026-11-01 12:57:34 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "/api/settings/backup and /api/settings/backup/download",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Verified in src/routes/api/settings/backup/+server.ts and download/+server.ts; requests from low-privilege biller return 403 Forbidden ('Access restricted to owner/admin').",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:09 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "POST /api/settings",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Verified in src/routes/api/settings/+server.ts; POST requests from low-privilege biller return 403 Forbidden ('Only owner_admin can modify store settings').",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:14 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "/api/users and /api/users/{id}",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Verified in src/routes/api/users/+server.ts and [id]/+server.ts; GET, POST, and PATCH requests from biller return 403 Forbidden ('Only owner_admin can view/create/modify users').",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:20 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "POST /api/purchases/{id}/cancel",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Verified in src/routes/api/purchases/[id]/cancel/+server.ts; POST requests from biller return 403 Forbidden ('Forbidden: Admin role required').",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:24 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "GET /api/reports/audit",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "ruled_out",
+      "outcome_label": "Ruled out",
+      "evidence": "Verified in src/routes/api/reports/audit/+server.ts; requests from biller return 403 Forbidden ('Only owner_admin can access the statutory audit log').",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:29 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "GET /api/reports/schedule-h1",
+      "risk_area": "IDOR / Tenant Isolation",
+      "outcome": "no_issue_found",
+      "outcome_label": "No issue identified",
+      "evidence": "Tested GET /api/reports/schedule-h1; returns 200 with entries strictly scoped to the caller's storeId (eq(salesTable.storeId, event.locals.user.storeId)). Dispensary staff requires access for statutory Form 35 compliance.",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:35 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "GET /api/settings/network",
+      "risk_area": "Information Disclosure / BFLA",
+      "outcome": "no_issue_found",
+      "outcome_label": "No issue identified",
+      "evidence": "GET /api/settings/network requires authentication (unauthenticated returns 401). Authenticated counter billers can view LAN pairing topology and QR codes needed for POS counter terminal pairing.",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:01:40 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "POST /api/sales/{id}/cancel",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "reported",
+      "outcome_label": "Finding reported",
+      "evidence": "Confirmed BFLA and IDOR in POST /api/sales/[id]/cancel. Any authenticated biller can cancel any sales invoice without role check or storeId verification. Filed vuln-0001.",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:02:34 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "POST /api/sync/push",
+      "risk_area": "BFLA / Privilege Escalation",
+      "outcome": "reported",
+      "outcome_label": "Finding reported",
+      "evidence": "Confirmed BFLA in POST /api/sync/push. Authenticated counter billers can bypass role checks and directly insert, update, or delete products, batches, stock events, and transactions. Filed vuln-0002.",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:03:03 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    },
+    {
+      "surface": "GET /api/sync/pull",
+      "risk_area": "BFLA / Information Disclosure",
+      "outcome": "reported",
+      "outcome_label": "Finding reported",
+      "evidence": "Confirmed BFLA in GET /api/sync/pull. Low-privilege biller can pull all replication outbox records by passing ?clientId=cloud. Filed vuln-0003.",
+      "recorded_by": "Auth and Access Control Specialist",
+      "recorded_at": "2026-11-01 13:03:29 UTC",
+      "updated_at": "",
+      "previous_outcomes": [],
+      "source": "agent_reported"
+    }
+  ],
+  "gaps": []
+}

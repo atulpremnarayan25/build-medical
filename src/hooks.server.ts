@@ -36,6 +36,25 @@ export const handle: Handle = async ({ event, resolve }) => {
 		});
 	}
 
+	// Centralized RBAC: restrict administrative operations to owner_admin
+	if (event.locals.user && event.locals.user.role !== 'owner_admin') {
+		const pathname = event.url.pathname;
+		const isAdminOnly =
+			pathname.startsWith('/api/users') ||
+			pathname.startsWith('/api/sync') ||
+			pathname.startsWith('/api/settings/backup') ||
+			pathname.startsWith('/api/reports/audit') ||
+			pathname.startsWith('/api/inventory/adjustments') ||
+			pathname.endsWith('/cancel');
+
+		if (isAdminOnly) {
+			return new Response(JSON.stringify({ error: 'Forbidden: Admin role required' }), {
+				status: 403,
+				headers: { 'Content-Type': 'application/json' }
+			});
+		}
+	}
+
 	// Authenticated pages must never be served from cache: after logout, a
 	// cached copy (HTTP cache or back/forward cache) would show the app as
 	// still logged in. Scope to document requests to keep API responses' own

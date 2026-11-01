@@ -1,0 +1,5 @@
+id,title,severity,timestamp,file
+vuln-0002,Broken Function Level Authorization in /api/sync/push Allows Arbitrary Database Manipulation,HIGH,2026-11-01 13:02:58 UTC,vulnerabilities/vuln-0002.md
+vuln-0001,Broken Function Level Authorization and IDOR in /api/sales/[id]/cancel,MEDIUM,2026-11-01 13:02:27 UTC,vulnerabilities/vuln-0001.md
+vuln-0003,Broken Function Level Authorization in /api/sync/pull Exposes Sync Outbox Records,MEDIUM,2026-11-01 13:03:21 UTC,vulnerabilities/vuln-0003.md
+vuln-0004,CVE-2026-92708 in devalue 5.9.1 (Process Memory Disclosure),INFO,2026-11-01 13:06:10 UTC,vulnerabilities/vuln-0004.md

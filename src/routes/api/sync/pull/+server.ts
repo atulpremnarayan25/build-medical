@@ -4,7 +4,11 @@ import { syncOutboxTable } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import { and, eq, gt } from 'drizzle-orm';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
+	if (!locals.user || locals.user.role !== 'owner_admin') {
+		return json({ error: 'Forbidden: Admin role required' }, { status: 403 });
+	}
+
 	const since = url.searchParams.get('since');
 
 	// If a caller hits this node's pull endpoint, they want the items that this node
