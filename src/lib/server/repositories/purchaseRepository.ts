@@ -18,6 +18,7 @@ import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
 import { logSyncOutbox } from '../db/sync/outbox.js';
+import { logAudit } from '../audit.js';
 
 function mapPurchaseRow(purchase: any, items: any[], supplierName = 'Unknown') {
 	const totalAmount = Number(purchase.totalAmount) || 0;
@@ -62,7 +63,7 @@ function mapPurchaseRow(purchase: any, items: any[], supplierName = 'Unknown') {
 		grandTotal: totalAmount,
 		paidAmount,
 		dueAmount,
-		status: 'confirmed' as const,
+		status: (purchase.status || 'confirmed') as any,
 		paymentMethod,
 		createdBy: purchase.createdBy || '00000000-0000-0000-0000-000000000000',
 		createdAt: purchase.createdAt
@@ -491,7 +492,7 @@ export class DbPurchaseRepository implements PurchaseRepository {
 		return this.getById(id) as Promise<Purchase>;
 	}
 
-	async update(id: string, input: Partial<CreatePurchaseInput>): Promise<Purchase> {
+	async update(id: string, input: Partial<CreatePurchaseInput> & { status?: string }): Promise<Purchase> {
 		const now = new Date();
 		const updateData: any = { updatedAt: now };
 		if (input.invoiceNumber) updateData.supplierInvoiceRef = input.invoiceNumber;
@@ -502,10 +503,101 @@ export class DbPurchaseRepository implements PurchaseRepository {
 		if (input.dueAmount !== undefined) updateData.dueAmount = String(input.dueAmount);
 		if (input.paymentMethod) updateData.paymentMethod = input.paymentMethod;
 		if (input.notes !== undefined) updateData.notes = input.notes;
+		if ((input as any).status) updateData.status = (input as any).status;
 
 		await pgDb.transaction(async (tx) => {
+			const existingPurchase = await this.getById(id);
+			if (!existingPurchase) return;
+
 			await tx.update(purchasesTable).set(updateData).where(eq(purchasesTable.id, id));
 			await logSyncOutbox(tx, 'purchases', id, 'update', updateData);
+
+			// If cancelling a confirmed purchase: reverse batch stock & rollback supplier balance
+			if ((input as any).status === 'cancelled' && existingPurchase.status !== 'cancelled') {
+				for (const item of existingPurchase.items) {
+					if (item.batchId) {
+						const [batch] = await tx
+							.select()
+							.from(batchesTable)
+							.where(eq(batchesTable.id, item.batchId));
+
+						if (batch) {
+							const newRemaining = Math.max(0, Number(batch.quantityRemaining || 0) - Number(item.quantity));
+							const newReceived = Math.max(0, Number(batch.quantityReceived || 0) - Number(item.quantity));
+
+							await tx
+								.update(batchesTable)
+								.set({
+									quantityRemaining: String(newRemaining),
+									quantityReceived: String(newReceived),
+									updatedAt: now
+								})
+								.where(eq(batchesTable.id, item.batchId));
+
+							await logSyncOutbox(tx, 'batches', item.batchId, 'update', {
+								id: item.batchId,
+								quantityRemaining: String(newRemaining),
+								quantityReceived: String(newReceived)
+							});
+
+							const eventId = uuidv4();
+							const eventValues = {
+								id: eventId,
+								batchId: item.batchId,
+								delta: String(-Number(item.quantity)),
+								eventType: 'adjustment',
+								referenceId: id,
+								reason: `Purchase GRN ${existingPurchase.invoiceNumber} cancelled - inward stock reversed`,
+								originNode: 'store_server',
+								createdAt: now
+							};
+							await tx.insert(batchStockEventsTable).values(eventValues as any);
+							await logSyncOutbox(tx, 'batch_stock_events', eventId, 'insert', eventValues);
+						}
+					}
+				}
+
+				// If supplier has dues from this purchase, roll them back
+				if (existingPurchase.supplierId && existingPurchase.dueAmount > 0) {
+					const [supp] = await tx
+						.select()
+						.from(suppliersTable)
+						.where(eq(suppliersTable.id, existingPurchase.supplierId));
+
+					if (supp) {
+						const newBalance = Math.max(0, Number(supp.outstandingBalance || 0) - existingPurchase.dueAmount);
+						await tx
+							.update(suppliersTable)
+							.set({
+								outstandingBalance: String(newBalance),
+								updatedAt: now
+							})
+							.where(eq(suppliersTable.id, supp.id));
+
+						await logSyncOutbox(tx, 'suppliers', supp.id, 'update', {
+							id: supp.id,
+							outstandingBalance: String(newBalance)
+						});
+					}
+				}
+
+				// Statutory regulatory audit trail
+				const [purchRow] = await tx
+					.select()
+					.from(purchasesTable)
+					.where(eq(purchasesTable.id, id));
+
+				if (purchRow) {
+					await logAudit(tx, {
+						storeId: purchRow.storeId,
+						entityType: 'purchase',
+						entityId: id,
+						action: 'cancel',
+						beforeValue: { status: existingPurchase.status, invoiceNumber: existingPurchase.invoiceNumber, grandTotal: existingPurchase.grandTotal },
+						afterValue: { status: 'cancelled' }
+					});
+				}
+			}
 		});
 
 		return this.getById(id) as Promise<Purchase>;

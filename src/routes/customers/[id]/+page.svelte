@@ -22,7 +22,8 @@
 		Clock,
 		AlertTriangle,
 		ShieldCheck,
-		ArrowDownLeft
+		ArrowDownLeft,
+		FileSpreadsheet
 	} from '@lucide/svelte';
 
 	let customerId = $derived($page.params.id as string);
@@ -214,6 +215,43 @@
 				return 'bg-surface-secondary text-text-secondary';
 		}
 	}
+
+	function exportLedgerCsv() {
+		if (!customer || ledgerEntries.length === 0) return;
+
+		const headers = [
+			'Date',
+			'Voucher Type',
+			'Particulars',
+			'Ref #',
+			'Debit (Dr ₹)',
+			'Credit (Cr ₹)',
+			'Running Balance (₹)'
+		];
+		const rows = ledgerEntries.map((e) => [
+			`"${e.date ? formatDate(e.date) : ''}"`,
+			`"${getVoucherLabel(e.type)}"`,
+			`"${(e.particulars || '').replace(/"/g, '""')}"`,
+			`"${e.reference || ''}"`,
+			(Number(e.debit) || 0).toFixed(2),
+			(Number(e.credit) || 0).toFixed(2),
+			(Number(e.balance) || 0).toFixed(2)
+		]);
+
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+		const encodedUri = encodeURI(csvContent);
+		const link = document.createElement('a');
+		link.setAttribute('href', encodedUri);
+		link.setAttribute(
+			'download',
+			`customer_ledger_${customer.name.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`
+		);
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
 </script>
 
 <div class="mx-auto max-w-4xl space-y-4">
@@ -281,6 +319,16 @@
 					>
 						<Printer size={14} />
 						<span>Print Account Statement</span>
+					</Button>
+					<Button
+						variant="secondary"
+						size="sm"
+						onclick={exportLedgerCsv}
+						disabled={ledgerEntries.length === 0}
+						class="flex items-center gap-1.5"
+					>
+						<FileSpreadsheet size={14} class="text-success" />
+						<span>Export CSV</span>
 					</Button>
 					<Button
 						variant="primary"

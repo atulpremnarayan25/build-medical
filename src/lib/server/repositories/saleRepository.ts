@@ -5,12 +5,14 @@ import {
 	saleItemsTable,
 	productsTable,
 	batchesTable,
+	batchStockEventsTable,
 	customersTable
 } from '$lib/server/db/schema.js';
 import { eq, desc, and, gte, lte, inArray } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
 import { logSyncOutbox } from '../db/sync/outbox.js';
+import { logAudit } from '../audit.js';
 
 function mapSaleRow(sale: any, items: any[], customerName?: string | null) {
 	return {
@@ -32,7 +34,7 @@ function mapSaleRow(sale: any, items: any[], customerName?: string | null) {
 		grandTotal: Number(sale.totalAmount) || 0,
 		paidAmount: Number(sale.amountPaidAtSale) || 0,
 		dueAmount: (Number(sale.totalAmount) || 0) - (Number(sale.amountPaidAtSale) || 0),
-		status: 'confirmed' as const,
+		status: (sale.status || 'confirmed') as any,
 		paymentMethod: sale.paymentMethod || 'cash',
 		createdBy: sale.createdBy || '00000000-0000-0000-0000-000000000000',
 		createdAt: sale.createdAt ? new Date(sale.createdAt).toISOString() : new Date().toISOString(),
@@ -257,6 +259,85 @@ export class DbSaleRepository implements SaleRepository {
 	}
 
 	async updateStatus(id: string, status: Sale['status']): Promise<Sale> {
+		const now = new Date();
+		await pgDb.transaction(async (tx) => {
+			const existingSale = await this.getById(id);
+			if (!existingSale) return;
+
+			await tx
+				.update(salesTable)
+				.set({
+					status,
+					updatedAt: now
+				})
+				.where(eq(salesTable.id, id));
+
+			await logSyncOutbox(tx, 'sales', id, 'update', {
+				id,
+				status,
+				updatedAt: now.toISOString()
+			});
+
+			// If cancelling a confirmed sale: restore batch stock & rollback customer balance
+			if (status === 'cancelled' && existingSale.status !== 'cancelled') {
+				for (const item of existingSale.items) {
+					if (item.batchId && item.batchId !== '00000000-0000-0000-0000-000000000000') {
+						const [batch] = await tx
+							.select()
+							.from(batchesTable)
+							.where(eq(batchesTable.id, item.batchId));
+
+						if (batch) {
+							const restoredQty = Number(batch.quantityRemaining || 0) + Number(item.quantity);
+							await tx
+								.update(batchesTable)
+								.set({
+									quantityRemaining: String(restoredQty),
+									updatedAt: now
+								})
+								.where(eq(batchesTable.id, item.batchId));
+
+							await logSyncOutbox(tx, 'batches', item.batchId, 'update', {
+								id: item.batchId,
+								quantityRemaining: String(restoredQty)
+							});
+
+							const eventId = uuidv4();
+							const eventValues = {
+								id: eventId,
+								batchId: item.batchId,
+								delta: String(item.quantity),
+								eventType: 'adjustment',
+								referenceId: id,
+								reason: `Sale ${existingSale.invoiceNumber} cancelled - stock restored`,
+								originNode: 'store_server',
+								createdAt: now
+							};
+							await tx.insert(batchStockEventsTable).values(eventValues as any);
+							await logSyncOutbox(tx, 'batch_stock_events', eventId, 'insert', eventValues);
+						}
+					}
+				}
+
+				// Statutory regulatory audit trail
+				const [saleRow] = await tx
+					.select()
+					.from(salesTable)
+					.where(eq(salesTable.id, id));
+
+				if (saleRow) {
+					await logAudit(tx, {
+						storeId: saleRow.storeId,
+						entityType: 'sale',
+						entityId: id,
+						action: 'cancel',
+						beforeValue: { status: existingSale.status, invoiceNumber: existingSale.invoiceNumber, grandTotal: existingSale.grandTotal },
+						afterValue: { status: 'cancelled' }
+					});
+				}
+			}
+		});
+
 		return this.getById(id) as Promise<Sale>;
 	}
 

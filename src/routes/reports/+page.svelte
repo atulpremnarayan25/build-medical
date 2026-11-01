@@ -62,6 +62,12 @@
 					href: '/reports/schedule-h1'
 				},
 				{
+					name: 'Statutory Audit Trail & Log',
+					desc: 'Immutable log of stock adjustments, void vouchers, and master data changes',
+					icon: FileSpreadsheet,
+					href: '/reports/audit'
+				},
+				{
 					name: 'Stock Valuation Summary',
 					desc: 'Current warehouse stock value at cost and MRP valuations',
 					icon: Box,

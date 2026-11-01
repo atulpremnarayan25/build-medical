@@ -301,6 +301,7 @@ export const purchasesTable = pgTable(
 		supplierInvoiceRef: text('supplier_invoice_ref').notNull(),
 		supplierInvoiceDate: date('supplier_invoice_date', { mode: 'string' }),
 		totalAmount: numeric('total_amount').notNull().default('0'),
+		status: text('status').notNull().default('confirmed'),
 		paymentStatus: text('payment_status').notNull().default('credit'),
 		paidAmount: numeric('paid_amount').notNull().default('0'),
 		dueAmount: numeric('due_amount').notNull().default('0'),
@@ -353,6 +354,7 @@ export const salesTable = pgTable(
 		gstAmount: numeric('gst_amount').notNull().default('0'),
 		totalAmount: numeric('total_amount').notNull().default('0'),
 		amountPaidAtSale: numeric('amount_paid_at_sale').notNull().default('0'),
+		status: text('status').notNull().default('confirmed'),
 		paymentStatus: text('payment_status').notNull().default('paid'), // paid|partial|credit
 		createdBy: uuid('created_by').references(() => usersTable.id),
 		...createdAt,

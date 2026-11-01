@@ -13,6 +13,7 @@
 		Users,
 		Truck,
 		Undo2,
+		CreditCard,
 		BarChart3,
 		Settings,
 		X
@@ -33,6 +34,7 @@
 		{ label: 'Purchases', href: '/purchases', icon: Package },
 		{ label: 'Customers', href: '/customers', icon: Users },
 		{ label: 'Suppliers', href: '/suppliers', icon: Truck },
+		{ label: 'Payments', href: '/payments', icon: CreditCard },
 		{ label: 'Returns', href: '/returns', icon: Undo2 },
 		{ label: 'Reports', href: '/reports', icon: BarChart3 },
 		{ label: 'Settings', href: '/settings', icon: Settings }

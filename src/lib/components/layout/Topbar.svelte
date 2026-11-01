@@ -24,8 +24,8 @@
 
 	let userMenuOpen = $state(false);
 
-	let user = $derived($page.data.user || { name: 'Guest', role: 'Not Logged In' });
-	let notifications = $derived($page.data.notifications || []);
+	let user = $derived($page.data?.user || { name: 'Guest', role: 'Not Logged In' });
+	let notifications = $derived($page.data?.notifications || []);
 	let notificationsOpen = $state(false);
 
 	const syncConfig: Record<SyncStatus, { color: string; label: string }> = {
@@ -86,11 +86,8 @@
 	<!-- Classic Pharma ERP Menu Hierarchy (File, Report, Account) -->
 	<PharmaMenuBar />
 
-	<!-- Spacer -->
-	<div class="flex-1 sm:hidden"></div>
-
 	<!-- Right section -->
-	<div class="flex items-center gap-2 sm:gap-3">
+	<div class="ml-auto flex items-center gap-2 sm:gap-3">
 		<!-- Quick Billing Terminal Button -->
 		<a
 			href="/sales/new"
