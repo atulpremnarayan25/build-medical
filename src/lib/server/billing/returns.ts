@@ -21,6 +21,9 @@ export async function processReturn(input: CreateReturnInput, storeId: string, u
 				.where(eq(salesTable.id, input.originalSaleId))
 				.limit(1);
 			if (sale.length === 0) throw new Error('Original sale not found');
+			if (storeId && sale[0].storeId && sale[0].storeId !== storeId) {
+				throw new Error('Forbidden: Cross-tenant return denied');
+			}
 		} else if (input.returnType === 'purchase_return' && input.originalPurchaseId) {
 			const purchase = await tx
 				.select()
@@ -28,6 +31,9 @@ export async function processReturn(input: CreateReturnInput, storeId: string, u
 				.where(eq(purchasesTable.id, input.originalPurchaseId))
 				.limit(1);
 			if (purchase.length === 0) throw new Error('Original purchase not found');
+			if (storeId && purchase[0].storeId && purchase[0].storeId !== storeId) {
+				throw new Error('Forbidden: Cross-tenant return denied');
+			}
 		}
 
 		// 2. Insert Return

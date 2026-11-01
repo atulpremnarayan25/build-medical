@@ -7,9 +7,11 @@
 		LoadingState,
 		EmptyState,
 		Badge,
-		Button
+		Button,
+		ConfirmDialog
 	} from '$lib/components/common/index.js';
 	import { goto } from '$app/navigation';
+	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import {
 		Printer,
 		Receipt,
@@ -19,7 +21,8 @@
 		CheckCircle2,
 		User,
 		Stethoscope,
-		Building2
+		Building2,
+		RotateCcw
 	} from '@lucide/svelte';
 	import {
 		formatCurrency,
@@ -98,6 +101,27 @@
 		return Boolean(sale.prescriberName || sale.prescriberRegNo || sale.patientName);
 	});
 
+	let currentUser = $derived((page.data as any)?.user);
+	let isAdmin = $derived(currentUser?.role === 'owner_admin');
+	let confirmCancelOpen = $state(false);
+	let isCancelling = $state(false);
+
+	async function handleCancelSale() {
+		if (!sale) return;
+		confirmCancelOpen = false;
+		isCancelling = true;
+		try {
+			const updated = await saleService.cancelSale(sale.id);
+			sale = updated;
+			addToast('success', `Invoice #${sale.invoiceNumber} cancelled. Batch stock restored.`);
+		} catch (e: any) {
+			console.error(e);
+			addToast('error', e.message || 'Failed to cancel invoice.');
+		} finally {
+			isCancelling = false;
+		}
+	}
+
 	function handlePrint() {
 		window.print();
 	}
@@ -123,7 +147,7 @@
 			>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
-			{#if sale && sale.paymentStatus !== 'paid'}
+			{#if sale && sale.status !== 'cancelled' && sale.paymentStatus !== 'paid'}
 				<Button
 					variant="secondary"
 					size="sm"
@@ -131,6 +155,17 @@
 				>
 					<CreditCard size={14} class="mr-1.5" />
 					<span>Record Payment</span>
+				</Button>
+			{/if}
+			{#if sale && sale.status !== 'cancelled' && isAdmin}
+				<Button
+					variant="danger"
+					size="sm"
+					onclick={() => (confirmCancelOpen = true)}
+					disabled={isCancelling}
+				>
+					<RotateCcw size={14} class="mr-1.5" />
+					<span>{isCancelling ? 'Cancelling...' : 'Cancel Invoice'}</span>
 				</Button>
 			{/if}
 			<Button variant="primary" size="sm" onclick={handlePrint}>
@@ -148,6 +183,24 @@
 			message="The requested invoice record does not exist or has been archived."
 		/>
 	{:else}
+		{#if sale.status === 'cancelled'}
+			<div
+				class="flex items-start gap-3 rounded-xl border border-danger/40 bg-danger-light/40 p-4 text-danger print:border-2 print:border-black print:bg-gray-100 print:text-black"
+			>
+				<ShieldAlert size={20} class="mt-0.5 shrink-0 text-danger" />
+				<div>
+					<div class="text-sm font-bold tracking-wider uppercase">
+						Statutory Void Notice — Invoice Cancelled
+					</div>
+					<p class="mt-1 text-xs text-text-secondary print:text-black">
+						This transaction #{sale.invoiceNumber} has been officially cancelled. All allocated batch
+						quantities have been restored back into active inventory, and a permanent entry has been recorded
+						in the statutory audit register.
+					</p>
+				</div>
+			</div>
+		{/if}
+
 		<!-- Main Tax Invoice Sheet -->
 		<div
 			class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm print:rounded-none print:border-none print:bg-white print:p-0 print:shadow-none"
@@ -204,16 +257,24 @@
 							<span class="uppercase">{sale.saleType || 'Retail'} Counter</span>
 						</div>
 						<div class="mt-1 flex items-center justify-end gap-1.5">
-							<span
-								class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {sale.paymentStatus ===
-								'paid'
-									? 'bg-success-light text-success'
-									: sale.paymentStatus === 'partial'
-										? 'bg-warning-light text-warning'
-										: 'bg-danger-light text-danger'}"
-							>
-								{sale.paymentStatus}
-							</span>
+							{#if sale.status === 'cancelled'}
+								<span
+									class="inline-flex items-center rounded-full bg-danger px-2 py-0.5 text-[10px] font-bold text-white uppercase"
+								>
+									CANCELLED (VOID)
+								</span>
+							{:else}
+								<span
+									class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {sale.paymentStatus ===
+									'paid'
+										? 'bg-success-light text-success'
+										: sale.paymentStatus === 'partial'
+											? 'bg-warning-light text-warning'
+											: 'bg-danger-light text-danger'}"
+								>
+									{sale.paymentStatus}
+								</span>
+							{/if}
 							<span
 								class="inline-flex items-center rounded-full border border-border bg-surface-secondary px-2 py-0.5 text-[10px] font-bold text-text-secondary uppercase"
 							>
@@ -514,6 +575,19 @@
 				</div>
 			</div>
 		</div>
+	{/if}
+
+	{#if sale}
+		<ConfirmDialog
+			open={confirmCancelOpen}
+			title="Cancel Sales Invoice #{sale.invoiceNumber}?"
+			message="Are you sure you want to cancel this invoice? This will mark the transaction as void, restore all item quantities back to their respective batch stock in inventory, and log a permanent entry in the statutory audit register. This action cannot be reversed."
+			confirmLabel="Yes, Void & Cancel Invoice"
+			cancelLabel="Keep Active"
+			variant="danger"
+			onconfirm={handleCancelSale}
+			oncancel={() => (confirmCancelOpen = false)}
+		/>
 	{/if}
 </div>
 

@@ -17,11 +17,20 @@ export async function GET({ url }: RequestEvent) {
 	}
 }
 
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
+		if (locals.user.role !== 'owner_admin') {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can create suppliers', 403);
+		}
 		const input = await request.json();
 		if (!input?.name || typeof input.name !== 'string' || !input.name.trim()) {
 			return errorResponse('VALIDATION_ERROR', 'Supplier name is required', 400);
+		}
+		if (locals.user.storeId) {
+			input.storeId = locals.user.storeId;
 		}
 		const newSupplier = await supplierService.createSupplier(input);
 		return jsonResponse(newSupplier, 201);

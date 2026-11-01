@@ -1,5 +1,6 @@
 export interface Customer {
 	id: string;
+	storeId?: string;
 	name: string;
 	code?: string;
 	phone?: string;

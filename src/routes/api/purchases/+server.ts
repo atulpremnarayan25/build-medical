@@ -14,12 +14,28 @@ export async function GET({ url }) {
 
 export async function POST({ request, locals }) {
 	if (!locals.user) {
-		return new Response('Unauthorized', { status: 401 });
+		return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+			status: 401,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
+	if (locals.user.role !== 'owner_admin') {
+		return new Response(
+			JSON.stringify({ error: 'Forbidden: Admin role required for inward purchases' }),
+			{
+				status: 403,
+				headers: { 'Content-Type': 'application/json' }
+			}
+		);
 	}
 
 	const data = await request.json();
 	// inject created by
 	data.createdBy = locals.user.id;
+	if (locals.user.storeId) {
+		data.storeId = locals.user.storeId;
+	}
 
 	const purchase = await purchaseService.createPurchase(data);
 	return json(purchase);

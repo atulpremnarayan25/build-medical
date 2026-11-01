@@ -8,7 +8,8 @@ import {
 	batchesTable,
 	productsTable,
 	salesTable,
-	purchasesTable
+	purchasesTable,
+	usersTable
 } from '$lib/server/db/schema.js';
 import { desc, eq, inArray } from 'drizzle-orm';
 import type { RequestEvent } from './$types';
@@ -18,7 +19,27 @@ export async function GET(event: RequestEvent) {
 		return errorResponse('UNAUTHORIZED', 'Login required', 401);
 	}
 
-	const rtns = await db.select().from(returnsTable).orderBy(desc(returnsTable.createdAt));
+	let rtnsQuery = db
+		.select({
+			id: returnsTable.id,
+			returnType: returnsTable.returnType,
+			originalSaleId: returnsTable.originalSaleId,
+			originalPurchaseId: returnsTable.originalPurchaseId,
+			reason: returnsTable.reason,
+			approvedBy: returnsTable.approvedBy,
+			createdBy: returnsTable.createdBy,
+			createdAt: returnsTable.createdAt,
+			updatedAt: returnsTable.updatedAt
+		})
+		.from(returnsTable);
+
+	if (event.locals.user.storeId) {
+		rtnsQuery = rtnsQuery
+			.innerJoin(usersTable, eq(returnsTable.createdBy, usersTable.id))
+			.where(eq(usersTable.storeId, event.locals.user.storeId)) as any;
+	}
+
+	const rtns = await rtnsQuery.orderBy(desc(returnsTable.createdAt));
 	if (rtns.length === 0) {
 		return json([]);
 	}
@@ -106,11 +127,15 @@ export async function POST(event: RequestEvent) {
 		return errorResponse('UNAUTHORIZED', 'Login required', 401);
 	}
 
-	let body;
+	let body: any;
 	try {
 		body = await event.request.json();
 	} catch {
 		return errorResponse('BAD_REQUEST', 'Invalid JSON', 400);
+	}
+
+	if (body.returnType === 'purchase_return' && event.locals.user.role !== 'owner_admin') {
+		return errorResponse('FORBIDDEN', 'Only owner_admin can process purchase returns', 403);
 	}
 
 	try {

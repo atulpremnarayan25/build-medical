@@ -60,6 +60,7 @@
 		"uuid": "^14.0.2"
 	},
 	"overrides": {
-		"devalue": "^5.9.4"
+		"devalue": "^5.9.4",
+		"cookie": "^0.7.0"
 	}
 }

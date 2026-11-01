@@ -26,11 +26,24 @@ export async function GET({ url }: RequestEvent) {
 	}
 }
 
-export async function POST({ request }: RequestEvent) {
+export async function POST({ request, locals }: RequestEvent) {
 	try {
+		if (!locals.user) {
+			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
+		}
 		const input = await request.json();
 		if (!input?.name || typeof input.name !== 'string' || !input.name.trim()) {
 			return errorResponse('VALIDATION_ERROR', 'Customer name is required', 400);
+		}
+		if (
+			input.creditLimit !== undefined &&
+			Number(input.creditLimit) > 0 &&
+			locals.user.role !== 'owner_admin'
+		) {
+			return errorResponse('FORBIDDEN', 'Only owner_admin can set non-zero credit limits', 403);
+		}
+		if (locals.user.storeId) {
+			input.storeId = locals.user.storeId;
 		}
 		const newCustomer = await customerService.createCustomer(input);
 		return jsonResponse(newCustomer, 201);

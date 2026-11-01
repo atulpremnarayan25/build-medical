@@ -39,13 +39,21 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Centralized RBAC: restrict administrative operations to owner_admin
 	if (event.locals.user && event.locals.user.role !== 'owner_admin') {
 		const pathname = event.url.pathname;
+		const method = event.request.method;
 		const isAdminOnly =
 			pathname.startsWith('/api/users') ||
 			pathname.startsWith('/api/sync') ||
 			pathname.startsWith('/api/settings/backup') ||
 			pathname.startsWith('/api/reports/audit') ||
 			pathname.startsWith('/api/inventory/adjustments') ||
-			pathname.endsWith('/cancel');
+			pathname.endsWith('/cancel') ||
+			(method === 'POST' && pathname === '/api/purchases') ||
+			(method === 'POST' && pathname === '/api/suppliers') ||
+			(method === 'PATCH' && pathname.startsWith('/api/suppliers')) ||
+			(method === 'POST' && pathname === '/api/products') ||
+			(method === 'PATCH' && pathname.startsWith('/api/products')) ||
+			(method === 'POST' && pathname === '/api/batches') ||
+			(method === 'PATCH' && pathname.startsWith('/api/batches'));
 
 		if (isAdminOnly) {
 			return new Response(JSON.stringify({ error: 'Forbidden: Admin role required' }), {

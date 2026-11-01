@@ -23,7 +23,9 @@ export async function POST({ request, locals }) {
 	const data = await request.json();
 
 	// Restrict supplier payouts to owner_admin
-	if (data.type === 'made' && locals.user.role !== 'owner_admin') {
+	const isSupplierPayment =
+		data.partyType === 'supplier' || data.type === 'made' || data.type === 'out';
+	if (isSupplierPayment && locals.user.role !== 'owner_admin') {
 		return new Response(
 			JSON.stringify({ error: 'Forbidden: Admin role required for supplier payments' }),
 			{ status: 403, headers: { 'Content-Type': 'application/json' } }

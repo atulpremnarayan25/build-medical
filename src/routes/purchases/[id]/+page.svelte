@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { purchaseService } from '$lib/services/index.js';
 	import type { Purchase } from '$lib/types/index.js';
 	import {
@@ -8,14 +8,21 @@
 		LoadingState,
 		EmptyState,
 		Badge,
-		Button
+		Button,
+		ConfirmDialog
 	} from '$lib/components/common/index.js';
 	import { goto } from '$app/navigation';
-	import { Printer, CreditCard, ArrowLeft, Building2 } from '@lucide/svelte';
+	import { addToast } from '$lib/stores/toastStore.svelte.js';
+	import { Printer, CreditCard, ArrowLeft, Building2, RotateCcw, ShieldAlert } from '@lucide/svelte';
 
-	let purchaseId = $derived($page.params.id as string);
+	let purchaseId = $derived(page.params.id as string);
 	let purchase = $state<Purchase | null>(null);
 	let loading = $state(true);
+
+	let currentUser = $derived((page.data as any)?.user);
+	let isAdmin = $derived(currentUser?.role === 'owner_admin');
+	let confirmCancelOpen = $state(false);
+	let isCancelling = $state(false);
 
 	onMount(async () => {
 		try {
@@ -26,6 +33,25 @@
 			loading = false;
 		}
 	});
+
+	async function handleCancelPurchase() {
+		if (!purchase) return;
+		confirmCancelOpen = false;
+		isCancelling = true;
+		try {
+			const updated = await purchaseService.cancelPurchase(purchase.id);
+			purchase = updated;
+			addToast(
+				'success',
+				`Purchase voucher #${purchase.invoiceNumber} cancelled. Inward stock reversed.`
+			);
+		} catch (e: any) {
+			console.error(e);
+			addToast('error', e.message || 'Failed to cancel purchase voucher.');
+		} finally {
+			isCancelling = false;
+		}
+	}
 
 	function handlePrint() {
 		window.print();
@@ -48,13 +74,23 @@
 						<ArrowLeft size={14} class="mr-1" />
 						<span>Back to GRN List</span>
 					</Button>
-					{#if purchase.paymentStatus !== 'paid'}
+					{#if purchase.status !== 'cancelled' && purchase.paymentStatus !== 'paid'}
 						<Button
 							variant="secondary"
 							onclick={() => goto(`/payments/pay?purchaseId=${purchase?.id}`)}
 						>
 							<CreditCard size={14} class="mr-1" />
 							<span>Record Outflow Payment</span>
+						</Button>
+					{/if}
+					{#if purchase.status !== 'cancelled' && isAdmin}
+						<Button
+							variant="danger"
+							onclick={() => (confirmCancelOpen = true)}
+							disabled={isCancelling}
+						>
+							<RotateCcw size={14} class="mr-1" />
+							<span>{isCancelling ? 'Cancelling...' : 'Cancel GRN Voucher'}</span>
 						</Button>
 					{/if}
 					<Button variant="primary" onclick={handlePrint}>
@@ -74,6 +110,24 @@
 			message="The requested goods received note could not be located."
 		/>
 	{:else}
+		{#if purchase.status === 'cancelled'}
+			<div
+				class="flex items-start gap-3 rounded-xl border border-danger/40 bg-danger-light/40 p-4 text-danger print:border-2 print:border-black print:bg-gray-100 print:text-black"
+			>
+				<ShieldAlert size={20} class="mt-0.5 shrink-0 text-danger" />
+				<div>
+					<div class="text-sm font-bold tracking-wider uppercase">
+						Statutory Void Notice — Inward Voucher Cancelled
+					</div>
+					<p class="mt-1 text-xs text-text-secondary print:text-black">
+						This inward purchase voucher #{purchase.invoiceNumber} has been officially cancelled.
+						All received batch inventory quantities have been deducted from active stock, and supplier
+						payables have been reversed in the ledger.
+					</p>
+				</div>
+			</div>
+		{/if}
+
 		<!-- Main Voucher Container -->
 		<div
 			class="rounded-xl border border-border bg-surface p-6 shadow-2xs print:border-none print:bg-transparent print:p-0 print:shadow-none"
@@ -89,8 +143,15 @@
 						>
 							GRN Stock Voucher
 						</span>
-						<Badge variant={purchase.status === 'confirmed' ? 'success' : 'neutral'} size="sm">
-							{purchase.status}
+						<Badge
+							variant={purchase.status === 'cancelled'
+								? 'danger'
+								: purchase.status === 'confirmed'
+									? 'success'
+									: 'neutral'}
+							size="sm"
+						>
+							{purchase.status === 'cancelled' ? 'CANCELLED (VOID)' : purchase.status}
 						</Badge>
 						<Badge
 							variant={purchase.paymentStatus === 'paid'
@@ -277,5 +338,18 @@
 				</div>
 			</div>
 		</div>
+	{/if}
+
+	{#if purchase}
+		<ConfirmDialog
+			open={confirmCancelOpen}
+			title="Cancel Purchase Voucher #{purchase.invoiceNumber}?"
+			message="Are you sure you want to cancel this inward purchase voucher? This will mark the goods received note as void, deduct inwarded batch stock from active inventory, and reverse supplier payable balances. This action cannot be reversed."
+			confirmLabel="Yes, Void & Cancel Voucher"
+			cancelLabel="Keep Active"
+			variant="danger"
+			onconfirm={handleCancelPurchase}
+			oncancel={() => (confirmCancelOpen = false)}
+		/>
 	{/if}
 </div>

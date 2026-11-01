@@ -351,14 +351,16 @@
 				<!-- Status Badge -->
 				<td class="px-3 py-3 text-center">
 					<Badge
-						variant={sale.paymentStatus === 'paid'
-							? 'success'
-							: sale.paymentStatus === 'partial'
-								? 'warning'
-								: 'danger'}
+						variant={sale.status === 'cancelled'
+							? 'danger'
+							: sale.paymentStatus === 'paid'
+								? 'success'
+								: sale.paymentStatus === 'partial'
+									? 'warning'
+									: 'danger'}
 						size="sm"
 					>
-						{sale.paymentStatus}
+						{sale.status === 'cancelled' ? 'cancelled' : sale.paymentStatus}
 					</Badge>
 				</td>
 
