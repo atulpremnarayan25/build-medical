@@ -41,6 +41,7 @@ function mapPurchaseRow(purchase: any, items: any[], supplierName = 'Unknown') {
 
 	return {
 		id: purchase.id,
+		storeId: purchase.storeId,
 		invoiceNumber:
 			purchase.supplierInvoiceRef || purchase.invoiceNumber || 'PUR-' + purchase.id.slice(0, 8),
 		date: purchase.supplierInvoiceDate

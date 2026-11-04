@@ -16,6 +16,7 @@ export class DbPaymentRepository implements PaymentRepository {
 	private _mapPayment(r: any): Payment {
 		return {
 			id: r.id,
+			storeId: r.storeId,
 			type: r.direction === 'customer_payment' ? 'received' : 'made',
 			partyId: r.customerId || r.supplierId || '',
 			partyName: '',

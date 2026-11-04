@@ -6,6 +6,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
+	if (locals.user.role !== 'owner_admin') {
+		throw redirect(302, '/dashboard');
+	}
 
 	const port = url.port ? parseInt(url.port, 10) : Number(process.env.PORT || 3000);
 	const topology = await getNetworkTopology(port);

@@ -46,7 +46,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			pathname.startsWith('/api/settings/backup') ||
 			pathname.startsWith('/api/settings/network') ||
 			(method === 'POST' && pathname.startsWith('/api/settings')) ||
-			pathname.startsWith('/api/reports/audit') ||
+			pathname.startsWith('/api/reports') ||
 			pathname.startsWith('/api/inventory/adjustments') ||
 			pathname.endsWith('/cancel') ||
 			pathname.endsWith('/adjust') ||

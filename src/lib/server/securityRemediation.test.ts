@@ -39,6 +39,8 @@ import { GET as getPaymentsList } from '../../routes/api/payments/+server.js';
 import { GET as getBatchesList } from '../../routes/api/batches/+server.js';
 import { GET as getBatch } from '../../routes/api/batches/[id]/+server.js';
 import { GET as getAdjustments } from '../../routes/api/inventory/adjustments/+server.js';
+import { GET as getPartyLedger } from '../../routes/api/ledger/[partyId]/+server.js';
+import { handle } from '../../hooks.server.js';
 import { createSaleService } from '../services/saleService.js';
 import { createPurchaseService } from '../services/purchaseService.js';
 
@@ -336,5 +338,49 @@ describe('Security Remediation & Role Boundary Checks', () => {
 		expect(summary.todayPurchasesCount).toBe(1);
 		expect(summary.todayPurchasesTotal).toBe(800);
 		expect(summary.totalPayables).toBe(300);
+	});
+
+	it('vuln-0003: should reject /api/reports access for biller with 403', async () => {
+		const resGst = await handle({
+			event: {
+				url: new URL('http://localhost/api/reports/gst'),
+				request: new Request('http://localhost/api/reports/gst'),
+				locals: { user: billerUser }
+			},
+			resolve: async () => new Response(JSON.stringify({ ok: true }))
+		} as any);
+		expect(resGst.status).toBe(403);
+
+		const resSales = await handle({
+			event: {
+				url: new URL('http://localhost/api/reports/sales'),
+				request: new Request('http://localhost/api/reports/sales'),
+				locals: { user: billerUser }
+			},
+			resolve: async () => new Response(JSON.stringify({ ok: true }))
+		} as any);
+		expect(resSales.status).toBe(403);
+	});
+
+	it('vuln-0001: should redirect biller away from /settings and /settings/network', async () => {
+		const { load as loadSettings } = await import('../../routes/settings/+page.server.js');
+		const { load as loadNetwork } = await import('../../routes/settings/network/+page.server.js');
+
+		await expect(
+			loadSettings({ locals: { user: billerUser } } as any)
+		).rejects.toMatchObject({
+			status: 302,
+			location: '/dashboard'
+		});
+
+		await expect(
+			loadNetwork({
+				locals: { user: billerUser },
+				url: new URL('http://localhost/settings/network')
+			} as any)
+		).rejects.toMatchObject({
+			status: 302,
+			location: '/dashboard'
+		});
 	});
 });

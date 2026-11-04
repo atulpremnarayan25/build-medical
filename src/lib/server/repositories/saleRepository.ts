@@ -19,6 +19,7 @@ import { logAudit } from '../audit.js';
 function mapSaleRow(sale: any, items: any[], customerName?: string | null) {
 	return {
 		id: sale.id,
+		storeId: sale.storeId,
 		invoiceNumber: sale.invoiceNumber,
 		date: sale.saleDate
 			? new Date(sale.saleDate).toISOString().split('T')[0]

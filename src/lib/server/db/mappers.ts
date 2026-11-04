@@ -2,6 +2,7 @@
 export const mapToCustomer = (dbRow: any) => {
 	return {
 		id: dbRow.id,
+		storeId: dbRow.storeId,
 		name: dbRow.name,
 		code: dbRow.code || '',
 		phone: dbRow.contactPhone || dbRow.phone || '',
@@ -42,6 +43,7 @@ export const mapToCustomer = (dbRow: any) => {
 export const mapToSupplier = (dbRow: any) => {
 	return {
 		id: dbRow.id,
+		storeId: dbRow.storeId,
 		name: dbRow.name,
 		code: dbRow.code || '',
 		phone: dbRow.contactPhone || dbRow.phone || '',

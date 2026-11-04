@@ -8,6 +8,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
 		throw redirect(302, '/login');
 	}
+	if (locals.user.role !== 'owner_admin') {
+		throw redirect(302, '/dashboard');
+	}
 
 	let store = await db.query.storesTable.findFirst({
 		where: eq(storesTable.id, locals.user.storeId)

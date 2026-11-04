@@ -25,6 +25,7 @@ export interface SaleItem {
 
 export interface Sale {
 	id: string;
+	storeId?: string;
 	invoiceNumber: string;
 	date: string; // ISO Date YYYY-MM-DD
 	customerId: string; // 'walk-in' or UUID

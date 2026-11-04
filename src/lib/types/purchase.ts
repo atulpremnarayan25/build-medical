@@ -27,6 +27,7 @@ export interface PurchaseItem {
 
 export interface Purchase {
 	id: string;
+	storeId?: string;
 	invoiceNumber: string;
 	invoiceDate: string;
 	supplierId: string;

@@ -4,6 +4,7 @@ export type PaymentType = 'received' | 'made';
 
 export interface Payment {
 	id: string;
+	storeId?: string;
 	type: PaymentType;
 	partyId: string;
 	partyName: string;
