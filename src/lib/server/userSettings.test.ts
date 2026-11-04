@@ -12,28 +12,7 @@ describe('Phase 1: Settings & User Management', () => {
 	let adminUser: any;
 
 	beforeAll(async () => {
-		// Ensure store and admin exist
-		const stores = await db.select().from(storesTable).limit(1);
-		if (stores.length === 0) {
-			const [s] = await db
-				.insert(storesTable)
-				.values({
-					name: 'Main Medical Store',
-					address: '123 Health Ave',
-					gstin: '29ABCDE1234F1Z5',
-					drugLicenseNo: 'DL-001',
-					drugLicenseNo2: 'DL-002',
-					phone: '9876543210',
-					email: 'contact@store.com',
-					invoicePrefix: 'INV',
-					invoiceTerms: 'Terms and conditions'
-				})
-				.returning();
-			storeId = s.id;
-		} else {
-			storeId = stores[0].id;
-		}
-
+		// Ensure admin and store exist
 		const admins = await db
 			.select()
 			.from(usersTable)
@@ -41,6 +20,31 @@ describe('Phase 1: Settings & User Management', () => {
 			.limit(1);
 
 		adminUser = admins[0];
+
+		if (adminUser?.storeId) {
+			storeId = adminUser.storeId;
+		} else {
+			const stores = await db.select().from(storesTable).limit(1);
+			if (stores.length === 0) {
+				const [s] = await db
+					.insert(storesTable)
+					.values({
+						name: 'Main Medical Store',
+						address: '123 Health Ave',
+						gstin: '29ABCDE1234F1Z5',
+						drugLicenseNo: 'DL-001',
+						drugLicenseNo2: 'DL-002',
+						phone: '9876543210',
+						email: 'contact@store.com',
+						invoicePrefix: 'INV',
+						invoiceTerms: 'Terms and conditions'
+					})
+					.returning();
+				storeId = s.id;
+			} else {
+				storeId = stores[0].id;
+			}
+		}
 	});
 
 	it('should read and update store profile via /api/settings', async () => {

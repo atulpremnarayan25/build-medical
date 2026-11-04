@@ -21,30 +21,34 @@ describe('Phase 3 GRN: Goods Inward, Multi-Unit Conversions, Payables Ledger & A
 	let augmentinProduct: any;
 
 	beforeAll(async () => {
-		// 1. Resolve store
-		const stores = await db.select().from(storesTable).limit(1);
-		if (stores.length === 0) {
-			const [s] = await db
-				.insert(storesTable)
-				.values({
-					name: 'MedStock Central Pharmacy',
-					address: 'Main Market Road',
-					gstin: '09AABBC1234D1Z5',
-					phone: '9876543210'
-				})
-				.returning();
-			storeId = s.id;
-		} else {
-			storeId = stores[0].id;
-		}
-
-		// 2. Resolve admin user
+		// 1. Resolve admin user
 		const admins = await db
 			.select()
 			.from(usersTable)
 			.where(eq(usersTable.username, 'admin'))
 			.limit(1);
 		adminUser = admins[0];
+
+		// 2. Resolve store
+		if (adminUser?.storeId) {
+			storeId = adminUser.storeId;
+		} else {
+			const stores = await db.select().from(storesTable).limit(1);
+			if (stores.length === 0) {
+				const [s] = await db
+					.insert(storesTable)
+					.values({
+						name: 'MedStock Central Pharmacy',
+						address: 'Main Market Road',
+						gstin: '09AABBC1234D1Z5',
+						phone: '9876543210'
+					})
+					.returning();
+				storeId = s.id;
+			} else {
+				storeId = stores[0].id;
+			}
+		}
 
 		// 3. Create or resolve test supplier
 		const existingSuppliers = await db
@@ -116,6 +120,7 @@ describe('Phase 3 GRN: Goods Inward, Multi-Unit Conversions, Payables Ledger & A
 		// Total purchase cost: 10 boxes * ₹100 = ₹1,000
 		// Effective Landing Cost per retail strip: ₹1,000 / 110 = ₹9.09
 		const purchase = await purchaseService.createPurchase({
+			storeId,
 			invoiceNumber: invoiceRef,
 			invoiceDate: '2026-10-08',
 			supplierId: testSupplier.id,

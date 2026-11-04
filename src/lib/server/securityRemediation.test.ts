@@ -345,6 +345,7 @@ describe('Security Remediation & Role Boundary Checks', () => {
 			event: {
 				url: new URL('http://localhost/api/reports/gst'),
 				request: new Request('http://localhost/api/reports/gst'),
+				cookies: { get: () => undefined },
 				locals: { user: billerUser }
 			},
 			resolve: async () => new Response(JSON.stringify({ ok: true }))
@@ -355,6 +356,7 @@ describe('Security Remediation & Role Boundary Checks', () => {
 			event: {
 				url: new URL('http://localhost/api/reports/sales'),
 				request: new Request('http://localhost/api/reports/sales'),
+				cookies: { get: () => undefined },
 				locals: { user: billerUser }
 			},
 			resolve: async () => new Response(JSON.stringify({ ok: true }))
@@ -363,8 +365,8 @@ describe('Security Remediation & Role Boundary Checks', () => {
 	});
 
 	it('vuln-0001: should redirect biller away from /settings and /settings/network', async () => {
-		const { load as loadSettings } = await import('../../routes/settings/+page.server.js');
-		const { load as loadNetwork } = await import('../../routes/settings/network/+page.server.js');
+		const { load: loadSettings } = await import('../../routes/settings/+page.server.js');
+		const { load: loadNetwork } = await import('../../routes/settings/network/+page.server.js');
 
 		await expect(
 			loadSettings({ locals: { user: billerUser } } as any)

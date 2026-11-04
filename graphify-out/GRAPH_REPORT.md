@@ -1,17 +1,17 @@
-# Graph Report - build-medical  (2026-11-01)
+# Graph Report - build-medical  (2026-11-04)
 
 ## Corpus Check
-- 290 files · ~212,008 words
+- 290 files · ~212,322 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 8 file(s) not represented in the graph (top: (none) 3, .example 1, .sarif 1)
 
 ## Summary
-- 1262 nodes · 3005 edges · 85 communities (60 shown, 25 thin omitted)
+- 1262 nodes · 3013 edges · 85 communities (60 shown, 25 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 50 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5a0d4957`
+- Built from commit: `b66468df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,7 +38,7 @@
 - paymentService.ts
 - Supplier
 - Broken Function Level Authorization in /api/sync/pull Exposes Sync Outbox Records
-- pairing.ts
+- auth/index.ts
 - svelte
 - compilerOptions
 - MedStock ERP Project
@@ -146,7 +146,7 @@ Cohesion: 0.10
 Nodes (10): applyTheme(), lastSyncAt, pendingChanges, setTheme(), sidebarCollapsed, sidebarOpen, syncStatus, theme (+2 more)
 
 ### Community 3 - "errorResponse"
-Cohesion: 0.05
+Cohesion: 0.06
 Nodes (81): ref_types, ref_types_js, errorResponse(), jsonResponse(), hashPassword(), invalidateUserSessions(), batchRepo, customerRepo (+73 more)
 
 ### Community 4 - "Purchase"
@@ -217,9 +217,9 @@ Nodes (6): SupplierRepository, mapToSupplier(), DbSupplierRepository, createSupp
 Cohesion: 0.15
 Nodes (12): Assumptions, Broken Function Level Authorization in /api/sync/pull Exposes Sync Outbox Records, Code Analysis, Counterevidence, Description, Evidence, Fix Verification, Impact (+4 more)
 
-### Community 22 - "pairing.ts"
-Cohesion: 0.27
-Nodes (8): ref_os, qrcode, sessionsTable, classifyInterface(), getNetworkTopology(), NetworkInterfaceInfo, NetworkTopology, load()
+### Community 22 - "auth/index.ts"
+Cohesion: 0.07
+Nodes (23): ref_app, bcryptjs, ref_crypto, ref_os, qrcode, handle(), createSession(), invalidateSession() (+15 more)
 
 ### Community 23 - "svelte"
 Cohesion: 0.11
@@ -354,8 +354,8 @@ Cohesion: 0.20
 Nodes (6): ProductRepository, mapToProduct(), DbProductRepository, createProductService(), CreateProductInput, Product
 
 ### Community 79 - "schema.ts"
-Cohesion: 0.05
-Nodes (79): ref_app, bcryptjs, ref_crypto, drizzle-orm, ref_env, @sveltejs/kit, uuid, isoDate() (+71 more)
+Cohesion: 0.07
+Nodes (64): drizzle-orm, ref_env, @sveltejs/kit, uuid, isoDate(), masterPasswordHash, money(), PRODUCTS (+56 more)
 
 ### Community 80 - "common/index.ts"
 Cohesion: 0.09
@@ -381,10 +381,10 @@ Nodes (3): overrides, cookie, devalue
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `drizzle-orm` connect `schema.ts` to `billing/engine.ts`, `errorResponse`, `package.json`, `server/repositories/productRepository.ts`, `backup/engine.ts`, `pairing.ts`?**
-  _High betweenness centrality (0.075) - this node is a cross-community bridge._
+- **Why does `drizzle-orm` connect `schema.ts` to `billing/engine.ts`, `errorResponse`, `package.json`, `server/repositories/productRepository.ts`, `backup/engine.ts`, `auth/index.ts`?**
+  _High betweenness centrality (0.074) - this node is a cross-community bridge._
 - **Why does `vitest` connect `billing/engine.ts` to `khataLedger.spec.ts`, `errorResponse`, `Purchase`, `Batch`, `Sale`, `package.json`, `schema.ts`, `vite.config.ts`, `gstin.ts`, `paymentService.ts`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+  _High betweenness centrality (0.063) - this node is a cross-community bridge._
 - **Why does `logSyncOutbox()` connect `schema.ts` to `billing/engine.ts`, `errorResponse`, `Purchase`, `Batch`, `Sale`, `server/repositories/productRepository.ts`, `Customer`, `paymentService.ts`, `Supplier`?**
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **What connects `gitignorePath`, `name`, `private` to the rest of the system?**

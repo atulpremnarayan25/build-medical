@@ -21,7 +21,7 @@
   "19": "paymentService.ts",
   "20": "Supplier",
   "21": "Broken Function Level Authorization in /api/sync/pull Exposes Sync Outbox Records",
-  "22": "pairing.ts",
+  "22": "auth/index.ts",
   "23": "svelte",
   "24": "compilerOptions",
   "25": "MedStock ERP Project",

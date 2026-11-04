@@ -26,32 +26,36 @@ describe('Phase 5: Statutory Compliance Reports (Schedule H1 Form 35, GSTR-1 & E
 	let b2bCustomer: any;
 
 	beforeAll(async () => {
-		// 1. Resolve or create store
-		const stores = await db.select().from(storesTable).limit(1);
-		if (stores.length === 0) {
-			const [s] = await db
-				.insert(storesTable)
-				.values({
-					name: 'MedStock Central Pharmacy',
-					address: '123 Healthcare Road, Medical Square',
-					gstin: '29ABCDE1234F1Z5',
-					drugLicenseNo: 'KA-B2-192847',
-					drugLicenseNo2: 'KA-B2-192848',
-					phone: '9876543210'
-				})
-				.returning();
-			storeId = s.id;
-		} else {
-			storeId = stores[0].id;
-		}
-
-		// 2. Resolve admin user
+		// 1. Resolve admin user
 		const admins = await db
 			.select()
 			.from(usersTable)
 			.where(eq(usersTable.username, 'admin'))
 			.limit(1);
 		adminUser = admins[0];
+
+		// 2. Resolve or create store
+		if (adminUser?.storeId) {
+			storeId = adminUser.storeId;
+		} else {
+			const stores = await db.select().from(storesTable).limit(1);
+			if (stores.length === 0) {
+				const [s] = await db
+					.insert(storesTable)
+					.values({
+						name: 'MedStock Central Pharmacy',
+						address: '123 Healthcare Road, Medical Square',
+						gstin: '29ABCDE1234F1Z5',
+						drugLicenseNo: 'KA-B2-192847',
+						drugLicenseNo2: 'KA-B2-192848',
+						phone: '9876543210'
+					})
+					.returning();
+				storeId = s.id;
+			} else {
+				storeId = stores[0].id;
+			}
+		}
 
 		// 3. Ensure Alprazolam 0.25mg product exists with drugSchedule 'H1'
 		const existingAlprazolam = await db

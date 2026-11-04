@@ -8,7 +8,7 @@ import {
 	batchesTable,
 	customersTable
 } from './db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { GET as getHealth } from '../../routes/api/health/+server.js';
 import { GET as getNetworkTopologyApi } from '../../routes/api/settings/network/+server.js';
 import { POST as postSale } from '../../routes/api/sales/+server.js';
@@ -24,25 +24,7 @@ describe('Phase 6: Standalone Store Server, Local LAN Pairing & Automated Backup
 	let testCustomer: any;
 
 	beforeAll(async () => {
-		// 1. Resolve or create store
-		const stores = await db.select().from(storesTable).limit(1);
-		if (stores.length === 0) {
-			const [s] = await db
-				.insert(storesTable)
-				.values({
-					name: 'MedStock Central Pharmacy',
-					address: '123 Healthcare Road, Medical Square',
-					gstin: '29ABCDE1234F1Z5',
-					drugLicenseNo: 'KA-B2-192847',
-					phone: '9876543210'
-				})
-				.returning();
-			storeId = s.id;
-		} else {
-			storeId = stores[0].id;
-		}
-
-		// 2. Resolve admin user
+		// 1. Resolve admin user
 		const admins = await db
 			.select()
 			.from(usersTable)
@@ -50,11 +32,38 @@ describe('Phase 6: Standalone Store Server, Local LAN Pairing & Automated Backup
 			.limit(1);
 		adminUser = admins[0];
 
+		// 2. Resolve or create store
+		if (adminUser?.storeId) {
+			storeId = adminUser.storeId;
+		} else {
+			const stores = await db.select().from(storesTable).limit(1);
+			if (stores.length === 0) {
+				const [s] = await db
+					.insert(storesTable)
+					.values({
+						name: 'MedStock Central Pharmacy',
+						address: '123 Healthcare Road, Medical Square',
+						gstin: '29ABCDE1234F1Z5',
+						drugLicenseNo: 'KA-B2-192847',
+						phone: '9876543210'
+					})
+					.returning();
+				storeId = s.id;
+			} else {
+				storeId = stores[0].id;
+			}
+		}
+
 		// 3. Resolve or create test product & batch for offline transaction verification
 		const products = await db
 			.select()
 			.from(productsTable)
-			.where(eq(productsTable.storeId, storeId))
+			.where(
+				and(
+					eq(productsTable.storeId, storeId),
+					eq(productsTable.name, 'Paracetamol 650mg Tablets')
+				)
+			)
 			.limit(1);
 
 		if (products.length > 0) {
