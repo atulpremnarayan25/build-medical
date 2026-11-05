@@ -114,6 +114,70 @@
 			totalAmount: number;
 		}[];
 		purchases: ItcSlab[];
+		table9b?: {
+			creditNotes: {
+				summary: {
+					noteCount: number;
+					taxableAmount: number;
+					cgstAmount: number;
+					sgstAmount: number;
+					igstAmount: number;
+					gstAmount: number;
+					totalAmount: number;
+				};
+				notes: {
+					id: string;
+					noteNumber: string;
+					noteType: string;
+					date: string;
+					originalInvoiceNumber: string;
+					recipientName: string;
+					recipientGstin: string;
+					isRegistered: boolean;
+					reason: string;
+					taxableAmount: number;
+					cgstAmount: number;
+					sgstAmount: number;
+					igstAmount: number;
+					gstAmount: number;
+					totalAmount: number;
+					rate: number;
+				}[];
+			};
+			debitNotes: {
+				summary: {
+					noteCount: number;
+					taxableAmount: number;
+					cgstAmount: number;
+					sgstAmount: number;
+					igstAmount: number;
+					gstAmount: number;
+					totalAmount: number;
+				};
+				notes: {
+					id: string;
+					noteNumber: string;
+					noteType: string;
+					date: string;
+					originalBillRef: string;
+					supplierName: string;
+					supplierGstin: string;
+					reason: string;
+					taxableAmount: number;
+					cgstAmount: number;
+					sgstAmount: number;
+					igstAmount: number;
+					gstAmount: number;
+					totalAmount: number;
+					rate: number;
+				}[];
+			};
+		};
+		itcSummary?: {
+			grossItc: { taxableAmount: number; cgstAmount: number; sgstAmount: number; totalAmount: number };
+			reversedItc: { taxableAmount: number; cgstAmount: number; sgstAmount: number; totalAmount: number };
+			netItc: { taxableAmount: number; cgstAmount: number; sgstAmount: number; totalAmount: number };
+		};
 	}
 
 	let data = $state<GstReportData | null>(null);
@@ -124,8 +188,8 @@
 	let fromDate = $state('');
 	let toDate = $state('');
 
-	// Active tab: 'summary' | 'b2b' | 'b2c' | 'hsn' | 'itc'
-	let activeTab = $state<'summary' | 'b2b' | 'b2c' | 'hsn' | 'itc'>('summary');
+	// Active tab: 'summary' | 'b2b' | 'b2c' | 'hsn' | 'itc' | 'table9b'
+	let activeTab = $state<'summary' | 'b2b' | 'b2c' | 'hsn' | 'itc' | 'table9b'>('summary');
 
 	function setDateRange(preset: 'month' | 'quarter' | 'year' | 'custom') {
 		datePreset = preset;
@@ -349,7 +413,79 @@
 			content += `"${h.hsnCode}","${h.description.replace(/"/g, '""')}","${h.uqc}",${h.totalQuantity.toFixed(2)},${h.totalValue.toFixed(2)},${h.taxableValue.toFixed(2)},${h.cgstAmount.toFixed(2)},${h.sgstAmount.toFixed(2)},${h.igstAmount.toFixed(2)}\n`;
 		}
 
+		// Section 5: Table 9B Credit & Debit Notes
+		if (data.table9b) {
+			content += `\n--- TABLE 9B: CREDIT / DEBIT NOTES ---\n`;
+			content += `Type,Note Number,Note Date,Original Ref,Party Name,GSTIN,Taxable Value,CGST,SGST,IGST,Total Value\n`;
+			for (const cn of data.table9b.creditNotes?.notes || []) {
+				content += `Credit Note,"${cn.noteNumber}","${formatDate(cn.date)}","${cn.originalInvoiceNumber}","${cn.recipientName.replace(/"/g, '""')}","${cn.recipientGstin}",${cn.taxableAmount.toFixed(2)},${cn.cgstAmount.toFixed(2)},${cn.sgstAmount.toFixed(2)},${cn.igstAmount.toFixed(2)},${cn.totalAmount.toFixed(2)}\n`;
+			}
+			for (const dn of data.table9b.debitNotes?.notes || []) {
+				content += `Debit Note,"${dn.noteNumber}","${formatDate(dn.date)}","${dn.originalBillRef}","${dn.supplierName.replace(/"/g, '""')}","${dn.supplierGstin}",${dn.taxableAmount.toFixed(2)},${dn.cgstAmount.toFixed(2)},${dn.sgstAmount.toFixed(2)},${dn.igstAmount.toFixed(2)},${dn.totalAmount.toFixed(2)}\n`;
+			}
+		}
+
 		downloadCsv(content, `GSTR1_Consolidated_Statement_${fromDate}_to_${toDate}.csv`);
+	}
+
+	function exportTable9bCsv() {
+		if (!data || !data.table9b) return;
+		const headers = [
+			'Note Type',
+			'Note Number',
+			'Note Date',
+			'Original Document Ref',
+			'Party Name',
+			'GSTIN/UIN',
+			'Registration Status',
+			'Rate %',
+			'Taxable Value',
+			'CGST Amount',
+			'SGST Amount',
+			'IGST Amount',
+			'Total Note Value',
+			'Reason'
+		];
+
+		const rows = [
+			...(data.table9b.creditNotes?.notes || []).map((n) => [
+				'Credit Note (Sales Return)',
+				`"${n.noteNumber}"`,
+				`"${formatDate(n.date)}"`,
+				`"${n.originalInvoiceNumber}"`,
+				`"${n.recipientName.replace(/"/g, '""')}"`,
+				`"${n.recipientGstin}"`,
+				n.isRegistered ? 'Registered (CDNR)' : 'Unregistered (CDNUR)',
+				n.rate.toFixed(2),
+				n.taxableAmount.toFixed(2),
+				n.cgstAmount.toFixed(2),
+				n.sgstAmount.toFixed(2),
+				n.igstAmount.toFixed(2),
+				n.totalAmount.toFixed(2),
+				`"${n.reason.replace(/"/g, '""')}"`
+			]),
+			...(data.table9b.debitNotes?.notes || []).map((n) => [
+				'Debit Note (Purchase Return)',
+				`"${n.noteNumber}"`,
+				`"${formatDate(n.date)}"`,
+				`"${n.originalBillRef}"`,
+				`"${n.supplierName.replace(/"/g, '""')}"`,
+				`"${n.supplierGstin}"`,
+				'Registered Supplier',
+				n.rate.toFixed(2),
+				n.taxableAmount.toFixed(2),
+				n.cgstAmount.toFixed(2),
+				n.sgstAmount.toFixed(2),
+				n.igstAmount.toFixed(2),
+				n.totalAmount.toFixed(2),
+				`"${n.reason.replace(/"/g, '""')}"`
+			])
+		];
+
+		downloadCsv(
+			[headers.join(','), ...rows.map((r) => r.join(','))].join('\n'),
+			`GSTR1_Table9B_Credit_Debit_Notes_${fromDate}_to_${toDate}.csv`
+		);
 	}
 
 	function downloadCsv(content: string, filename: string) {
@@ -624,6 +760,18 @@
 		>
 			<ShieldCheck size={13} />
 			<span>GSTR-3B ITC Offsets</span>
+		</button>
+
+		<button
+			type="button"
+			class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold transition-all {activeTab ===
+			'table9b'
+				? 'bg-accent text-white shadow-2xs'
+				: 'border border-border bg-surface text-text-secondary hover:bg-surface-secondary'}"
+			onclick={() => (activeTab = 'table9b')}
+		>
+			<FileSpreadsheet size={13} />
+			<span>Table 9B: Credit / Debit Notes ({((data?.table9b?.creditNotes?.summary?.noteCount || 0) + (data?.table9b?.debitNotes?.summary?.noteCount || 0))})</span>
 		</button>
 	</div>
 
@@ -1026,6 +1174,141 @@
 					</table>
 				</div>
 			</div>
+			{:else if activeTab === 'table9b'}
+				<div class="space-y-4">
+					<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+						<div>
+							<h3 class="text-xs font-bold tracking-wider text-text-primary uppercase">
+								Table 9B: Credit &amp; Debit Notes (CDNR / CDNUR &amp; Supplier Notes)
+							</h3>
+							<p class="text-[11px] text-text-muted">
+								Sales returns issued to customers and purchase returns issued to suppliers for statutory reconciliation
+							</p>
+						</div>
+						<Button variant="secondary" size="sm" onclick={exportTable9bCsv}>
+							<Download size={14} class="mr-1.5" />
+							Export Table 9B CSV
+						</Button>
+					</div>
+
+					<!-- SECTION 1: CREDIT NOTES (Sales Returns) -->
+					<div class="space-y-2">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								<span class="rounded bg-accent/10 px-2 py-0.5 text-xs font-bold text-accent">Credit Notes</span>
+								<span class="text-xs text-text-secondary">Customer Sales Returns ({data.table9b?.creditNotes?.summary?.noteCount || 0} notes)</span>
+							</div>
+							<div class="text-xs font-mono text-text-secondary">
+								Total Value: <span class="font-bold text-text-primary">{formatCurrency(data.table9b?.creditNotes?.summary?.totalAmount || 0)}</span> |
+								Tax: <span class="font-bold text-accent">{formatCurrency(data.table9b?.creditNotes?.summary?.gstAmount || 0)}</span>
+							</div>
+						</div>
+
+						<div class="max-h-[calc(100vh-32rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+							<table class="w-full text-left text-xs">
+								<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs">
+									<tr>
+										<th class="px-3 py-2.5">Note #</th>
+										<th class="px-3 py-2.5">Date</th>
+										<th class="px-3 py-2.5">Original Invoice</th>
+										<th class="px-3 py-2.5">Recipient / Customer</th>
+										<th class="px-3 py-2.5">GSTIN</th>
+										<th class="px-3 py-2.5">Type</th>
+										<th class="px-3 py-2.5 text-right">Taxable (₹)</th>
+										<th class="px-3 py-2.5 text-right">CGST (₹)</th>
+										<th class="px-3 py-2.5 text-right">SGST (₹)</th>
+										<th class="px-3 py-2.5 text-right">Total (₹)</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-border">
+									{#if !data.table9b || data.table9b.creditNotes.notes.length === 0}
+										<tr>
+											<td colspan="10" class="px-3 py-6 text-center text-text-muted">
+												No credit notes (sales returns) recorded for this period.
+											</td>
+										</tr>
+									{:else}
+										{#each data.table9b.creditNotes.notes as note}
+											<tr class="font-sans transition-colors hover:bg-surface-hover">
+												<td class="px-3 py-2 font-mono font-bold text-accent">{note.noteNumber}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{formatDate(note.date)}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{note.originalInvoiceNumber}</td>
+												<td class="px-3 py-2 text-text-primary">{note.recipientName}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{note.recipientGstin || 'Unregistered'}</td>
+												<td class="px-3 py-2">
+													<span class="rounded px-1.5 py-0.5 text-[10px] font-semibold {note.isRegistered ? 'bg-primary/10 text-primary' : 'bg-surface-secondary text-text-muted'}">
+														{note.noteType}
+													</span>
+												</td>
+												<td class="px-3 py-2 text-right font-mono text-text-primary tabular-nums">{formatCurrency(note.taxableAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">{formatCurrency(note.cgstAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono text-text-secondary tabular-nums">{formatCurrency(note.sgstAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums">{formatCurrency(note.totalAmount)}</td>
+											</tr>
+										{/each}
+									{/if}
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- SECTION 2: DEBIT NOTES (Purchase Returns) -->
+					<div class="space-y-2 pt-2">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								<span class="rounded bg-warning/10 px-2 py-0.5 text-xs font-bold text-warning">Debit Notes</span>
+								<span class="text-xs text-text-secondary">Supplier Purchase Returns ({data.table9b?.debitNotes?.summary?.noteCount || 0} notes)</span>
+							</div>
+							<div class="text-xs font-mono text-text-secondary">
+								Total Value: <span class="font-bold text-text-primary">{formatCurrency(data.table9b?.debitNotes?.summary?.totalAmount || 0)}</span> |
+								ITC Reversed: <span class="font-bold text-warning">{formatCurrency(data.table9b?.debitNotes?.summary?.gstAmount || 0)}</span>
+							</div>
+						</div>
+
+						<div class="max-h-[calc(100vh-32rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs">
+							<table class="w-full text-left text-xs">
+								<thead class="sticky top-0 z-10 border-b border-border bg-surface-secondary text-[10px] font-bold tracking-wider text-text-muted uppercase shadow-xs">
+									<tr>
+										<th class="px-3 py-2.5">Note #</th>
+										<th class="px-3 py-2.5">Date</th>
+										<th class="px-3 py-2.5">Original Bill Ref</th>
+										<th class="px-3 py-2.5">Supplier</th>
+										<th class="px-3 py-2.5">Supplier GSTIN</th>
+										<th class="px-3 py-2.5">Reason</th>
+										<th class="px-3 py-2.5 text-right">Taxable (₹)</th>
+										<th class="px-3 py-2.5 text-right">Input CGST Rev (₹)</th>
+										<th class="px-3 py-2.5 text-right">Input SGST Rev (₹)</th>
+										<th class="px-3 py-2.5 text-right">Total Debit (₹)</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-border">
+									{#if !data.table9b || data.table9b.debitNotes.notes.length === 0}
+										<tr>
+											<td colspan="10" class="px-3 py-6 text-center text-text-muted">
+												No debit notes (purchase returns) recorded for this period.
+											</td>
+										</tr>
+									{:else}
+										{#each data.table9b.debitNotes.notes as note}
+											<tr class="font-sans transition-colors hover:bg-surface-hover">
+												<td class="px-3 py-2 font-mono font-bold text-warning">{note.noteNumber}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{formatDate(note.date)}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{note.originalBillRef}</td>
+												<td class="px-3 py-2 text-text-primary">{note.supplierName}</td>
+												<td class="px-3 py-2 font-mono text-text-secondary">{note.supplierGstin || 'Unregistered'}</td>
+												<td class="px-3 py-2 text-text-secondary">{note.reason || 'Return to vendor'}</td>
+												<td class="px-3 py-2 text-right font-mono text-text-primary tabular-nums">{formatCurrency(note.taxableAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono text-warning tabular-nums">{formatCurrency(note.cgstAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono text-warning tabular-nums">{formatCurrency(note.sgstAmount)}</td>
+												<td class="px-3 py-2 text-right font-mono font-bold text-text-primary tabular-nums">{formatCurrency(note.totalAmount)}</td>
+											</tr>
+										{/each}
+									{/if}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 
 			<!-- TAB 3: TABLE 7 B2C SLABS -->
 		{:else if activeTab === 'b2c'}
@@ -1233,6 +1516,38 @@
 						liability
 					</p>
 				</div>
+
+				{#if data.itcSummary}
+					<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+						<div class="rounded-lg border border-border bg-surface-secondary/40 p-3">
+							<span class="text-[10px] font-bold tracking-wider text-text-muted uppercase">Gross Inward ITC (Table 4A)</span>
+							<div class="mt-1 text-base font-bold text-text-primary tabular-nums">
+								{formatCurrency(data.itcSummary.grossItc.cgstAmount + data.itcSummary.grossItc.sgstAmount)}
+							</div>
+							<div class="mt-0.5 text-[10px] text-text-muted">
+								Taxable: {formatCurrency(data.itcSummary.grossItc.taxableAmount)}
+							</div>
+						</div>
+						<div class="rounded-lg border border-warning/30 bg-warning/5 p-3">
+							<span class="text-[10px] font-bold tracking-wider text-warning uppercase">ITC Reversal (Debit Notes Table 4B)</span>
+							<div class="mt-1 text-base font-bold text-warning tabular-nums">
+								- {formatCurrency(data.itcSummary.reversedItc.cgstAmount + data.itcSummary.reversedItc.sgstAmount)}
+							</div>
+							<div class="mt-0.5 text-[10px] text-text-muted">
+								Purchase Returns: {formatCurrency(data.itcSummary.reversedItc.taxableAmount)}
+							</div>
+						</div>
+						<div class="rounded-lg border border-success/30 bg-success/5 p-3">
+							<span class="text-[10px] font-bold tracking-wider text-success uppercase">Net Eligible ITC (Table 4C)</span>
+							<div class="mt-1 text-base font-bold text-success tabular-nums">
+								{formatCurrency(data.itcSummary.netItc.cgstAmount + data.itcSummary.netItc.sgstAmount)}
+							</div>
+							<div class="mt-0.5 text-[10px] text-text-muted">
+								Net Taxable: {formatCurrency(data.itcSummary.netItc.taxableAmount)}
+							</div>
+						</div>
+					</div>
+				{/if}
 
 				<div
 					class="max-h-[calc(100vh-28rem)] overflow-x-auto overflow-y-auto rounded-xl border border-border bg-surface shadow-2xs"

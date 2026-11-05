@@ -200,13 +200,14 @@
 								>
 								{#if item.drugSchedule && item.drugSchedule !== 'none'}
 									<span
-										class="py-0.2 inline-flex shrink-0 items-center gap-0.5 rounded px-1 text-[9px] font-bold tracking-wider uppercase
+										class="py-0.2 inline-flex shrink-0 items-center gap-0.5 rounded px-1.5 text-[9px] font-black tracking-wider uppercase
 										{item.drugSchedule === 'H1' || item.drugSchedule === 'X'
-											? 'border border-danger/20 bg-danger-light text-danger'
-											: 'border border-warning/20 bg-warning-light text-warning'}"
+											? 'border-2 border-danger bg-danger/15 text-danger font-extrabold shadow-2xs ring-1 ring-danger/30'
+											: 'border border-warning/30 bg-warning-light text-warning font-bold'}"
+										title={item.drugSchedule === 'H1' ? 'Schedule H1: Restricted habit-forming / 3rd-gen antibiotic drug. Mandatory register entry required.' : `Schedule ${item.drugSchedule}`}
 									>
-										<ShieldAlert size={9} />
-										<span>{item.drugSchedule}</span>
+										<ShieldAlert size={10} />
+										<span>Rx Sch {item.drugSchedule}</span>
 									</span>
 								{/if}
 							</div>

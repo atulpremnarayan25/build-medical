@@ -7,6 +7,7 @@ export async function GET({ locals }: RequestEvent) {
 		return new Response('Unauthorized', { status: 401 });
 	}
 
-	const summary = await purchaseService.getDashboardSummary();
+	const storeId = locals.user.storeId || undefined;
+	const summary = await purchaseService.getDashboardSummary(storeId);
 	return json(summary);
 }

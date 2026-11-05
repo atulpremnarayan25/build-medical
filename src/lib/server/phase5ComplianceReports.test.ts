@@ -458,4 +458,30 @@ describe('Phase 5: Statutory Compliance Reports (Schedule H1 Form 35, GSTR-1 & E
 
 		expect(Number(updatedBatch.quantityRemaining)).toBe(0);
 	});
+
+	it('should include returns and credit/debit notes in Table 9B and compute net eligible ITC in GSTR-3B', async () => {
+		const gstReq = new Request('http://localhost/api/reports/gst');
+		const gstRes = await getGstReport({
+			request: gstReq,
+			locals: { user: adminUser }
+		} as any);
+
+		expect(gstRes.status).toBe(200);
+		const gstData = await gstRes.json();
+
+		expect(gstData.table9b).toBeDefined();
+		expect(gstData.table9b.creditNotes).toBeDefined();
+		expect(gstData.table9b.debitNotes).toBeDefined();
+		expect(gstData.itcSummary).toBeDefined();
+
+		// Debit notes (purchase returns) should be captured
+		expect(gstData.table9b.debitNotes.notes.length).toBeGreaterThanOrEqual(1);
+		expect(gstData.itcSummary.reversedItc.taxableAmount).toBeGreaterThan(0);
+		expect(
+			gstData.itcSummary.netItc.taxableAmount
+		).toBeCloseTo(
+			Math.max(0, gstData.itcSummary.grossItc.taxableAmount - gstData.itcSummary.reversedItc.taxableAmount),
+			2
+		);
+	});
 });

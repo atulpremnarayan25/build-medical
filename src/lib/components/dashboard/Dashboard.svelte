@@ -60,8 +60,8 @@
 			const [
 				salesDashboard,
 				purchasesDashboard,
-				allSales,
-				allPurchases,
+				recentSalesPage,
+				recentPurchasesPage,
 				lowStock,
 				expired,
 				expiring,
@@ -69,8 +69,8 @@
 			] = await Promise.all([
 				saleService.getDashboardSummary(),
 				purchaseService.getDashboardSummary(),
-				saleService.getSales(),
-				purchaseService.getPurchases(),
+				saleService.getPaginatedSales({ page: 1, limit: 5 }),
+				purchaseService.getPaginatedPurchases({ page: 1, limit: 5 }),
 				batchService.getLowStockBatches(10),
 				batchService.getExpiredBatches(),
 				batchService.getExpiringBatches(90),
@@ -87,13 +87,9 @@
 				itemsSold: salesDashboard.todayItemsSold
 			};
 
-			recentSales = allSales
-				.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-				.slice(0, 5);
+			recentSales = recentSalesPage?.items || [];
 
-			recentPurchases = allPurchases
-				.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-				.slice(0, 5);
+			recentPurchases = recentPurchasesPage?.items || [];
 
 			stockAlerts = {
 				lowStock: lowStock.length,

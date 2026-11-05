@@ -25,6 +25,45 @@ export function createProductService(repo: ProductRepository) {
 
 		async searchProducts(query: string): Promise<Product[]> {
 			return repo.search(query);
+		},
+
+		async getProductByBarcode(barcode: string, storeId?: string): Promise<Product | null> {
+			if (repo.getByBarcode) {
+				return repo.getByBarcode(barcode, storeId);
+			}
+			const all = await repo.getAll();
+			return all.find((p) => p.barcode === barcode && (!storeId || (p as any).storeId === storeId)) || null;
+		},
+
+		async getPaginatedProducts(opts: {
+			page?: number;
+			limit?: number;
+			search?: string;
+			category?: string;
+			storeId?: string;
+		}) {
+			if (repo.getPaginated) {
+				return repo.getPaginated(opts);
+			}
+			const all = await repo.getAll();
+			let filtered = all;
+			if (opts.search) {
+				const q = opts.search.toLowerCase();
+				filtered = filtered.filter(
+					(p) =>
+						p.name.toLowerCase().includes(q) ||
+						(p.genericName && p.genericName.toLowerCase().includes(q))
+				);
+			}
+			if (opts.category) {
+				filtered = filtered.filter((p) => p.category === opts.category);
+			}
+			const page = Math.max(1, opts.page || 1);
+			const limit = Math.max(1, Math.min(100, opts.limit || 50));
+			const total = filtered.length;
+			const totalPages = Math.ceil(total / limit) || 1;
+			const items = filtered.slice((page - 1) * limit, page * limit);
+			return { items, total, page, limit, totalPages };
 		}
 	};
 }

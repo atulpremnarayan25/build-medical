@@ -10,6 +10,8 @@
 		type PrintableInvoiceData
 	} from '$lib/components/billing/PrintableInvoice.svelte';
 	import SalesHistoryPanel from '$lib/components/billing/SalesHistoryPanel.svelte';
+	import PatientHistoryModal from '$lib/components/billing/PatientHistoryModal.svelte';
+	import { createBarcodeScannerHandler } from '$lib/utils/barcodeScanner.js';
 
 	import type {
 		Product,
@@ -19,7 +21,7 @@
 		SaleQuote,
 		PaymentMethod
 	} from '$lib/types/index.js';
-	import { saleService } from '$lib/services/index.js';
+	import { saleService, productService, batchService } from '$lib/services/index.js';
 	import { addToast } from '$lib/stores/toastStore.svelte.js';
 	import {
 		ShieldAlert,
@@ -37,7 +39,11 @@
 		AlertTriangle,
 		User,
 		Building2,
-		RotateCcw
+		RotateCcw,
+		Barcode,
+		History,
+		AlertOctagon,
+		Coins
 	} from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -59,6 +65,7 @@
 	let isSaving = $state(false);
 	let shortcutsOpen = $state(false);
 	let showSalesHistory = $state(false);
+	let patientHistoryOpen = $state(false);
 
 	// Parked / Held Bills State
 	let heldBills = $state<HeldBill[]>([]);
@@ -78,6 +85,7 @@
 			packSize?: number;
 			freeQuantity?: number;
 			schemeApplied?: string;
+			barcode?: string;
 		})[]
 	>([]);
 	let nextUiKey = 0;
@@ -195,6 +203,9 @@
 	});
 
 	let grandTotal = $derived(quote?.grandTotalRupees ?? 0);
+	let next50 = $derived(grandTotal > 0 ? Math.ceil(grandTotal / 50) * 50 : 50);
+	let next100 = $derived(grandTotal > 0 ? Math.ceil(grandTotal / 100) * 100 : 100);
+	let next500 = $derived(grandTotal > 0 ? Math.ceil(grandTotal / 500) * 500 : 500);
 	let subtotal = $derived(quote?.subtotalRupees ?? 0);
 	let discountTotal = $derived(quote?.discountRupees ?? 0);
 	let taxableTotal = $derived(quote?.taxableTotalRupees ?? 0);
@@ -209,6 +220,9 @@
 		if (customer) {
 			selectedCustomer = customer;
 			isWalkIn = false;
+			if (!patientName.trim()) {
+				patientName = customer.name;
+			}
 			if (customer.billSeries) {
 				billSeries = customer.billSeries === 'R' ? 'R' : 'T';
 			} else if (customer.gstin) {
@@ -253,17 +267,19 @@
 	}
 
 	// Inline batch selection callback from ProductSearch.svelte
-	function handleInlineBatchSelect(product: Product, batch: Batch) {
+	function handleInlineBatchSelect(product: Product, batch: Batch, preferredQty?: number) {
+		const initialQty = preferredQty && preferredQty > 0 ? Math.min(preferredQty, batch.quantity) : 1;
 		const newItem = {
 			uiKey: nextUiKey++,
 			productId: product.id,
 			productName: product.name,
+			barcode: product.barcode,
 			batchId: batch.id,
 			batchNumber: batch.batchNumber,
 			expiryDate: batch.expiryDate,
 			pack: (product as any).pack || (product.packSize ? `1X${product.packSize}` : '1PH'),
 			packSize: product.packSize || 10,
-			quantity: 1,
+			quantity: initialQty,
 			freeQuantity: 0,
 			schemeApplied: '',
 			mrp: batch.mrp,
@@ -538,10 +554,132 @@
 		addToast('info', 'Parked bill discarded');
 	}
 
+	async function handleBarcodeScan(barcode: string) {
+		try {
+			if (!isCustomerSelected) {
+				handleCustomerSelect(null, true);
+			}
+
+			// Check if an item with this barcode is already in the cart -> increment quantity!
+			const existingBarcodeIdx = items.findIndex((i) => (i as any).barcode === barcode);
+			if (existingBarcodeIdx >= 0) {
+				items[existingBarcodeIdx].quantity += 1;
+				items = [...items];
+				activeItemIndex = existingBarcodeIdx;
+				addToast('info', `Incremented ${items[existingBarcodeIdx].productName} qty to ${items[existingBarcodeIdx].quantity}`);
+				return;
+			}
+
+			// Lookup product by barcode
+			const product = await productService.getProductByBarcode(barcode);
+			if (!product) {
+				addToast('warning', `No product found for barcode: ${barcode}`);
+				return;
+			}
+
+			// Check if product already in items by productId
+			const existingProdIdx = items.findIndex((i) => i.productId === product.id);
+			if (existingProdIdx >= 0) {
+				items[existingProdIdx].quantity += 1;
+				items = [...items];
+				activeItemIndex = existingProdIdx;
+				addToast('info', `Incremented ${items[existingProdIdx].productName} qty to ${items[existingProdIdx].quantity}`);
+				return;
+			}
+
+			// Fetch active batches with FEFO sorting
+			const allBatches = await batchService.getBatchesByProduct(product.id);
+			const sorted = allBatches.sort(
+				(a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+			);
+			const activeBatches = sorted.filter(
+				(b) => b.quantity > 0 && new Date(b.expiryDate).getTime() > Date.now()
+			);
+
+			if (activeBatches.length === 0) {
+				addToast('error', `No available stock for ${product.name}`);
+				return;
+			}
+
+			handleInlineBatchSelect(product, activeBatches[0]);
+			addToast('success', `Scanned: ${product.name} (${activeBatches[0].batchNumber})`);
+		} catch (err) {
+			console.error('Barcode scan error:', err);
+			addToast('error', 'Barcode processing failed');
+		}
+	}
+
+	const barcodeScanner = createBarcodeScannerHandler({
+		maxIntervalMs: 50,
+		minBarcodeLength: 4,
+		onScan: handleBarcodeScan
+	});
+
+	async function handleRepeatItem(item: any) {
+		try {
+			const product = await productService.getProduct(item.productId);
+			if (!product) {
+				addToast('error', `Product ${item.productName} not found`);
+				return;
+			}
+			const allBatches = await batchService.getBatchesByProduct(product.id);
+			const sorted = allBatches.sort(
+				(a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+			);
+			const activeBatches = sorted.filter(
+				(b) => b.quantity > 0 && new Date(b.expiryDate).getTime() > Date.now()
+			);
+			if (activeBatches.length === 0) {
+				addToast('error', `No active stock available for ${product.name}`);
+				return;
+			}
+			handleInlineBatchSelect(product, activeBatches[0], item.quantity);
+			addToast('success', `Added ${product.name} (Qty: ${item.quantity || 1}) to bill`);
+		} catch (err) {
+			console.error(err);
+			addToast('error', 'Failed to add repeat item');
+		}
+	}
+
+	async function handleRepeatAll(saleItems: any[]) {
+		let addedCount = 0;
+		for (const item of saleItems) {
+			try {
+				const product = await productService.getProduct(item.productId);
+				if (!product) continue;
+				const allBatches = await batchService.getBatchesByProduct(product.id);
+				const sorted = allBatches.sort(
+					(a, b) => new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime()
+				);
+				const activeBatches = sorted.filter(
+					(b) => b.quantity > 0 && new Date(b.expiryDate).getTime() > Date.now()
+				);
+				if (activeBatches.length > 0) {
+					handleInlineBatchSelect(product, activeBatches[0], item.quantity);
+					addedCount++;
+				}
+			} catch (err) {
+				console.error(err);
+			}
+		}
+		if (addedCount > 0) {
+			addToast('success', `Repeated ${addedCount} items from prior prescription`);
+		} else {
+			addToast('warning', 'Could not repeat items: medicines out of stock');
+		}
+	}
+
 	function handleWindowKeydown(e: KeyboardEvent) {
+		if (barcodeScanner(e)) {
+			return;
+		}
 		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
 			e.preventDefault();
 			handleSaveSale();
+		} else if (e.altKey && e.key.toLowerCase() === 'e') {
+			e.preventDefault();
+			setQuickTender(grandTotal);
+			addToast('info', `Tendered Exact ₹${Math.round(grandTotal)}`);
 		} else if (e.key === 'F2') {
 			e.preventDefault();
 			if (!isCustomerSelected) {
@@ -571,6 +709,14 @@
 		} else if (e.key === 'F8') {
 			e.preventDefault();
 			toggleSaleType();
+		} else if (e.key === 'F9') {
+			e.preventDefault();
+			if (selectedCustomer) {
+				patientHistoryOpen = true;
+			} else {
+				addToast('info', 'Please select a customer first to view prescription history (F3).');
+				customerInputRef?.focus();
+			}
 		} else if (e.key === 'F10') {
 			e.preventDefault();
 			handleSaveSale();
@@ -670,6 +816,31 @@
 					<span>A4 Tax Invoice</span>
 				</button>
 			</div>
+
+			<div
+				class="hidden items-center gap-1.5 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-muted md:flex"
+				title="Hardware barcode scanner wedge active: Scan any medicine box anytime"
+			>
+				<Barcode size={14} class="text-accent" />
+				<span>Barcode Wedge Active</span>
+			</div>
+
+			<button
+				type="button"
+				onclick={() => {
+					if (selectedCustomer) {
+						patientHistoryOpen = true;
+					} else {
+						addToast('info', 'Please select a customer first to view history (F3).');
+						customerInputRef?.focus();
+					}
+				}}
+				class="flex items-center gap-1 rounded-lg border border-border bg-surface-secondary px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+				title="View Patient Prescription History (F9)"
+			>
+				<History size={13} class="text-accent" />
+				<span class="hidden sm:inline">Rx History (F9)</span>
+			</button>
 
 			<button
 				type="button"
@@ -801,6 +972,24 @@
 			</button>
 			<button
 				type="button"
+				onclick={() => {
+					if (selectedCustomer) {
+						patientHistoryOpen = true;
+					} else {
+						addToast('info', 'Please select a customer first to view history (F3).');
+						customerInputRef?.focus();
+					}
+				}}
+				class="flex items-center gap-1 font-semibold text-text-secondary hover:underline"
+			>
+				<kbd
+					class="rounded border border-border-strong bg-surface px-1.5 py-0.5 font-mono text-[11px] font-bold text-text-secondary shadow-2xs"
+					>F9</kbd
+				>
+				<span>Rx History</span>
+			</button>
+			<button
+				type="button"
 				onclick={handleSaveSale}
 				class="flex items-center gap-1 font-semibold text-accent hover:underline"
 			>
@@ -838,6 +1027,23 @@
 	<div class="grid min-h-0 flex-1 grid-cols-1 items-start gap-2.5 overflow-hidden lg:grid-cols-12">
 		<!-- LEFT COLUMN (65% WIDTH = lg:col-span-8 approx 66.6% or flex-[65]) -->
 		<div class="flex h-full min-h-0 flex-col gap-2 overflow-hidden lg:col-span-8">
+			<!-- Statutory Schedule H/H1 Regulatory Banner -->
+			{#if hasH1Item}
+				<div
+					class="flex items-center justify-between rounded-xl border-2 border-danger/60 bg-danger-light/40 px-3.5 py-2 text-xs text-danger shadow-2xs"
+				>
+					<div class="flex items-center gap-2">
+						<ShieldAlert size={16} class="shrink-0 text-danger animate-pulse" />
+						<span class="font-bold">
+							SCHEDULE H/H1 STATUTORY REGULATION: Bill contains restricted medicines. Patient Name, Prescribing Doctor and Council Reg No are mandatory before finalization.
+						</span>
+					</div>
+					<span class="rounded bg-danger px-2 py-0.5 font-mono text-[10px] font-bold text-white uppercase tracking-wider">
+						Mandatory Entry
+					</span>
+				</div>
+			{/if}
+
 			<!-- Anchored Medicine Search Bar (Hero on Load) -->
 			<div class="shrink-0 rounded-xl border border-border bg-surface p-2.5 shadow-2xs">
 				<ProductSearch
@@ -1227,29 +1433,78 @@
 					</button>
 				</div>
 
-				<!-- Quick Tender Pills -->
-				<div class="grid grid-cols-3 gap-1.5">
-					<button
-						type="button"
-						onclick={() => addQuickTender(100)}
-						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
-					>
-						+₹100
-					</button>
-					<button
-						type="button"
-						onclick={() => addQuickTender(500)}
-						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
-					>
-						+₹500
-					</button>
-					<button
-						type="button"
-						onclick={() => addQuickTender(2000)}
-						class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
-					>
-						+₹2000
-					</button>
+				<!-- Quick Tender Chips: Presets & Roundups -->
+				<div class="space-y-1.5">
+					<!-- Row 1: Note Roundups / Exact -->
+					<div class="flex flex-wrap items-center gap-1.5">
+						<button
+							type="button"
+							onclick={() => setQuickTender(grandTotal)}
+							class="rounded-md border border-accent/40 bg-accent-light/50 px-2 py-1 font-mono text-[11px] font-bold text-accent hover:bg-accent hover:text-white transition-colors"
+							title="Tender Exact Amount (Alt+E)"
+						>
+							Exact ₹{Math.round(grandTotal)}
+						</button>
+						{#if next50 > Math.round(grandTotal)}
+							<button
+								type="button"
+								onclick={() => setQuickTender(next50)}
+								class="rounded-md border border-border bg-surface-secondary px-2 py-1 font-mono text-[11px] font-semibold text-text-primary hover:bg-surface-hover"
+							>
+								₹{next50}
+							</button>
+						{/if}
+						{#if next100 > next50 && next100 > Math.round(grandTotal)}
+							<button
+								type="button"
+								onclick={() => setQuickTender(next100)}
+								class="rounded-md border border-border bg-surface-secondary px-2 py-1 font-mono text-[11px] font-semibold text-text-primary hover:bg-surface-hover"
+							>
+								₹{next100}
+							</button>
+						{/if}
+						{#if next500 > next100 && next500 > Math.round(grandTotal)}
+							<button
+								type="button"
+								onclick={() => setQuickTender(next500)}
+								class="rounded-md border border-border bg-surface-secondary px-2 py-1 font-mono text-[11px] font-semibold text-text-primary hover:bg-surface-hover"
+							>
+								₹{next500}
+							</button>
+						{/if}
+					</div>
+
+					<!-- Row 2: Cash Additions -->
+					<div class="grid grid-cols-4 gap-1.5">
+						<button
+							type="button"
+							onclick={() => addQuickTender(10)}
+							class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
+						>
+							+₹10
+						</button>
+						<button
+							type="button"
+							onclick={() => addQuickTender(50)}
+							class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
+						>
+							+₹50
+						</button>
+						<button
+							type="button"
+							onclick={() => addQuickTender(100)}
+							class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
+						>
+							+₹100
+						</button>
+						<button
+							type="button"
+							onclick={() => addQuickTender(500)}
+							class="rounded border border-border bg-surface-secondary py-1 text-center font-mono text-[11px] font-semibold text-text-secondary hover:bg-surface-hover"
+						>
+							+₹500
+						</button>
+					</div>
 				</div>
 
 				<!-- Real-time Green "Change to Return" Display -->
@@ -1320,6 +1575,14 @@
 	onRecall={handleRecallBill}
 	onDiscard={handleDiscardHeldBill}
 	onclose={() => (holdBillsOpen = false)}
+/>
+
+<!-- PATIENT PRESCRIPTION HISTORY MODAL -->
+<PatientHistoryModal
+	bind:open={patientHistoryOpen}
+	customer={selectedCustomer}
+	onRepeatItem={handleRepeatItem}
+	onRepeatAll={handleRepeatAll}
 />
 
 <!-- KEYBOARD SHORTCUTS REFERENCE MODAL -->

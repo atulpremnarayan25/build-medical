@@ -33,3 +33,11 @@ export type {
 export type { GSTSummaryRow, GSTReportResponse, SalesReportRow, StockReportRow } from './report.js';
 export type { UserRole, User } from './user.js';
 export type { SyncStatus, AppState, BusinessInfo, Theme } from './app.js';
+
+export interface PaginatedResponse<T> {
+	items: T[];
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
+}

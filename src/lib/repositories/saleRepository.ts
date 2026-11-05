@@ -1,7 +1,15 @@
-import type { Sale, CreateSaleInput } from '$lib/types/index.js';
+import type { Sale, CreateSaleInput, PaginatedResponse } from '$lib/types/index.js';
 
 export interface SaleRepository {
-	getAll(): Promise<Sale[]>;
+	getAll(limit?: number, offset?: number): Promise<Sale[]>;
+	getPaginated?(opts: {
+		page?: number;
+		limit?: number;
+		customerId?: string;
+		status?: string;
+		search?: string;
+		storeId?: string;
+	}): Promise<PaginatedResponse<Sale>>;
 	getById(id: string): Promise<Sale | null>;
 	getByCustomerId(customerId: string): Promise<Sale[]>;
 	create(input: CreateSaleInput): Promise<Sale>;
@@ -15,4 +23,10 @@ export interface SaleRepository {
 		paymentStatus: Sale['paymentStatus']
 	): Promise<Sale>;
 	getByDateRange(from: string, to: string): Promise<Sale[]>;
+	getDashboardSummary?(storeId?: string): Promise<{
+		todaySalesCount: number;
+		todaySalesTotal: number;
+		todayItemsSold: number;
+		totalReceivables: number;
+	}>;
 }

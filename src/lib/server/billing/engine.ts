@@ -9,6 +9,7 @@ import {
 	productsTable,
 	saleItemsTable,
 	salesTable,
+	paymentsTable,
 	storesTable,
 	type Product,
 	type ProductUnit,
@@ -53,6 +54,7 @@ export interface SaleInput {
 	interState?: boolean;
 	items: EngineLineInput[];
 	amountPaidAtSaleRupees?: number | string;
+	paymentMethod?: string;
 	notes?: string;
 }
 
@@ -520,6 +522,23 @@ export async function finalizeSale(
 			.returning();
 
 		await logSyncOutbox(tx, 'sales', sale.id, 'insert', sale);
+
+		if (input.customerId && paidPaise > 0) {
+			const [paymentRow] = await tx
+				.insert(paymentsTable)
+				.values({
+					storeId: ctx.store.id,
+					direction: 'customer_payment',
+					customerId: input.customerId,
+					amount: fromPaise(paidPaise),
+					method: (input.paymentMethod || 'cash').toLowerCase(),
+					relatedSaleId: sale.id,
+					notes: `Counter payment for Inv #${invoiceNumber}`,
+					createdBy: opts.userId ?? null
+				})
+				.returning();
+			await logSyncOutbox(tx, 'payments', paymentRow.id, 'insert', paymentRow);
+		}
 
 		const itemPayloads: InvoiceItemPayload[] = [];
 		for (const line of lines) {

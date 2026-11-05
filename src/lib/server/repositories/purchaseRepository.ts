@@ -9,12 +9,13 @@ import {
 	purchasesTable,
 	purchaseItemsTable,
 	suppliersTable,
+	paymentsTable,
 	productsTable,
 	batchesTable,
 	batchStockEventsTable,
 	storesTable
 } from '$lib/server/db/schema.js';
-import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
+import { eq, ne, desc, and, gte, lte, sql, inArray, or, ilike } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
 import { logSyncOutbox } from '../db/sync/outbox.js';
@@ -115,7 +116,74 @@ export class DbPurchaseRepository implements PurchaseRepository {
 		this._db = database;
 	}
 
-	async getAll(): Promise<Purchase[]> {
+	async getDashboardSummary(storeId?: string): Promise<{
+		todayPurchasesCount: number;
+		todayPurchasesTotal: number;
+		totalPayables: number;
+	}> {
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+
+		const conditions = [ne(purchasesTable.status, "cancelled")];
+		if (storeId) conditions.push(eq(purchasesTable.storeId, storeId));
+
+		const [row] = await this._db
+			.select({
+				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${purchasesTable.createdAt} >= ${todayStart} THEN 1 END), 0)::int`,
+				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${purchasesTable.createdAt} >= ${todayStart} THEN CAST(${purchasesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
+				totalPayables: sql<string>`COALESCE(SUM(CAST(${purchasesTable.dueAmount} AS NUMERIC)), 0)`
+			})
+			.from(purchasesTable)
+			.where(and(...conditions));
+
+		return {
+			todayPurchasesCount: Number(row?.todayCount || 0),
+			todayPurchasesTotal: Number(row?.todayTotal || 0),
+			totalPayables: Math.max(0, Number(row?.totalPayables || 0))
+		};
+	}
+
+	async getPaginated(opts: {
+		page?: number;
+		limit?: number;
+		supplierId?: string;
+		status?: string;
+		search?: string;
+		storeId?: string;
+	}): Promise<{ items: Purchase[]; total: number; page: number; limit: number; totalPages: number }> {
+		const page = Math.max(1, opts.page || 1);
+		const limit = Math.max(1, Math.min(100, opts.limit || 50));
+		const offset = (page - 1) * limit;
+
+		const conditions = [];
+		if (opts.storeId) {
+			conditions.push(eq(purchasesTable.storeId, opts.storeId));
+		}
+		if (opts.supplierId) {
+			conditions.push(eq(purchasesTable.supplierId, opts.supplierId));
+		}
+		if (opts.status && opts.status !== "all") {
+			conditions.push(eq(purchasesTable.status, opts.status));
+		}
+		if (opts.search) {
+			const s = `%${opts.search}%`;
+			const searchCond = or(
+				ilike(purchasesTable.supplierInvoiceRef, s),
+				ilike(suppliersTable.name, s)
+			);
+			if (searchCond) conditions.push(searchCond);
+		}
+
+		const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+		const [countRow] = await this._db
+			.select({ count: sql<number>`count(*)::int` })
+			.from(purchasesTable)
+			.leftJoin(suppliersTable, eq(purchasesTable.supplierId, suppliersTable.id))
+			.where(whereClause);
+
+		const total = Number(countRow?.count || 0);
+
 		const purchasesRows = await this._db
 			.select({
 				purchase: purchasesTable,
@@ -123,9 +191,18 @@ export class DbPurchaseRepository implements PurchaseRepository {
 			})
 			.from(purchasesTable)
 			.leftJoin(suppliersTable, eq(purchasesTable.supplierId, suppliersTable.id))
-			.orderBy(desc(purchasesTable.createdAt));
+			.where(whereClause)
+			.orderBy(desc(purchasesTable.createdAt))
+			.limit(limit)
+			.offset(offset);
 
-		const allItems = await this._db
+		if (purchasesRows.length === 0) {
+			return { items: [], total, page, limit, totalPages: Math.ceil(total / limit) || 1 };
+		}
+
+		const purchaseIds = purchasesRows.map(({ purchase }: any) => purchase.id);
+
+		const items = await this._db
 			.select({
 				id: purchaseItemsTable.id,
 				purchaseId: purchaseItemsTable.purchaseId,
@@ -141,12 +218,79 @@ export class DbPurchaseRepository implements PurchaseRepository {
 			})
 			.from(purchaseItemsTable)
 			.leftJoin(batchesTable, eq(purchaseItemsTable.batchId, batchesTable.id))
-			.leftJoin(productsTable, eq(batchesTable.productId, productsTable.id));
+			.leftJoin(productsTable, eq(batchesTable.productId, productsTable.id))
+			.where(inArray(purchaseItemsTable.purchaseId, purchaseIds));
+
+		const itemsByPurchaseId = new Map<string, any[]>();
+		for (const item of items) {
+			const list = itemsByPurchaseId.get(item.purchaseId);
+			if (list) list.push(item);
+			else itemsByPurchaseId.set(item.purchaseId, [item]);
+		}
+
+		const mapped = purchasesRows.map(({ purchase, supplierName }: any) =>
+			mapPurchaseRow(
+				purchase,
+				itemsByPurchaseId.get(purchase.id) || [],
+				supplierName
+			)
+		);
+
+		return {
+			items: mapped,
+			total,
+			page,
+			limit,
+			totalPages: Math.ceil(total / limit) || 1
+		};
+	}
+
+	async getAll(limit = 100, offset = 0): Promise<Purchase[]> {
+		const purchasesRows = await this._db
+			.select({
+				purchase: purchasesTable,
+				supplierName: suppliersTable.name
+			})
+			.from(purchasesTable)
+			.leftJoin(suppliersTable, eq(purchasesTable.supplierId, suppliersTable.id))
+			.orderBy(desc(purchasesTable.createdAt))
+			.limit(limit)
+			.offset(offset);
+
+		if (purchasesRows.length === 0) return [];
+
+		const purchaseIds = purchasesRows.map(({ purchase }: any) => purchase.id);
+
+		const items = await this._db
+			.select({
+				id: purchaseItemsTable.id,
+				purchaseId: purchaseItemsTable.purchaseId,
+				batchId: purchaseItemsTable.batchId,
+				quantity: purchaseItemsTable.quantity,
+				purchasePrice: purchaseItemsTable.purchasePrice,
+				batchNo: batchesTable.batchNo,
+				expiryDate: batchesTable.expiryDate,
+				mrp: batchesTable.mrp,
+				productId: batchesTable.productId,
+				productName: productsTable.name,
+				gstRate: productsTable.gstRate
+			})
+			.from(purchaseItemsTable)
+			.leftJoin(batchesTable, eq(purchaseItemsTable.batchId, batchesTable.id))
+			.leftJoin(productsTable, eq(batchesTable.productId, productsTable.id))
+			.where(inArray(purchaseItemsTable.purchaseId, purchaseIds));
+
+		const itemsByPurchaseId = new Map<string, any[]>();
+		for (const item of items) {
+			const list = itemsByPurchaseId.get(item.purchaseId);
+			if (list) list.push(item);
+			else itemsByPurchaseId.set(item.purchaseId, [item]);
+		}
 
 		return purchasesRows.map(({ purchase, supplierName }: any) =>
 			mapPurchaseRow(
 				purchase,
-				allItems.filter((i: any) => i.purchaseId === purchase.id),
+				itemsByPurchaseId.get(purchase.id) || [],
 				supplierName
 			)
 		);
@@ -471,6 +615,27 @@ export class DbPurchaseRepository implements PurchaseRepository {
 				await tx.insert(purchaseItemsTable).values(itemValues as any);
 			}
 
+			// Record supplier payment disbursement for upfront paid amount
+			if (purchaseValues.supplierId && paidAmountNum > 0) {
+				const paymentId = uuidv4();
+				const paymentValues = {
+					id: paymentId,
+					storeId,
+					direction: 'supplier_payment',
+					supplierId: purchaseValues.supplierId,
+					amount: String(paidAmountNum),
+					method: (purchaseValues.paymentMethod || 'cash').toLowerCase(),
+					relatedPurchaseId: id,
+					notes: `Disbursement for Purchase Bill #${purchaseValues.supplierInvoiceRef}`,
+					createdBy,
+					originNode: 'store_server',
+					createdAt: now,
+					updatedAt: now
+				};
+				await tx.insert(paymentsTable).values(paymentValues as any);
+				await logSyncOutbox(tx, 'payments', paymentId, 'insert', paymentValues);
+			}
+
 			// Update supplier balance in suppliersTable to reflect payable debt
 			if (dueAmountNum > 0 && purchaseValues.supplierId) {
 				await tx
@@ -579,6 +744,19 @@ export class DbPurchaseRepository implements PurchaseRepository {
 							id: supp.id,
 							outstandingBalance: String(newBalance)
 						});
+					}
+				}
+
+				// Void disbursement payment receipts tied to this cancelled purchase
+				const paymentsToDelete = await tx
+					.select({ id: paymentsTable.id })
+					.from(paymentsTable)
+					.where(eq(paymentsTable.relatedPurchaseId, id));
+
+				if (paymentsToDelete.length > 0) {
+					await tx.delete(paymentsTable).where(eq(paymentsTable.relatedPurchaseId, id));
+					for (const p of paymentsToDelete) {
+						await logSyncOutbox(tx, 'payments', p.id, 'delete', { id: p.id });
 					}
 				}
 

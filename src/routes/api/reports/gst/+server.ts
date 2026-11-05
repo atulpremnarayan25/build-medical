@@ -8,9 +8,13 @@ import {
 	purchaseItemsTable,
 	batchesTable,
 	productsTable,
-	storesTable
+	storesTable,
+	returnsTable,
+	returnItemsTable,
+	suppliersTable,
+	usersTable
 } from '$lib/server/db/schema.js';
-import { eq, ne, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, ne, and, or, gte, lte, desc, inArray } from 'drizzle-orm';
 import { toPaise, paiseToRupees } from '$lib/utils/money.js';
 import type { RequestEvent } from './$types';
 
@@ -471,6 +475,233 @@ export async function GET(event: RequestEvent) {
 		};
 	});
 
+	// 4. Returns & Table 9B Credit/Debit Notes
+	const returnDateFilters = [];
+	if (from) {
+		const fromDate = new Date(from);
+		fromDate.setHours(0, 0, 0, 0);
+		returnDateFilters.push(gte(returnsTable.createdAt, fromDate));
+	}
+	if (to) {
+		const toDate = new Date(to);
+		toDate.setHours(23, 59, 59, 999);
+		returnDateFilters.push(lte(returnsTable.createdAt, toDate));
+	}
+
+	const rawReturns = await db
+		.select({
+			id: returnsTable.id,
+			returnType: returnsTable.returnType,
+			reason: returnsTable.reason,
+			createdAt: returnsTable.createdAt,
+			originalSaleId: returnsTable.originalSaleId,
+			originalPurchaseId: returnsTable.originalPurchaseId,
+			saleInvoiceNumber: salesTable.invoiceNumber,
+			customerName: customersTable.name,
+			customerGstin: customersTable.gstin,
+			purchaseInvoiceRef: purchasesTable.supplierInvoiceRef,
+			supplierName: suppliersTable.name,
+			supplierGstin: suppliersTable.gstin
+		})
+		.from(returnsTable)
+		.leftJoin(usersTable, eq(returnsTable.createdBy, usersTable.id))
+		.leftJoin(salesTable, eq(returnsTable.originalSaleId, salesTable.id))
+		.leftJoin(customersTable, eq(salesTable.customerId, customersTable.id))
+		.leftJoin(purchasesTable, eq(returnsTable.originalPurchaseId, purchasesTable.id))
+		.leftJoin(suppliersTable, eq(purchasesTable.supplierId, suppliersTable.id))
+		.where(
+			and(
+				or(
+					eq(usersTable.storeId, storeId),
+					eq(salesTable.storeId, storeId),
+					eq(purchasesTable.storeId, storeId)
+				),
+				...returnDateFilters
+			)
+		)
+		.orderBy(desc(returnsTable.createdAt));
+
+	let returnItems: any[] = [];
+	if (rawReturns.length > 0) {
+		const returnIds = rawReturns.map((r) => r.id);
+		returnItems = await db
+			.select({
+				id: returnItemsTable.id,
+				returnId: returnItemsTable.returnId,
+				batchId: returnItemsTable.batchId,
+				quantity: returnItemsTable.quantity,
+				lineAmount: returnItemsTable.lineAmount,
+				productId: batchesTable.productId,
+				productName: productsTable.name,
+				hsnCode: productsTable.hsnCode,
+				gstRate: productsTable.gstRate,
+				baseUnit: productsTable.baseUnit
+			})
+			.from(returnItemsTable)
+			.leftJoin(batchesTable, eq(returnItemsTable.batchId, batchesTable.id))
+			.leftJoin(productsTable, eq(batchesTable.productId, productsTable.id))
+			.where(inArray(returnItemsTable.returnId, returnIds));
+	}
+
+	const itemsByReturnId = new Map<string, typeof returnItems>();
+	for (const item of returnItems) {
+		const list = itemsByReturnId.get(item.returnId) || [];
+		list.push(item);
+		itemsByReturnId.set(item.returnId, list);
+	}
+
+	const creditNotes: any[] = [];
+	let cnTaxablePaise = 0;
+	let cnCgstPaise = 0;
+	let cnSgstPaise = 0;
+	let cnIgstPaise = 0;
+	let cnGstPaise = 0;
+	let cnTotalPaise = 0;
+
+	const debitNotes: any[] = [];
+	let dnTaxablePaise = 0;
+	let dnCgstPaise = 0;
+	let dnSgstPaise = 0;
+	let dnIgstPaise = 0;
+	let dnGstPaise = 0;
+	let dnTotalPaise = 0;
+
+	for (const rtn of rawReturns) {
+		const items = itemsByReturnId.get(rtn.id) || [];
+		let rtnTotalPaise = 0;
+		let rtnTaxablePaise = 0;
+		let rtnCgstPaise = 0;
+		let rtnSgstPaise = 0;
+		let rtnIgstPaise = 0;
+
+		if (rtn.returnType === 'sales_return') {
+			const hasValidGstin = Boolean(rtn.customerGstin && rtn.customerGstin.trim().length >= 5);
+			const isInterState = hasValidGstin && rtn.customerGstin!.trim().slice(0, 2) !== storeStateCode;
+
+			for (const it of items) {
+				const r = Number(it.gstRate || 0);
+				const lineTotalPaise = toPaise(it.lineAmount || 0);
+				const lineTaxablePaise = Math.round((lineTotalPaise * 100) / (100 + r));
+				const lineGstPaise = lineTotalPaise - lineTaxablePaise;
+
+				let cgst = 0;
+				let sgst = 0;
+				let igst = 0;
+				if (isInterState) {
+					igst = lineGstPaise;
+				} else {
+					cgst = Math.floor(lineGstPaise / 2);
+					sgst = lineGstPaise - cgst;
+				}
+
+				rtnTotalPaise += lineTotalPaise;
+				rtnTaxablePaise += lineTaxablePaise;
+				rtnCgstPaise += cgst;
+				rtnSgstPaise += sgst;
+				rtnIgstPaise += igst;
+			}
+
+			const noteNumber = `CN-${rtn.id.slice(0, 8).toUpperCase()}`;
+			const maxRate = items.length > 0 ? Math.max(...items.map((it) => Number(it.gstRate || 0))) : 12;
+
+			creditNotes.push({
+				id: rtn.id,
+				noteNumber,
+				noteType: 'C',
+				date: rtn.createdAt ? new Date(rtn.createdAt).toISOString() : new Date().toISOString(),
+				originalInvoiceNumber: rtn.saleInvoiceNumber || 'N/A',
+				recipientName: rtn.customerName || 'Walk-in Customer',
+				recipientGstin: rtn.customerGstin || '',
+				isRegistered: hasValidGstin,
+				reason: rtn.reason,
+				taxableAmount: paiseToRupees(rtnTaxablePaise),
+				cgstAmount: paiseToRupees(rtnCgstPaise),
+				sgstAmount: paiseToRupees(rtnSgstPaise),
+				igstAmount: paiseToRupees(rtnIgstPaise),
+				gstAmount: paiseToRupees(rtnCgstPaise + rtnSgstPaise + rtnIgstPaise),
+				totalAmount: paiseToRupees(rtnTotalPaise),
+				rate: maxRate
+			});
+
+			cnTaxablePaise += rtnTaxablePaise;
+			cnCgstPaise += rtnCgstPaise;
+			cnSgstPaise += rtnSgstPaise;
+			cnIgstPaise += rtnIgstPaise;
+			cnGstPaise += rtnCgstPaise + rtnSgstPaise + rtnIgstPaise;
+			cnTotalPaise += rtnTotalPaise;
+		} else if (rtn.returnType === 'purchase_return') {
+			const hasValidGstin = Boolean(rtn.supplierGstin && rtn.supplierGstin.trim().length >= 5);
+			const isInterState = hasValidGstin && rtn.supplierGstin!.trim().slice(0, 2) !== storeStateCode;
+
+			for (const it of items) {
+				const r = Number(it.gstRate || 0);
+				const lineTotalPaise = toPaise(it.lineAmount || 0);
+				const lineTaxablePaise = Math.round((lineTotalPaise * 100) / (100 + r));
+				const lineGstPaise = lineTotalPaise - lineTaxablePaise;
+
+				let cgst = 0;
+				let sgst = 0;
+				let igst = 0;
+				if (isInterState) {
+					igst = lineGstPaise;
+				} else {
+					cgst = Math.floor(lineGstPaise / 2);
+					sgst = lineGstPaise - cgst;
+				}
+
+				rtnTotalPaise += lineTotalPaise;
+				rtnTaxablePaise += lineTaxablePaise;
+				rtnCgstPaise += cgst;
+				rtnSgstPaise += sgst;
+				rtnIgstPaise += igst;
+			}
+
+			const noteNumber = `DN-${rtn.id.slice(0, 8).toUpperCase()}`;
+			const maxRate = items.length > 0 ? Math.max(...items.map((it) => Number(it.gstRate || 0))) : 12;
+
+			debitNotes.push({
+				id: rtn.id,
+				noteNumber,
+				noteType: 'D',
+				date: rtn.createdAt ? new Date(rtn.createdAt).toISOString() : new Date().toISOString(),
+				originalBillRef: rtn.purchaseInvoiceRef || 'N/A',
+				supplierName: rtn.supplierName || 'Supplier',
+				supplierGstin: rtn.supplierGstin || '',
+				reason: rtn.reason,
+				taxableAmount: paiseToRupees(rtnTaxablePaise),
+				cgstAmount: paiseToRupees(rtnCgstPaise),
+				sgstAmount: paiseToRupees(rtnSgstPaise),
+				igstAmount: paiseToRupees(rtnIgstPaise),
+				gstAmount: paiseToRupees(rtnCgstPaise + rtnSgstPaise + rtnIgstPaise),
+				totalAmount: paiseToRupees(rtnTotalPaise),
+				rate: maxRate
+			});
+
+			dnTaxablePaise += rtnTaxablePaise;
+			dnCgstPaise += rtnCgstPaise;
+			dnSgstPaise += rtnSgstPaise;
+			dnIgstPaise += rtnIgstPaise;
+			dnGstPaise += rtnCgstPaise + rtnSgstPaise + rtnIgstPaise;
+			dnTotalPaise += rtnTotalPaise;
+		}
+	}
+
+	let grossItcTaxablePaise = 0;
+	let grossItcCgstPaise = 0;
+	let grossItcSgstPaise = 0;
+	let grossItcTotalPaise = 0;
+	for (const itc of itcSlabsMap.values()) {
+		grossItcTaxablePaise += itc.taxablePaise;
+		grossItcCgstPaise += itc.cgstPaise;
+		grossItcSgstPaise += itc.sgstPaise;
+		grossItcTotalPaise += itc.totalPaise;
+	}
+
+	const netItcTaxablePaise = Math.max(0, grossItcTaxablePaise - dnTaxablePaise);
+	const netItcCgstPaise = Math.max(0, grossItcCgstPaise - dnCgstPaise);
+	const netItcSgstPaise = Math.max(0, grossItcSgstPaise - dnSgstPaise);
+	const netItcTotalPaise = Math.max(0, grossItcTotalPaise - dnTotalPaise);
+
 	return json({
 		from,
 		to,
@@ -514,6 +745,52 @@ export async function GET(event: RequestEvent) {
 		},
 		hsnSummary,
 		sales: overallSalesSlabs,
-		purchases
+		purchases,
+		table9b: {
+			creditNotes: {
+				summary: {
+					noteCount: creditNotes.length,
+					taxableAmount: paiseToRupees(cnTaxablePaise),
+					cgstAmount: paiseToRupees(cnCgstPaise),
+					sgstAmount: paiseToRupees(cnSgstPaise),
+					igstAmount: paiseToRupees(cnIgstPaise),
+					gstAmount: paiseToRupees(cnGstPaise),
+					totalAmount: paiseToRupees(cnTotalPaise)
+				},
+				notes: creditNotes
+			},
+			debitNotes: {
+				summary: {
+					noteCount: debitNotes.length,
+					taxableAmount: paiseToRupees(dnTaxablePaise),
+					cgstAmount: paiseToRupees(dnCgstPaise),
+					sgstAmount: paiseToRupees(dnSgstPaise),
+					igstAmount: paiseToRupees(dnIgstPaise),
+					gstAmount: paiseToRupees(dnGstPaise),
+					totalAmount: paiseToRupees(dnTotalPaise)
+				},
+				notes: debitNotes
+			}
+		},
+		itcSummary: {
+			grossItc: {
+				taxableAmount: paiseToRupees(grossItcTaxablePaise),
+				cgstAmount: paiseToRupees(grossItcCgstPaise),
+				sgstAmount: paiseToRupees(grossItcSgstPaise),
+				totalAmount: paiseToRupees(grossItcTotalPaise)
+			},
+			reversedItc: {
+				taxableAmount: paiseToRupees(dnTaxablePaise),
+				cgstAmount: paiseToRupees(dnCgstPaise),
+				sgstAmount: paiseToRupees(dnSgstPaise),
+				totalAmount: paiseToRupees(dnTotalPaise)
+			},
+			netItc: {
+				taxableAmount: paiseToRupees(netItcTaxablePaise),
+				cgstAmount: paiseToRupees(netItcCgstPaise),
+				sgstAmount: paiseToRupees(netItcSgstPaise),
+				totalAmount: paiseToRupees(netItcTotalPaise)
+			}
+		}
 	});
 }

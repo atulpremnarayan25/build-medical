@@ -7,7 +7,27 @@ export async function GET({ url, locals }: any) {
 		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 	}
 
-	const supplierId = url.searchParams.get('supplierId');
+	const supplierId = url.searchParams.get('supplierId') || undefined;
+	const status = url.searchParams.get('status') || undefined;
+	const search = url.searchParams.get('search') || url.searchParams.get('q') || undefined;
+	const pageParam = url.searchParams.get('page');
+	const limitParam = url.searchParams.get('limit');
+	const storeId = locals.user.storeId || undefined;
+
+	if (pageParam !== null || limitParam !== null) {
+		const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+		const limit = Math.max(1, Math.min(100, parseInt(limitParam || '50', 10) || 50));
+		const result = await purchaseService.getPaginatedPurchases({
+			page,
+			limit,
+			supplierId,
+			status,
+			search,
+			storeId
+		});
+		return jsonResponse(result);
+	}
+
 	if (supplierId) {
 		const purchases = await purchaseService.getPurchasesBySupplier(supplierId);
 		return json(purchases);

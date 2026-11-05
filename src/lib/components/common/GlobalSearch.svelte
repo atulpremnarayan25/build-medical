@@ -2,13 +2,6 @@
 	import { Search, X, Loader2, Package, Users, Truck, FileText } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import {
-		customerService,
-		supplierService,
-		productService,
-		saleService,
-		purchaseService
-	} from '$lib/services';
 
 	let open = $state(false);
 	let query = $state('');
@@ -43,72 +36,41 @@
 		return () => window.removeEventListener('keydown', handleKeydown);
 	});
 
+	const typeIconMap: Record<string, any> = {
+		Product: Package,
+		Customer: Users,
+		Supplier: Truck,
+		Sale: FileText,
+		Purchase: FileText
+	};
+
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
 	async function performSearch() {
-		if (query.length < 2) {
+		if (query.trim().length < 2) {
 			results = [];
 			return;
 		}
 
 		loading = true;
 		try {
-			const q = query.toLowerCase();
-			const [customers, suppliers, products, sales, purchases] = await Promise.all([
-				customerService.searchCustomers(q).catch(() => []),
-				supplierService.searchSuppliers(q).catch(() => []),
-				productService.searchProducts(q).catch(() => []),
-				saleService
-					.getSales()
-					.then((res) => res.filter((s) => s.invoiceNumber.toLowerCase().includes(q)))
-					.catch(() => []),
-				purchaseService
-					.getPurchases()
-					.then((res) => res.filter((p) => p.invoiceNumber.toLowerCase().includes(q)))
-					.catch(() => [])
-			]);
-
-			const combined = [
-				...products.slice(0, 5).map((p) => ({
-					type: 'Product',
-					title: p.name,
-					subtitle: p.genericName || 'No generic name',
-					href: `/inventory/products/${p.id}`,
-					icon: Package
-				})),
-				...customers.slice(0, 5).map((c) => ({
-					type: 'Customer',
-					title: c.name,
-					subtitle: c.phone || 'No phone',
-					href: `/customers/${c.id}`,
-					icon: Users
-				})),
-				...suppliers.slice(0, 5).map((s) => ({
-					type: 'Supplier',
-					title: s.name,
-					subtitle: s.phone || 'No phone',
-					href: `/suppliers/${s.id}`,
-					icon: Truck
-				})),
-				...sales.slice(0, 5).map((s) => ({
-					type: 'Sale',
-					title: s.invoiceNumber,
-					subtitle: `Customer: ${s.customerName}`,
-					href: `/sales/${s.id}`,
-					icon: FileText
-				})),
-				...purchases.slice(0, 5).map((p) => ({
-					type: 'Purchase',
-					title: p.invoiceNumber,
-					subtitle: `Supplier: ${p.supplierName}`,
-					href: `/purchases/${p.id}`,
-					icon: FileText
-				}))
-			];
-
-			results = combined;
+			const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`);
+			if (res.ok) {
+				const json = await res.json();
+				const items: any[] = json?.data?.items || json?.items || [];
+				results = items.map((item) => ({
+					type: item.type,
+					title: item.title,
+					subtitle: item.subtitle,
+					href: item.href,
+					icon: typeIconMap[item.type] || FileText
+				}));
+			} else {
+				results = [];
+			}
 		} catch (e) {
-			console.error(e);
+			console.error('Global search error:', e);
+			results = [];
 		} finally {
 			loading = false;
 		}

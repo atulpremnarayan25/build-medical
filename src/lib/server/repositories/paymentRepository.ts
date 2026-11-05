@@ -21,7 +21,9 @@ export class DbPaymentRepository implements PaymentRepository {
 			partyId: r.customerId || r.supplierId || '',
 			partyName: '',
 			partyType: r.direction === 'customer_payment' ? 'customer' : 'supplier',
-			invoiceId: r.relatedSaleId || undefined,
+			invoiceId: r.relatedSaleId || r.relatedPurchaseId || undefined,
+			relatedSaleId: r.relatedSaleId || undefined,
+			relatedPurchaseId: r.relatedPurchaseId || undefined,
 			amount: Number(r.amount || 0),
 			paymentMethod: r.method || 'cash',
 			reference: r.notes || undefined,
@@ -103,7 +105,8 @@ export class DbPaymentRepository implements PaymentRepository {
 
 		const method = (_input.paymentMethod || _input.method || 'cash').toLowerCase();
 		const notes = _input.notes || _input.reference || _input.referenceNumber || null;
-		const relatedSaleId = _input.invoiceId || _input.relatedSaleId || null;
+		const relatedSaleId = isCustomer ? _input.relatedSaleId || _input.invoiceId || null : null;
+		const relatedPurchaseId = !isCustomer ? _input.relatedPurchaseId || _input.invoiceId || null : null;
 
 		const values = {
 			id,
@@ -114,6 +117,7 @@ export class DbPaymentRepository implements PaymentRepository {
 			amount: String(_input.amount || 0),
 			method,
 			relatedSaleId,
+			relatedPurchaseId,
 			notes,
 			createdBy,
 			createdAt: now

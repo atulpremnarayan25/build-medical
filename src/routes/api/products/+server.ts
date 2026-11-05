@@ -8,9 +8,33 @@ export async function GET({ url, locals }: RequestEvent) {
 			return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 		}
 
-		const q = url.searchParams.get('q') || url.searchParams.get('search');
-		const category = url.searchParams.get('category');
-		// const barcode = url.searchParams.get('barcode');
+		const barcode = url.searchParams.get('barcode');
+		const q = url.searchParams.get('q') || url.searchParams.get('search') || undefined;
+		const category = url.searchParams.get('category') || undefined;
+		const pageParam = url.searchParams.get('page');
+		const limitParam = url.searchParams.get('limit');
+		const storeId = locals.user.storeId || undefined;
+
+		if (barcode) {
+			const product = await productService.getProductByBarcode(barcode, storeId);
+			if (!product) {
+				return errorResponse('NOT_FOUND', 'Product not found with this barcode', 404);
+			}
+			return jsonResponse(product);
+		}
+
+		if (pageParam !== null || limitParam !== null) {
+			const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+			const limit = Math.max(1, Math.min(100, parseInt(limitParam || '50', 10) || 50));
+			const result = await productService.getPaginatedProducts({
+				page,
+				limit,
+				search: q,
+				category,
+				storeId
+			});
+			return jsonResponse(result);
+		}
 
 		let products = await productService.getProducts();
 

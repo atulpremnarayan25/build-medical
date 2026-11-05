@@ -11,6 +11,8 @@ export interface Payment {
 	partyType: 'customer' | 'supplier';
 	invoiceId?: string;
 	invoiceNumber?: string;
+	relatedSaleId?: string;
+	relatedPurchaseId?: string;
 	amount: number;
 	paymentMethod: PaymentMethod;
 	reference?: string;

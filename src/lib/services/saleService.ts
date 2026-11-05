@@ -73,12 +73,49 @@ export function createSaleService(
 			return repo.getByDateRange(from, to);
 		},
 
-		async getDashboardSummary(): Promise<{
+		async getPaginatedSales(opts: {
+			page?: number;
+			limit?: number;
+			customerId?: string;
+			status?: string;
+			search?: string;
+			storeId?: string;
+		}) {
+			if (repo.getPaginated) {
+				return repo.getPaginated(opts);
+			}
+			const all = opts.customerId
+				? await repo.getByCustomerId(opts.customerId)
+				: await repo.getAll();
+			let filtered = all;
+			if (opts.status) {
+				filtered = filtered.filter((s) => s.status === opts.status);
+			}
+			if (opts.search) {
+				const q = opts.search.toLowerCase();
+				filtered = filtered.filter(
+					(s) =>
+						s.invoiceNumber.toLowerCase().includes(q) ||
+						(s.customerName && s.customerName.toLowerCase().includes(q))
+				);
+			}
+			const page = Math.max(1, opts.page || 1);
+			const limit = Math.max(1, Math.min(100, opts.limit || 50));
+			const total = filtered.length;
+			const totalPages = Math.ceil(total / limit) || 1;
+			const items = filtered.slice((page - 1) * limit, page * limit);
+			return { items, total, page, limit, totalPages };
+		},
+
+		async getDashboardSummary(storeId?: string): Promise<{
 			todaySalesCount: number;
 			todaySalesTotal: number;
 			todayItemsSold: number;
 			totalReceivables: number;
 		}> {
+			if (repo.getDashboardSummary) {
+				return repo.getDashboardSummary(storeId);
+			}
 			const today = new Date().toISOString().split('T')[0];
 			const allSales = await repo.getAll();
 			const activeSales = allSales.filter((s) => s.status !== 'cancelled');

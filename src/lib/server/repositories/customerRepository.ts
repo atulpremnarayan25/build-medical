@@ -16,7 +16,7 @@ export class DbCustomerRepository implements CustomerRepository {
 
 	private _balanceSql() {
 		return sql<string>`(
-			COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM sales WHERE sales.customer_id = customers.id), 0)
+			COALESCE((SELECT SUM(CAST(total_amount AS NUMERIC)) FROM sales WHERE sales.customer_id = customers.id AND sales.status != 'cancelled'), 0)
 			- COALESCE((SELECT SUM(CAST(amount AS NUMERIC)) FROM payments WHERE payments.customer_id = customers.id AND payments.direction = 'customer_payment'), 0)
 			- COALESCE((
 				SELECT SUM(CAST(ri.line_amount AS NUMERIC))

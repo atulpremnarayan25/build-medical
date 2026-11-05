@@ -127,6 +127,7 @@ export const productsTable = pgTable(
 	},
 	(t) => [
 		index('products_name_trgm_idx').using('gin', sql`${t.name} gin_trgm_ops`),
+		index('products_store_name_idx').on(t.storeId, t.name),
 		uniqueIndex('products_barcode_uq')
 			.on(t.barcode)
 			.where(sql`barcode IS NOT NULL`)
@@ -313,7 +314,8 @@ export const purchasesTable = pgTable(
 	},
 	(t) => [
 		index('purchases_supplier_idx').on(t.supplierId),
-		index('purchases_created_idx').on(t.createdAt)
+		index('purchases_created_idx').on(t.createdAt),
+		index('purchases_store_created_idx').on(t.storeId, t.createdAt)
 	]
 );
 
@@ -362,7 +364,8 @@ export const salesTable = pgTable(
 	},
 	(t) => [
 		index('sales_customer_created_idx').on(t.customerId, t.createdAt), // khata ledger views
-		index('sales_created_idx').on(t.createdAt)
+		index('sales_created_idx').on(t.createdAt),
+		index('sales_store_created_idx').on(t.storeId, t.createdAt)
 	]
 );
 
@@ -409,6 +412,7 @@ export const paymentsTable = pgTable(
 		amount: numeric('amount').notNull(),
 		method: text('method').notNull().default('cash'), // cash|upi|bank_transfer|other
 		relatedSaleId: uuid('related_sale_id').references(() => salesTable.id),
+		relatedPurchaseId: uuid('related_purchase_id').references(() => purchasesTable.id),
 		notes: text('notes'),
 		createdBy: uuid('created_by').references(() => usersTable.id),
 		...createdAt,
@@ -417,6 +421,7 @@ export const paymentsTable = pgTable(
 	(t) => [
 		index('payments_customer_idx').on(t.customerId),
 		index('payments_supplier_idx').on(t.supplierId),
+		index('payments_purchase_idx').on(t.relatedPurchaseId),
 		index('payments_created_idx').on(t.createdAt)
 	]
 );

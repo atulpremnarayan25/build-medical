@@ -1,7 +1,7 @@
 import type { ProductRepository } from '$lib/repositories/productRepository.js';
 import type { Product, CreateProductInput } from '$lib/types/index.js';
 import { productsTable, productUnitsTable, storesTable } from '../db/schema.js';
-import { eq, and, ilike, or } from 'drizzle-orm';
+import { eq, and, ilike, or, sql } from 'drizzle-orm';
 import { mapToProduct } from '../db/mappers.js';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
@@ -12,6 +12,58 @@ export class DbProductRepository implements ProductRepository {
 
 	constructor(database: any) {
 		this._db = database;
+	}
+
+	async getPaginated(opts: {
+		page?: number;
+		limit?: number;
+		search?: string;
+		category?: string;
+		storeId?: string;
+	}): Promise<{ items: Product[]; total: number; page: number; limit: number; totalPages: number }> {
+		const page = Math.max(1, opts.page || 1);
+		const limit = Math.max(1, Math.min(100, opts.limit || 50));
+		const offset = (page - 1) * limit;
+
+		const conditions = [eq(productsTable.isActive, true)];
+		if (opts.storeId) {
+			conditions.push(eq(productsTable.storeId, opts.storeId));
+		}
+		if (opts.category && opts.category !== "all") {
+			conditions.push(eq(productsTable.category, opts.category));
+		}
+		if (opts.search) {
+			const s = `%${opts.search}%`;
+			const searchCond = or(
+				ilike(productsTable.name, s),
+				ilike(productsTable.genericName, s),
+				ilike(productsTable.manufacturer, s),
+				ilike(productsTable.barcode, s)
+			);
+			if (searchCond) conditions.push(searchCond);
+		}
+
+		const [countRow] = await this._db
+			.select({ count: sql<number>`count(*)::int` })
+			.from(productsTable)
+			.where(and(...conditions));
+		const total = Number(countRow?.count || 0);
+
+		const rows = await this._db
+			.select()
+			.from(productsTable)
+			.where(and(...conditions))
+			.orderBy(productsTable.name)
+			.limit(limit)
+			.offset(offset);
+
+		return {
+			items: rows.map(mapToProduct),
+			total,
+			page,
+			limit,
+			totalPages: Math.ceil(total / limit) || 1
+		};
 	}
 
 	async getAll(): Promise<Product[]> {
@@ -151,10 +203,28 @@ export class DbProductRepository implements ProductRepository {
 						ilike(productsTable.name, search),
 						ilike(productsTable.genericName, search),
 						ilike(productsTable.manufacturer, search),
-						ilike(productsTable.category, search)
+						ilike(productsTable.category, search),
+						ilike(productsTable.barcode, search)
 					)
 				)
 			);
 		return rows.map(mapToProduct);
+	}
+
+	async getByBarcode(barcode: string, storeId?: string): Promise<Product | null> {
+		const conditions = [
+			eq(productsTable.isActive, true),
+			eq(productsTable.barcode, barcode)
+		];
+		if (storeId) {
+			conditions.push(eq(productsTable.storeId, storeId));
+		}
+		const rows = await this._db
+			.select()
+			.from(productsTable)
+			.where(and(...conditions))
+			.limit(1);
+		if (rows.length === 0) return null;
+		return mapToProduct(rows[0]);
 	}
 }

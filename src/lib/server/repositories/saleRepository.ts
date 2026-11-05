@@ -7,10 +7,11 @@ import {
 	batchesTable,
 	batchStockEventsTable,
 	customersTable,
+	paymentsTable,
 	storesTable,
 	usersTable
 } from '$lib/server/db/schema.js';
-import { eq, desc, and, gte, lte, inArray } from 'drizzle-orm';
+import { eq, ne, desc, and, gte, lte, inArray, or, ilike, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { db as pgDb } from '../db/index.js';
 import { logSyncOutbox } from '../db/sync/outbox.js';
@@ -76,6 +77,153 @@ export class DbSaleRepository implements SaleRepository {
 
 	constructor(database: any) {
 		this._db = database;
+	}
+
+	async getDashboardSummary(storeId?: string): Promise<{
+		todaySalesCount: number;
+		todaySalesTotal: number;
+		todayItemsSold: number;
+		totalReceivables: number;
+	}> {
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+
+		const salesConditions = [ne(salesTable.status, "cancelled")];
+		if (storeId) salesConditions.push(eq(salesTable.storeId, storeId));
+
+		const [summaryRow] = await this._db
+			.select({
+				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${salesTable.createdAt} >= ${todayStart} THEN 1 END), 0)::int`,
+				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${salesTable.createdAt} >= ${todayStart} THEN CAST(${salesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
+				totalReceivables: sql<string>`COALESCE(SUM(CAST(${salesTable.totalAmount} AS NUMERIC) - CAST(${salesTable.amountPaidAtSale} AS NUMERIC)), 0)`
+			})
+			.from(salesTable)
+			.where(and(...salesConditions));
+
+		const itemConditions = [
+			ne(salesTable.status, "cancelled"),
+			gte(salesTable.createdAt, todayStart)
+		];
+		if (storeId) itemConditions.push(eq(salesTable.storeId, storeId));
+
+		const [itemRow] = await this._db
+			.select({
+				itemsSold: sql<number>`COALESCE(SUM(${saleItemsTable.quantity}), 0)::int`
+			})
+			.from(saleItemsTable)
+			.leftJoin(salesTable, eq(saleItemsTable.saleId, salesTable.id))
+			.where(and(...itemConditions));
+
+		return {
+		todaySalesCount: Number(summaryRow?.todayCount || 0),
+		todaySalesTotal: Number(summaryRow?.todayTotal || 0),
+		todayItemsSold: Number(itemRow?.itemsSold || 0),
+		totalReceivables: Math.max(0, Number(summaryRow?.totalReceivables || 0))
+		};
+	}
+
+	async getPaginated(opts: {
+		page?: number;
+		limit?: number;
+		customerId?: string;
+		status?: string;
+		search?: string;
+		storeId?: string;
+	}): Promise<{ items: Sale[]; total: number; page: number; limit: number; totalPages: number }> {
+		const page = Math.max(1, opts.page || 1);
+		const limit = Math.max(1, Math.min(100, opts.limit || 50));
+		const offset = (page - 1) * limit;
+
+		const conditions = [];
+		if (opts.storeId) {
+			conditions.push(eq(salesTable.storeId, opts.storeId));
+		}
+		if (opts.customerId) {
+			conditions.push(eq(salesTable.customerId, opts.customerId));
+		}
+		if (opts.status && opts.status !== "all") {
+			conditions.push(eq(salesTable.status, opts.status));
+		}
+		if (opts.search) {
+			const s = `%${opts.search}%`;
+			const searchCond = or(
+				ilike(salesTable.invoiceNumber, s),
+				ilike(salesTable.notes, s),
+				ilike(customersTable.name, s)
+			);
+			if (searchCond) conditions.push(searchCond);
+		}
+
+		const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+		const [countRow] = await this._db
+			.select({ count: sql<number>`count(*)::int` })
+			.from(salesTable)
+			.leftJoin(customersTable, eq(salesTable.customerId, customersTable.id))
+			.where(whereClause);
+
+		const total = Number(countRow?.count || 0);
+
+		const salesRows = await this._db
+			.select({
+				sale: salesTable,
+				customerName: customersTable.name
+			})
+			.from(salesTable)
+			.leftJoin(customersTable, eq(salesTable.customerId, customersTable.id))
+			.where(whereClause)
+			.orderBy(desc(salesTable.createdAt))
+			.limit(limit)
+			.offset(offset);
+
+		if (salesRows.length === 0) {
+			return { items: [], total, page, limit, totalPages: Math.ceil(total / limit) || 1 };
+		}
+
+		const saleIds = salesRows.map(({ sale }: any) => sale.id);
+
+		const items = await this._db
+			.select({
+				id: saleItemsTable.id,
+				saleId: saleItemsTable.saleId,
+				productId: saleItemsTable.productId,
+				productName: productsTable.name,
+				batchId: saleItemsTable.batchId,
+				batchNumber: batchesTable.batchNo,
+				expiryDate: batchesTable.expiryDate,
+				mrp: batchesTable.mrp,
+				quantity: saleItemsTable.quantity,
+				rate: saleItemsTable.rate,
+				gstRate: saleItemsTable.gstRate,
+				lineTotal: saleItemsTable.lineTotal,
+				schemeApplied: saleItemsTable.schemeApplied
+			})
+			.from(saleItemsTable)
+			.leftJoin(productsTable, eq(saleItemsTable.productId, productsTable.id))
+			.leftJoin(batchesTable, eq(saleItemsTable.batchId, batchesTable.id))
+			.where(inArray(saleItemsTable.saleId, saleIds));
+
+		const itemsBySaleId = new Map<string, any[]>();
+		for (const item of items) {
+			const list = itemsBySaleId.get(item.saleId);
+			if (list) {
+				list.push(item);
+			} else {
+				itemsBySaleId.set(item.saleId, [item]);
+			}
+		}
+
+		const mapped = salesRows.map(({ sale, customerName }: any) =>
+			mapSaleRow(sale, itemsBySaleId.get(sale.id) || [], customerName)
+		);
+
+		return {
+			items: mapped,
+			total,
+			page,
+			limit,
+			totalPages: Math.ceil(total / limit) || 1
+		};
 	}
 
 	async getAll(limit = 100, offset = 0): Promise<Sale[]> {
@@ -182,6 +330,8 @@ export class DbSaleRepository implements SaleRepository {
 
 		if (salesRows.length === 0) return [];
 
+		const saleIds = salesRows.map(({ sale }: any) => sale.id);
+
 		const allItems = await this._db
 			.select({
 				id: saleItemsTable.id,
@@ -200,12 +350,23 @@ export class DbSaleRepository implements SaleRepository {
 			})
 			.from(saleItemsTable)
 			.leftJoin(productsTable, eq(saleItemsTable.productId, productsTable.id))
-			.leftJoin(batchesTable, eq(saleItemsTable.batchId, batchesTable.id));
+			.leftJoin(batchesTable, eq(saleItemsTable.batchId, batchesTable.id))
+			.where(inArray(saleItemsTable.saleId, saleIds));
+
+		const itemsBySaleId = new Map<string, any[]>();
+		for (const item of allItems) {
+			const list = itemsBySaleId.get(item.saleId);
+			if (list) {
+				list.push(item);
+			} else {
+				itemsBySaleId.set(item.saleId, [item]);
+			}
+		}
 
 		return salesRows.map(({ sale, customerName }: any) =>
 			mapSaleRow(
 				sale,
-				allItems.filter((i: any) => i.saleId === sale.id),
+				itemsBySaleId.get(sale.id) || [],
 				customerName
 			)
 		);
@@ -295,6 +456,19 @@ export class DbSaleRepository implements SaleRepository {
 
 			// If cancelling a confirmed sale: restore batch stock & rollback customer balance
 			if (status === 'cancelled' && existingSale.status !== 'cancelled') {
+				// Void counter payment receipts tied to this cancelled sale
+				const paymentsToDelete = await tx
+					.select({ id: paymentsTable.id })
+					.from(paymentsTable)
+					.where(eq(paymentsTable.relatedSaleId, id));
+
+				if (paymentsToDelete.length > 0) {
+					await tx.delete(paymentsTable).where(eq(paymentsTable.relatedSaleId, id));
+					for (const p of paymentsToDelete) {
+						await logSyncOutbox(tx, 'payments', p.id, 'delete', { id: p.id });
+					}
+				}
+
 				for (const item of existingSale.items) {
 					if (item.batchId && item.batchId !== '00000000-0000-0000-0000-000000000000') {
 						const [batch] = await tx

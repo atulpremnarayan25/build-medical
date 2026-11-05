@@ -1,4 +1,4 @@
-import type { Purchase, CreatePurchaseInput } from '$lib/types/index.js';
+import type { Purchase, CreatePurchaseInput, PaginatedResponse } from '$lib/types/index.js';
 import { unwrap } from './unwrap.js';
 
 export const purchaseService = {
@@ -6,6 +6,24 @@ export const purchaseService = {
 		const res = await fetch('/api/purchases');
 		if (!res.ok) throw new Error('Failed to fetch purchases');
 		return unwrap(res);
+	},
+	async getPaginatedPurchases(opts?: {
+		page?: number;
+		limit?: number;
+		search?: string;
+		status?: string;
+		supplierId?: string;
+	}): Promise<PaginatedResponse<Purchase>> {
+		const params = new URLSearchParams();
+		if (opts?.page) params.set('page', String(opts.page));
+		if (opts?.limit) params.set('limit', String(opts.limit));
+		if (opts?.search) params.set('search', opts.search);
+		if (opts?.status) params.set('status', opts.status);
+		if (opts?.supplierId) params.set('supplierId', opts.supplierId);
+		const url = `/api/purchases${params.toString() ? '?' + params.toString() : ''}`;
+		const res = await fetch(url);
+		if (!res.ok) throw new Error('Failed to fetch paginated purchases');
+		return unwrap<PaginatedResponse<Purchase>>(res);
 	},
 	async getPurchase(id: string): Promise<Purchase | null> {
 		const res = await fetch(`/api/purchases/${id}`);

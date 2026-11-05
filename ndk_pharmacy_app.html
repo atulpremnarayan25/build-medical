@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National Dawa Kendra (NDK) - Online Pharmacy & Quick Commerce</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK (Modular CDN scripts) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ndk: {
+                            primary: 'var(--color-primary, #168B52)',
+                            dark: 'var(--color-dark, #075B3B)',
+                            light: 'var(--color-light, #EAF7EF)',
+                            accent: '#F4B942',
+                            text: '#17251E',
+                            muted: '#5A6E63'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['var(--font-family, Inter)', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style id="custom-theme-styles">
+        :root {
+            --color-primary: #168B52;
+            --color-dark: #075B3B;
+            --color-light: #EAF7EF;
+            --font-family: 'Inter';
+        }
+        body { font-family: var(--font-family), sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-dark); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-invoice, #printable-invoice * { visibility: visible; }
+            #printable-invoice { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-ndk-text font-sans antialiased pb-16 md:pb-0">
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- TOP ANNOUNCEMENT BAR -->
+    <div id="announcement-bar" class="bg-ndk-dark text-white text-xs py-1.5 px-4 text-center font-medium flex justify-between items-center transition-colors">
+        <div class="hidden sm:block">
+            <i class="fa-solid fa-shield-halved text-ndk-accent mr-1"></i> National Dawa Kendra — Founder: <span id="ann-founder-name">Mr. Virendra Kumar Verma</span>
+        </div>
+        <div class="mx-auto sm:mx-0">
+            <i class="fa-solid fa-truck-fast mr-1 text-ndk-accent"></i> Delivery strictly in <span class="font-bold text-white underline" id="header-pincodes-display">Bansdih, Ballia (277202, 277203, 277201, 277001)</span>
+        </div>
+        <div class="hidden md:flex items-center gap-3 text-xs">
+            <span><i class="fa-solid fa-phone mr-1"></i> <span id="header-phone-display">+91 98765 43210</span></span>
+            <button onclick="switchView('admin')" class="bg-ndk-accent text-ndk-text px-2.5 py-0.5 rounded text-[11px] font-bold hover:bg-yellow-400 transition">
+                <i class="fa-solid fa-user-gear mr-1"></i> Admin Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between gap-2 md:gap-6">
+                
+                <!-- BRAND LOGO -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('store'); renderProducts();">
+                    <div id="brand-logo-wrapper" class="w-10 h-10 md:w-12 md:h-12 bg-ndk-primary rounded-xl flex items-center justify-center text-white shadow-md relative overflow-hidden group transition-colors">
+                        <img id="brand-logo-img" src="" class="hidden w-full h-full object-cover">
+                        <i id="brand-logo-icon" class="fa-solid fa-house-medical text-xl md:text-2xl group-hover:scale-110 transition-transform"></i>
+                        <span class="absolute top-0 right-0 w-3 h-3 bg-ndk-accent rounded-full border-2 border-white"></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <span id="header-store-name-1" class="font-extrabold text-lg md:text-2xl tracking-tight text-ndk-dark leading-none">NATIONAL</span>
+                            <span class="font-bold text-xs bg-ndk-primary text-white px-1.5 py-0.5 rounded">DAWA</span>
+                        </div>
+                        <div class="text-[10px] md:text-xs tracking-widest uppercase font-bold text-ndk-primary flex items-center gap-1">
+                            <span id="header-store-name-2">KENDRA</span> <span class="text-gray-400">|</span> <span class="text-ndk-accent font-extrabold">NDK</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOCATION SELECTOR -->
+                <div class="hidden lg:flex items-center gap-2 bg-ndk-light text-ndk-dark px-3 py-1.5 rounded-lg border border-ndk-primary/20 text-xs font-medium cursor-pointer hover:bg-green-100 transition" onclick="detectUserLocation()">
+                    <i class="fa-solid fa-location-crosshairs text-ndk-primary text-base"></i>
+                    <div>
+                        <div class="text-[10px] text-ndk-muted leading-tight flex items-center gap-1">
+                            <span>Delivery Location</span>
+                            <span class="text-ndk-primary font-bold hover:underline">(Detect GPS)</span>
+                        </div>
+                        <div class="font-bold text-xs truncate max-w-[160px]" id="current-location">Bansdih, Ballia</div>
+                    </div>
+                </div>
+
+                <!-- LIVE SEARCH BAR -->
+                <div class="flex-1 max-w-xl relative">
+                    <div class="relative">
+                        <input type="text" id="main-search-input" onkeyup="handleSearchInput(event)" placeholder="Search medicines, generic names, healthcare products..." class="w-full bg-gray-100 border border-gray-300 rounded-full py-2 pl-10 pr-10 text-xs md:text-sm focus:outline-none focus:border-ndk-primary focus:bg-white transition shadow-inner">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+                        <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 text-xs">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                    <div id="search-suggestions" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-80 overflow-y-auto"></div>
+                </div>
+
+                <!-- USER & CART CONTROLS -->
+                <div class="flex items-center gap-2 md:gap-3">
+                    <button onclick="toggleWishlistModal()" class="relative p-2 text-gray-600 hover:text-ndk-primary transition hidden sm:block">
+                        <i class="fa-regular fa-heart text-xl"></i>
+                        <span id="wishlist-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+                    </button>
+
+                    <button onclick="toggleMyOrdersModal()" class="relative p-2 text-gray-600 hover:text-ndk-primary transition flex items-center gap-1.5" title="Track My Orders">
+                        <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                        <span class="hidden md:inline text-xs font-bold text-gray-700">My Orders</span>
+                    </button>
+
+                    <button onclick="toggleCartDrawer(true)" class="relative bg-ndk-primary hover:bg-ndk-dark text-white px-3 md:px-4 py-2 rounded-xl flex items-center gap-2 text-xs md:text-sm font-semibold shadow-md transition transform active:scale-95">
+                        <i class="fa-solid fa-basket-shopping text-base"></i>
+                        <span class="hidden md:inline">Cart</span>
+                        <span id="cart-counter-badge" class="bg-ndk-accent text-ndk-text text-xs font-extrabold rounded-full px-2 py-0.5 min-w-[20px] text-center">0</span>
+                    </button>
+
+                    <button onclick="switchView('admin')" class="border border-ndk-primary text-ndk-primary hover:bg-ndk-light px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span class="hidden md:inline" id="view-mode-label">Admin Portal</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CATEGORY SUB-NAV BAR -->
+        <nav class="bg-ndk-light/60 border-t border-gray-200/60 overflow-x-auto no-scrollbar hidden md:block">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-1 py-1.5 text-xs font-medium whitespace-nowrap" id="category-nav-container"></div>
+        </nav>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 min-h-[75vh]">
+
+        <!-- ADMIN LOGIN GATEKEEPER MODAL -->
+        <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3">
+            <div class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl relative p-6 space-y-4 text-xs">
+                <div class="text-center space-y-1">
+                    <div class="w-12 h-12 bg-ndk-primary text-white rounded-xl mx-auto flex items-center justify-center text-xl shadow">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="font-extrabold text-base text-ndk-dark">NDK Admin Portal Authentication</h3>
+                    <p class="text-gray-500">Enter owner administrator credentials</p>
+                </div>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">Admin User ID *</label>
+                        <input type="text" id="admin-userid-input" required placeholder="Enter User ID" class="w-full border p-2.5 rounded-lg font-mono text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-gray-700">Admin Password *</label>
+                        <input type="password" id="admin-password-input" required placeholder="Enter Password" class="w-full border p-2.5 rounded-lg text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-ndk-primary hover:bg-ndk-dark text-white py-2.5 rounded-xl font-bold shadow transition">
+                        Authenticate & Access Controls
+                    </button>
+                    <button type="button" onclick="closeAdminLoginModal()" class="w-full bg-gray-100 text-gray-600 py-2 rounded-xl font-bold hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- CUSTOMER STOREFRONT VIEW -->
+        <section id="store-view" class="space-y-6">
+            
+            <!-- AUTOMATED SLIDING HERO BANNER CAROUSEL -->
+            <div class="relative rounded-2xl overflow-hidden shadow-lg group">
+                <div id="hero-banner-container" class="relative text-white transition-all min-h-[220px] md:min-h-[280px] bg-ndk-dark flex items-center"></div>
+                <!-- SLIDER CONTROLS -->
+                <button onclick="prevBannerSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button onclick="nextBannerSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+                <div id="banner-dots-container" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
+            </div>
+
+            <!-- SHOP BY CATEGORY SHORTCUTS -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-base md:text-lg text-ndk-dark flex items-center gap-2">
+                        <i class="fa-solid fa-border-all text-ndk-primary"></i> Browse Categories
+                    </h3>
+                    <button onclick="filterByCategory('All')" class="text-xs font-bold text-ndk-primary hover:underline">View All</button>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-2.5" id="category-shortcuts-grid"></div>
+            </div>
+
+            <!-- PRODUCT CATALOGUE SECTION -->
+            <div id="catalog-section" class="pt-2">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-200">
+                    <div>
+                        <h2 class="text-lg md:text-xl font-bold text-ndk-text flex items-center gap-2">
+                            <span>Available Healthcare Products</span>
+                            <span id="active-category-title" class="text-xs font-normal bg-ndk-light text-ndk-dark px-2.5 py-0.5 rounded-full border border-ndk-primary/20">All Categories</span>
+                        </h2>
+                        <p class="text-xs text-gray-500">Showing <span id="product-count-label">0</span> products</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <button id="rx-filter-btn" onclick="toggleRxOnlyFilter()" class="px-3 py-1.5 rounded-lg border border-gray-300 font-medium hover:border-ndk-primary transition flex items-center gap-1.5 bg-white">
+                            <i class="fa-solid fa-file-medical text-red-500"></i> Rx Required Only
+                        </button>
+
+                        <select id="sort-select" onchange="applyFiltersAndSort()" class="px-3 py-1.5 rounded-lg border border-gray-300 font-medium bg-white focus:outline-none focus:border-ndk-primary">
+                            <option value="popular">Sort: Popularity</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="discount">Highest Discount</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PRODUCT CARDS GRID -->
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mt-4"></div>
+
+                <!-- EMPTY PRODUCTS FALLBACK -->
+                <div id="no-products-view" class="hidden text-center py-12 bg-white rounded-2xl border border-gray-200 mt-4">
+                    <i class="fa-solid fa-box-open text-4xl text-gray-300 mb-3"></i>
+                    <h3 class="font-bold text-gray-700">No products found</h3>
+                    <p class="text-xs text-gray-500 mt-1">Try resetting your search query or filters.</p>
+                    <button onclick="resetFilters()" class="mt-3 bg-ndk-primary text-white text-xs px-4 py-2 rounded-lg font-bold">Reset Filters</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN PORTAL VIEW -->
+        <section id="admin-view" class="hidden space-y-6">
+            
+            <div class="bg-ndk-dark text-white p-4 md:p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-lg">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-ndk-accent text-ndk-text text-[10px] font-extrabold uppercase px-2 py-0.5 rounded">Super Admin</span>
+                        <h2 class="text-xl md:text-2xl font-bold">NDK Business Control Center</h2>
+                    </div>
+                    <p class="text-xs text-green-100 mt-1">Founder: <span id="admin-founder-label">Mr. Virendra Kumar Verma</span> | National Dawa Kendra</p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <button onclick="openAddProductModal()" class="bg-ndk-accent hover:bg-yellow-400 text-ndk-text px-4 py-2 rounded-xl font-bold shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-plus-circle"></i> Add Product
+                    </button>
+                    <button onclick="openSettingsModal()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl font-bold border border-white/20 transition">
+                        <i class="fa-solid fa-sliders mr-1"></i> Store & Policy Settings
+                    </button>
+                    <button onclick="adminLogout()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-xl font-bold transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout Admin
+                    </button>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB NAVIGATION -->
+            <div class="flex border-b border-gray-200 overflow-x-auto text-xs font-bold gap-2 no-scrollbar">
+                <button onclick="switchAdminTab('dashboard')" id="adm-tab-dashboard" class="px-4 py-2.5 border-b-2 border-ndk-primary text-ndk-primary whitespace-nowrap">
+                    <i class="fa-solid fa-chart-line mr-1"></i> Dashboard Overview
+                </button>
+                <button onclick="switchAdminTab('orders')" id="adm-tab-orders" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-ndk-primary whitespace-nowrap">
+                    <i class="fa-solid fa-cart-shopping mr-1"></i> Customer Orders & Prescriptions
+                    <span id="pending-orders-badge" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full ml-1 hidden">0</span>
+                </button>
+                <button onclick="switchAdminTab('products')" id="adm-tab-products" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-ndk-primary whitespace-nowrap">
+                    <i class="fa-solid fa-boxes-stacked mr-1"></i> Product Catalogue & Batches
+                </button>
+                <button onclick="switchAdminTab('inventory')" id="adm-tab-inventory" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-ndk-primary whitespace-nowrap">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Inventory & Stock Alerts
+                    <span id="low-stock-badge" class="bg-amber-500 text-white text-[10px] px-1.5 py-0.2 rounded-full ml-1 hidden">0</span>
+                </button>
+                <button onclick="switchAdminTab('banners')" id="adm-tab-banners" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-ndk-primary whitespace-nowrap">
+                    <i class="fa-solid fa-image mr-1"></i> Full Homepage Banners CMS
+                </button>
+            </div>
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <div id="adm-sec-dashboard" class="space-y-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                        <div class="flex justify-between items-center text-gray-500 text-xs font-medium">
+                            <span>Total Store Revenue</span>
+                            <i class="fa-solid fa-indian-rupee-sign text-ndk-primary"></i>
+                        </div>
+                        <div class="text-xl md:text-2xl font-extrabold text-ndk-dark" id="stat-total-revenue">₹0.00</div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                        <div class="flex justify-between items-center text-gray-500 text-xs font-medium">
+                            <span>Total Customer Orders</span>
+                            <i class="fa-solid fa-bag-shopping text-blue-500"></i>
+                        </div>
+                        <div class="text-xl md:text-2xl font-extrabold text-gray-800" id="stat-total-orders">0</div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                        <div class="flex justify-between items-center text-gray-500 text-xs font-medium">
+                            <span>Active Products</span>
+                            <i class="fa-solid fa-pills text-purple-500"></i>
+                        </div>
+                        <div class="text-xl md:text-2xl font-extrabold text-gray-800" id="stat-total-products">0</div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                        <div class="flex justify-between items-center text-gray-500 text-xs font-medium">
+                            <span>Pending Rx Verification</span>
+                            <i class="fa-solid fa-clipboard-check text-red-500"></i>
+                        </div>
+                        <div class="text-xl md:text-2xl font-extrabold text-red-600" id="stat-pending-rx">0</div>
+                    </div>
+                </div>
+
+                <!-- RECENT ORDERS TABLE -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="font-bold text-sm text-gray-800">Recent Customer Activity</h3>
+                        <button onclick="switchAdminTab('orders')" class="text-xs font-bold text-ndk-primary hover:underline">View All Orders</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-100 text-gray-600 uppercase font-bold border-b">
+                                <tr>
+                                    <th class="p-3">Order ID</th>
+                                    <th class="p-3">Customer</th>
+                                    <th class="p-3">Items</th>
+                                    <th class="p-3">Total Amount</th>
+                                    <th class="p-3">Payment</th>
+                                    <th class="p-3">Fulfillment Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-recent-orders-tbody" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ORDERS MANAGEMENT -->
+            <div id="adm-sec-orders" class="hidden bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
+                    <h3 class="font-bold text-sm text-gray-800">Customer Orders & Prescriptions Console</h3>
+                    <select id="admin-order-filter" onchange="renderAdminOrders()" class="text-xs p-2 border border-gray-300 rounded-lg bg-white font-bold">
+                        <option value="ALL">Filter: All Statuses</option>
+                        <option value="NEW">New Orders</option>
+                        <option value="RX_PENDING">Prescription Under Review</option>
+                        <option value="CONFIRMED">Confirmed / Processing</option>
+                        <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                        <option value="DELIVERED">Delivered</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-100 text-gray-600 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-3">Order ID & Date</th>
+                                <th class="p-3">Customer Contact & Address</th>
+                                <th class="p-3">Order Summary</th>
+                                <th class="p-3">Payment Info</th>
+                                <th class="p-3">Prescription Upload</th>
+                                <th class="p-3">Fulfillment Control</th>
+                                <th class="p-3 text-right">Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-tbody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: PRODUCTS CATALOGUE & BATCHES -->
+            <div id="adm-sec-products" class="hidden bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-gray-800">Medicine & Healthcare Inventory Catalogue</h3>
+                    <button onclick="openAddProductModal()" class="bg-ndk-primary text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-ndk-dark transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Product
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-100 text-gray-600 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-3">Product Info</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Pricing (MRP / Selling)</th>
+                                <th class="p-3">Available Stock</th>
+                                <th class="p-3">Batch & Expiry</th>
+                                <th class="p-3">Rx Tag</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-tbody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: INVENTORY & EXPIRY MONITOR -->
+            <div id="adm-sec-inventory" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">Inventory Health & Expiry Monitor</h3>
+                        <p class="text-xs text-gray-500">Monitors low stock (&lt; 10 units) and medicines nearing expiry date.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-100 text-gray-600 uppercase font-bold border-b">
+                                <tr>
+                                    <th class="p-3">Product Name</th>
+                                    <th class="p-3">Batch #</th>
+                                    <th class="p-3">Current Stock</th>
+                                    <th class="p-3">Expiry Date</th>
+                                    <th class="p-3">Health Warning</th>
+                                    <th class="p-3 text-right">Quick Restock</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-inventory-tbody" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: BANNER CMS -->
+            <div id="adm-sec-banners" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">Homepage Banners CMS (Full Cover Display)</h3>
+                        <p class="text-xs text-gray-500">Uploaded banner images will cover the entire hero section background on the customer storefront.</p>
+                    </div>
+                    <button onclick="openAddBannerModal()" class="bg-ndk-primary text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-ndk-dark transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Banner
+                    </button>
+                </div>
+                <div id="admin-banners-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-ndk-dark text-white border-t border-ndk-primary mt-12 py-8 px-4 text-xs">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-ndk-primary rounded-lg flex items-center justify-center text-white font-bold">
+                        <i class="fa-solid fa-house-medical"></i>
+                    </div>
+                    <span class="font-extrabold text-base tracking-tight text-white">NATIONAL DAWA KENDRA</span>
+                </div>
+                <p class="text-green-200">Your Trusted Healthcare Partner. Delivering genuine medicines & personal care products right to your doorstep.</p>
+                <p class="text-ndk-accent font-bold">Founder: <span id="footer-founder-name">Mr. Virendra Kumar Verma</span></p>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-sm mb-2 text-ndk-accent uppercase tracking-wider">Quick Navigation</h4>
+                <ul class="space-y-1.5 text-green-100">
+                    <li><a href="#" onclick="switchView('store'); return false;" class="hover:underline">Home Storefront</a></li>
+                    <li><a href="#" onclick="filterByCategory('Prescription Medicines'); return false;" class="hover:underline">Prescription Medicines</a></li>
+                    <li><a href="#" onclick="filterByCategory('Vitamins & Supplements'); return false;" class="hover:underline">Vitamins & Supplements</a></li>
+                    <li><a href="#" onclick="toggleMyOrdersModal(); return false;" class="hover:underline">Track Order Status</a></li>
+                    <li><a href="#" onclick="openPolicyModal(); return false;" class="hover:underline">Privacy & Store Policy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-sm mb-2 text-ndk-accent uppercase tracking-wider">Licensed Pharmacy Info</h4>
+                <ul class="space-y-1.5 text-green-100">
+                    <li><i class="fa-solid fa-id-card mr-1.5"></i> License: <span id="footer-license-no">DL-NDK-2024-8831</span></li>
+                    <li><i class="fa-solid fa-user-doctor mr-1.5"></i> Pharmacist: <span id="footer-pharmacist-name">Mr. Virendra Kumar Verma</span></li>
+                    <li><i class="fa-solid fa-file-contract mr-1.5"></i> Reg #: <span id="footer-pharmacist-reg">REG-UP-984201</span></li>
+                    <li><i class="fa-solid fa-location-dot mr-1.5"></i> <span id="footer-address">Bansdih, Ballia (UP)</span></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-sm mb-2 text-ndk-accent uppercase tracking-wider">Serviceable Delivery Zone</h4>
+                <div class="bg-white/10 p-3 rounded-xl border border-white/20 space-y-1">
+                    <p class="font-bold text-white"><i class="fa-solid fa-truck-ramp-box mr-1"></i> Restricted Area Delivery</p>
+                    <p class="text-[11px] text-green-200">Active Serviceable PINs: <span class="font-mono text-white font-bold" id="footer-pincodes">277202, 277203, 277201, 277001</span></p>
+                    <p class="text-[11px] text-ndk-accent font-medium">Orders outside these PIN codes cannot be placed.</p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto border-t border-green-800 mt-6 pt-4 flex flex-col md:flex-row justify-between items-center text-green-300 text-[11px]">
+            <div>&copy; <span id="footer-year">2026</span> National Dawa Kendra (NDK). All Rights Reserved.</div>
+            <div class="mt-2 md:mt-0 flex gap-4">
+                <button onclick="switchView('admin')" class="hover:text-white font-bold text-ndk-accent">Switch to Admin Portal</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MOBILE BOTTOM NAVIGATION STRIP -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 flex justify-around py-2 text-[10px] font-bold text-gray-600 shadow-lg">
+        <button onclick="switchView('store');" class="flex flex-col items-center gap-0.5 text-ndk-primary">
+            <i class="fa-solid fa-house text-base"></i>
+            <span>Home</span>
+        </button>
+        <button onclick="toggleCartDrawer(true);" class="flex flex-col items-center gap-0.5 relative">
+            <i class="fa-solid fa-basket-shopping text-base"></i>
+            <span>Cart</span>
+            <span id="mobile-cart-badge" class="absolute -top-1 -right-2 bg-ndk-accent text-ndk-text text-[9px] font-extrabold rounded-full px-1">0</span>
+        </button>
+        <button onclick="toggleMyOrdersModal();" class="flex flex-col items-center gap-0.5">
+            <i class="fa-solid fa-clock-rotate-left text-base"></i>
+            <span>My Orders</span>
+        </button>
+        <button onclick="switchView('admin');" class="flex flex-col items-center gap-0.5 text-ndk-dark">
+            <i class="fa-solid fa-user-gear text-base"></i>
+            <span>Admin</span>
+        </button>
+    </div>
+
+    <!-- SLIDE-OUT CART DRAWER -->
+    <div id="cart-drawer-overlay" class="hidden fixed inset-0 bg-black/50 z-50 transition-opacity" onclick="toggleCartDrawer(false)"></div>
+    <div id="cart-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-basket-shopping text-ndk-accent text-lg"></i>
+                <h3 class="font-bold text-base">Your Shopping Cart</h3>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="text-white hover:text-ndk-accent text-lg p-1">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- FREE DELIVERY THRESHOLD BAR -->
+        <div class="bg-ndk-light p-3 border-b border-ndk-primary/20 text-xs text-ndk-dark">
+            <div class="flex justify-between font-bold mb-1">
+                <span id="free-shipping-text">Add ₹499 for FREE Delivery</span>
+                <span id="free-shipping-percent">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div id="free-shipping-progress" class="bg-ndk-primary h-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- CART ITEMS LIST -->
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-3 divide-y divide-gray-100"></div>
+
+        <!-- CART FOOTER & CHECKOUT SUMMARY -->
+        <div class="p-4 bg-gray-50 border-t border-gray-200 space-y-3">
+            <!-- COUPON INPUT -->
+            <div class="flex gap-2">
+                <input type="text" id="coupon-code-input" placeholder="Coupon (e.g. NDK10)" class="flex-1 border text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-ndk-primary uppercase">
+                <button onclick="applyCouponCode()" class="bg-ndk-primary text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-ndk-dark">Apply</button>
+            </div>
+            <div id="applied-coupon-tag" class="hidden bg-green-100 text-ndk-dark text-xs p-1.5 rounded-lg flex justify-between items-center font-bold">
+                <span>Applied Coupon: <span id="applied-coupon-name"></span></span>
+                <button onclick="removeCoupon()" class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+            </div>
+
+            <!-- PRICE BREAKDOWN -->
+            <div class="text-xs space-y-1.5 text-gray-600">
+                <div class="flex justify-between"><span>Items Subtotal</span><span id="cart-subtotal">₹0.00</span></div>
+                <div class="flex justify-between text-green-600"><span>Coupon Discount</span><span id="cart-discount">-₹0.00</span></div>
+                <div class="flex justify-between"><span>Estimated Delivery Fee</span><span id="cart-delivery-fee">₹0.00</span></div>
+                <div class="flex justify-between font-extrabold text-sm text-ndk-dark pt-1 border-t border-gray-200">
+                    <span>Final Payable Amount</span><span id="cart-total-amount">₹0.00</span>
+                </div>
+            </div>
+
+            <button onclick="openCheckoutModal()" class="w-full bg-ndk-primary hover:bg-ndk-dark text-white py-3 rounded-xl font-bold shadow-lg text-sm transition transform active:scale-95 flex items-center justify-center gap-2">
+                <span>Proceed to Direct Checkout</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- PRODUCT DETAILS MODAL -->
+    <div id="product-details-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+            <button onclick="closeProductDetailsModal()" class="absolute top-3 right-3 bg-gray-100 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-200 z-10">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="overflow-y-auto p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-4 items-center">
+                    <img id="detail-prod-image" src="" class="w-36 h-36 object-contain rounded-xl border bg-gray-50 p-2">
+                    <div class="space-y-1 flex-1">
+                        <span id="detail-prod-rx" class="hidden bg-red-100 text-red-600 font-bold text-[10px] px-2 py-0.5 rounded-full inline-block">Rx Required</span>
+                        <h3 id="detail-prod-name" class="font-extrabold text-lg text-ndk-dark"></h3>
+                        <p id="detail-prod-generic" class="text-xs text-gray-500 italic"></p>
+                        <p class="text-xs text-gray-600">Brand: <span id="detail-prod-brand" class="font-bold"></span></p>
+                        <div class="flex items-baseline gap-2 pt-1">
+                            <span id="detail-prod-price" class="text-xl font-extrabold text-ndk-primary"></span>
+                            <span id="detail-prod-mrp" class="text-xs text-gray-400 line-through"></span>
+                            <span id="detail-prod-discount" class="text-xs bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-xl border text-xs space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><span class="text-gray-500">Composition:</span> <span id="detail-prod-comp" class="font-bold text-gray-800"></span></div>
+                        <div><span class="text-gray-500">Category:</span> <span id="detail-prod-cat" class="font-bold text-gray-800"></span></div>
+                        <div><span class="text-gray-500">Batch Number:</span> <span id="detail-prod-batch" class="font-mono font-bold text-gray-800"></span></div>
+                        <div><span class="text-gray-500">Expiry Date:</span> <span id="detail-prod-expiry" class="font-bold text-gray-800"></span></div>
+                        <div><span class="text-gray-500">Available Stock:</span> <span id="detail-prod-stock" class="font-bold"></span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs text-gray-700 mb-1">Product Description</h4>
+                    <p id="detail-prod-desc" class="text-xs text-gray-600 leading-relaxed"></p>
+                </div>
+
+                <button id="detail-add-cart-btn" onclick="" class="w-full bg-ndk-primary text-white py-2.5 rounded-xl font-bold hover:bg-ndk-dark shadow text-xs transition">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIRECT CHECKOUT MODAL -->
+    <div id="checkout-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl relative max-h-[92vh] flex flex-col">
+            <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-truck-fast text-ndk-accent mr-2"></i> Fast Checkout</h3>
+                <button onclick="closeCheckoutModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="checkout-form" onsubmit="processOrderPlacement(event)" class="overflow-y-auto p-5 space-y-4 text-xs">
+                
+                <!-- CUSTOMER CONTACT & ADDRESS -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center border-b pb-1">
+                        <h4 class="font-bold text-sm text-ndk-dark">1. Contact & Delivery Information</h4>
+                        <button type="button" onclick="detectUserLocation('checkout')" class="bg-ndk-light text-ndk-dark px-2.5 py-1 rounded-lg font-bold hover:bg-green-100 transition flex items-center gap-1">
+                            <i class="fa-solid fa-location-crosshairs text-ndk-primary"></i> Detect Address via GPS
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold mb-1">Full Name *</label>
+                            <input type="text" id="chk-name" required placeholder="e.g. Rahul Verma" class="w-full border p-2 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Mobile Phone *</label>
+                            <input type="tel" id="chk-phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}" class="w-full border p-2 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold mb-1">Email Address (Optional for Invoice)</label>
+                            <input type="email" id="chk-email" placeholder="rahul@gmail.com" class="w-full border p-2 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block font-bold mb-1">House No., Street, Landmark *</label>
+                            <input type="text" id="chk-address" required placeholder="e.g. Near Station Road, Bansdih" class="w-full border p-2 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">City / District</label>
+                            <input type="text" value="Bansdih, Ballia" readonly class="w-full border p-2 rounded-lg bg-gray-100 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">PIN Code *</label>
+                            <input type="text" id="chk-pincode" required placeholder="277202" class="w-full border p-2 rounded-lg font-bold">
+                            <span class="text-[10px] text-gray-500">Serviceable PINs: <span id="chk-allowed-pincodes-label" class="font-bold"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRESCRIPTION UPLOAD -->
+                <div id="checkout-rx-container" class="hidden bg-red-50 p-3 rounded-xl border border-red-200 space-y-2">
+                    <div class="flex items-center gap-2 text-red-700 font-bold">
+                        <i class="fa-solid fa-file-medical text-base"></i>
+                        <span>Doctor Prescription Required for Rx Products</span>
+                    </div>
+                    <p class="text-[11px] text-red-600">Your cart contains prescription medicines. Please upload a clear photo/PDF of your prescription for pharmacist verification.</p>
+                    <input type="file" id="chk-rx-file" accept="image/*,application/pdf" onchange="handleFileToDataUrl(this, 'chk-rx-preview', 'chk-rx-data')" class="w-full border p-1 rounded-lg bg-white text-xs">
+                    <input type="hidden" id="chk-rx-data">
+                    <div id="chk-rx-preview" class="mt-1 hidden">
+                        <img src="" class="w-24 h-24 object-contain border rounded-lg bg-white p-1">
+                    </div>
+                </div>
+
+                <!-- PAYMENT METHOD SELECTION -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-sm text-ndk-dark border-b pb-1">2. Select Payment Method</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="border-2 p-3 rounded-xl cursor-pointer flex flex-col items-center gap-1.5 transition text-center hover:border-ndk-primary font-bold text-gray-700 has-[:checked]:border-ndk-primary has-[:checked]:bg-ndk-light">
+                            <input type="radio" name="payment-method" value="COD" checked onchange="togglePaymentFields()" class="hidden">
+                            <i class="fa-solid fa-hand-holding-dollar text-xl text-ndk-primary"></i>
+                            <span>Cash on Delivery</span>
+                        </label>
+
+                        <label class="border-2 p-3 rounded-xl cursor-pointer flex flex-col items-center gap-1.5 transition text-center hover:border-ndk-primary font-bold text-gray-700 has-[:checked]:border-ndk-primary has-[:checked]:bg-ndk-light">
+                            <input type="radio" name="payment-method" value="UPI" onchange="togglePaymentFields()" class="hidden">
+                            <i class="fa-solid fa-qrcode text-xl text-ndk-primary"></i>
+                            <span>UPI QR Payment</span>
+                        </label>
+                    </div>
+
+                    <!-- UPI SCANNER CONTAINER -->
+                    <div id="upi-details-container" class="hidden bg-gray-50 p-4 rounded-xl border space-y-3">
+                        <div class="text-center space-y-1">
+                            <p class="font-bold text-ndk-dark text-xs">Scan & Pay via Any UPI App (GPay, PhonePe, Paytm)</p>
+                            <div class="w-36 h-36 bg-white p-2 border rounded-xl mx-auto shadow flex items-center justify-center">
+                                <img id="upi-qr-image" src="" alt="UPI QR Code" class="w-full h-full object-contain">
+                            </div>
+                            <p class="font-mono font-bold text-ndk-primary" id="display-upi-id"></p>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Enter 12-Digit UPI Transaction Reference (UTR) *</label>
+                            <input type="text" id="chk-utr" placeholder="e.g. 402918274619" class="w-full border p-2 rounded-lg font-mono">
+                            <span class="text-[10px] text-gray-500">Automated system will verify payment receipt instantly.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ORDER SUMMARY BREAKDOWN -->
+                <div class="bg-gray-100 p-3 rounded-xl space-y-1 text-xs">
+                    <div class="flex justify-between"><span>Subtotal:</span><span id="chk-subtotal">₹0.00</span></div>
+                    <div class="flex justify-between text-green-700"><span>Discount:</span><span id="chk-discount">-₹0.00</span></div>
+                    <div class="flex justify-between"><span>Delivery Charge:</span><span id="chk-delivery">₹0.00</span></div>
+                    <div class="flex justify-between font-extrabold text-sm text-ndk-dark pt-1 border-t"><span>Total Amount Payable:</span><span id="chk-total">₹0.00</span></div>
+                </div>
+
+                <button type="submit" class="w-full bg-ndk-primary hover:bg-ndk-dark text-white py-3 rounded-xl font-bold shadow-lg transition text-xs">
+                    Confirm & Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN STORE & POLICY SETTINGS MODAL WITH THEME CUSTOMIZER -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+            <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-sliders text-ndk-accent mr-2"></i> Store, Theme & Policy Control</h3>
+                <button onclick="closeSettingsModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="settings-form" onsubmit="saveStoreSettings(event)" class="overflow-y-auto p-5 space-y-4 text-xs">
+                
+                <!-- THEME & BRANDING CUSTOMIZER -->
+                <div class="bg-ndk-light/60 p-3.5 rounded-xl border border-ndk-primary/30 space-y-3">
+                    <h4 class="font-bold text-xs text-ndk-dark flex items-center gap-1.5">
+                        <i class="fa-solid fa-palette text-ndk-primary"></i> Manual Theme & Branding Customizer
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block font-bold mb-1 text-[11px]">Primary Theme Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="cfg-color-primary" value="#168B52" onchange="previewThemeColors()" class="w-8 h-8 rounded cursor-pointer border">
+                                <span id="cfg-primary-hex" class="font-mono text-[11px]">#168B52</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[11px]">Dark Accent Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="cfg-color-dark" value="#075B3B" onchange="previewThemeColors()" class="w-8 h-8 rounded cursor-pointer border">
+                                <span id="cfg-dark-hex" class="font-mono text-[11px]">#075B3B</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[11px]">Platform Typography</label>
+                            <select id="cfg-font-family" onchange="applyFontFamily(this.value)" class="w-full border p-1.5 rounded-lg bg-white font-bold">
+                                <option value="Inter">Inter (Default)</option>
+                                <option value="Poppins">Poppins</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Custom Brand Logo Image (File Upload)</label>
+                        <input type="file" id="cfg-logo-file" accept="image/*" onchange="handleFileToDataUrl(this, 'cfg-logo-preview', 'cfg-logo-data')" class="w-full border p-1 rounded-lg bg-white text-xs">
+                        <input type="hidden" id="cfg-logo-data">
+                        <div id="cfg-logo-preview" class="mt-1 hidden">
+                            <img src="" class="w-12 h-12 object-contain border rounded-lg bg-white p-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold mb-1">Store Name</label>
+                        <input type="text" id="cfg-store-name" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Founder Name *</label>
+                        <input type="text" id="cfg-founder" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Support Phone *</label>
+                        <input type="text" id="cfg-phone" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Support Email</label>
+                        <input type="email" id="cfg-email" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold mb-1">Physical Store Address</label>
+                        <input type="text" id="cfg-address" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Licensed Pharmacist Name</label>
+                        <input type="text" id="cfg-pharmacist-name" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Pharmacist Reg. Number</label>
+                        <input type="text" id="cfg-pharmacist-reg" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Drug License Number</label>
+                        <input type="text" id="cfg-license" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">GSTIN Number</label>
+                        <input type="text" id="cfg-gstin" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">UPI ID for Payment QR</label>
+                        <input type="text" id="cfg-upi" required class="w-full border p-2 rounded-lg font-mono">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Free Delivery Threshold (₹)</label>
+                        <input type="number" id="cfg-free-threshold" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Standard Delivery Fee (₹)</label>
+                        <input type="number" id="cfg-delivery-charge" required class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold mb-1">Serviceable Delivery PIN Codes (Comma Separated) *</label>
+                        <input type="text" id="cfg-pincodes" required placeholder="277202, 277203, 277201, 277001" class="w-full border p-2 rounded-lg font-mono">
+                    </div>
+                </div>
+
+                <div class="border-t pt-3 space-y-2">
+                    <h4 class="font-bold text-sm text-ndk-dark">Store Privacy Policy & Terms Content</h4>
+                    <textarea id="cfg-policy-text" rows="4" class="w-full border p-2 rounded-lg text-xs" placeholder="Enter privacy policy & pharmacy disclaimer..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-ndk-primary text-white py-3 rounded-xl font-bold hover:bg-ndk-dark shadow transition">Save All Settings & Theme</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MY ORDERS MODAL -->
+    <div id="my-orders-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
+            <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-clock-rotate-left text-ndk-accent mr-2"></i> Track Your Orders</h3>
+                <button onclick="closeMyOrdersModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 space-y-4" id="my-orders-container"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN PRODUCT ADD/EDIT MODAL -->
+    <div id="add-product-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl relative max-h-[92vh] flex flex-col">
+            <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+                <h3 id="product-form-title" class="font-bold text-base">Add New Medicine / Product</h3>
+                <button onclick="closeAddProductModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="product-crud-form" onsubmit="saveProduct(event)" class="overflow-y-auto p-5 space-y-4 text-xs">
+                <input type="hidden" id="prod-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold mb-1">Product Title / Medicine Name *</label>
+                        <input type="text" id="prod-name" required placeholder="e.g. Paracetamol 650mg" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Generic Name</label>
+                        <input type="text" id="prod-generic" placeholder="e.g. Paracetamol" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Brand / Manufacturer *</label>
+                        <input type="text" id="prod-brand" required placeholder="e.g. Micro Labs" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Active Composition</label>
+                        <input type="text" id="prod-composition" placeholder="e.g. Paracetamol 650mg IP" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Category *</label>
+                        <select id="prod-category" required class="w-full border p-2 rounded-lg bg-white">
+                            <option value="Prescription Medicines">Prescription Medicines</option>
+                            <option value="OTC Medicines">OTC Medicines</option>
+                            <option value="Vitamins & Supplements">Vitamins & Supplements</option>
+                            <option value="Personal Care">Personal Care</option>
+                            <option value="Baby Care">Baby Care</option>
+                            <option value="Medical Devices">Medical Devices</option>
+                            <option value="Healthcare Essentials">Healthcare Essentials</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">MRP (₹) *</label>
+                        <input type="number" step="0.01" id="prod-mrp" required placeholder="35.00" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Selling Price (₹) *</label>
+                        <input type="number" step="0.01" id="prod-price" required placeholder="28.50" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Stock Quantity *</label>
+                        <input type="number" id="prod-stock" required placeholder="100" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Batch Number</label>
+                        <input type="text" id="prod-batch" placeholder="e.g. B-2024-99" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">Expiry Date</label>
+                        <input type="date" id="prod-expiry" class="w-full border p-2 rounded-lg">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold mb-1">Product Photo Upload (File or Base64)</label>
+                        <input type="file" id="prod-file-input" accept="image/*" onchange="handleFileToDataUrl(this, 'prod-image-url-preview', 'prod-image-data')" class="w-full border p-1 rounded-lg">
+                        <input type="hidden" id="prod-image-data">
+                        <div id="prod-image-url-preview" class="mt-1 hidden">
+                            <img src="" class="w-16 h-16 object-contain border rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-bold mb-1">Detailed Description</label>
+                    <textarea id="prod-desc" rows="3" placeholder="Enter dosage instructions, usage info..." class="w-full border p-2 rounded-lg"></textarea>
+                </div>
+
+                <div class="flex gap-6 items-center pt-2">
+                    <label class="flex items-center gap-2 cursor-pointer font-bold text-red-600">
+                        <input type="checkbox" id="prod-rx" class="w-4 h-4">
+                        <span>Requires Doctor Prescription (Rx)</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold text-ndk-primary">
+                        <input type="checkbox" id="prod-published" checked class="w-4 h-4">
+                        <span>Publish Storefront</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-ndk-primary hover:bg-ndk-dark text-white py-3 rounded-xl font-bold shadow text-xs transition">
+                    Save Product Record
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN BANNER ADD MODAL -->
+    <div id="add-banner-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl relative">
+            <div class="p-4 bg-ndk-dark text-white flex justify-between items-center">
+                <h3 class="font-bold text-base">Add Homepage Banner</h3>
+                <button onclick="closeAddBannerModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="banner-crud-form" onsubmit="saveBanner(event)" class="p-5 space-y-3 text-xs">
+                <input type="hidden" id="banner-id">
+                <div>
+                    <label class="block font-bold mb-1">Top Badge Text</label>
+                    <input type="text" id="banner-badge" placeholder="e.g. Quick 10-Min Delivery" class="w-full border p-2 rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Headline *</label>
+                    <input type="text" id="banner-title" required placeholder="e.g. Reliable Medicine Delivery" class="w-full border p-2 rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Subheading / Message</label>
+                    <input type="text" id="banner-subtitle" placeholder="e.g. Genuine pharmacy products delivered." class="w-full border p-2 rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Full-Cover Banner Image Upload *</label>
+                    <input type="file" id="banner-file-input" accept="image/*" onchange="handleFileToDataUrl(this, 'banner-img-preview', 'banner-image-data')" class="w-full border p-1 rounded-lg">
+                    <input type="hidden" id="banner-image-data">
+                    <div id="banner-img-preview" class="mt-1 hidden">
+                        <img src="" class="w-full h-20 object-cover border rounded-lg">
+                    </div>
+                </div>
+                <label class="flex items-center gap-2 font-bold cursor-pointer pt-1">
+                    <input type="checkbox" id="banner-active" checked class="w-4 h-4">
+                    <span>Active Banner</span>
+                </label>
+                <button type="submit" class="w-full bg-ndk-primary text-white py-2.5 rounded-xl font-bold hover:bg-ndk-dark transition">Save Banner</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- RX PREVIEW MODAL FOR ADMIN -->
+    <div id="rx-preview-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative p-4 space-y-3 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h4 class="font-bold text-sm text-ndk-dark">Uploaded Doctor Prescription Verification</h4>
+                <button onclick="closeRxPreviewModal()" class="text-gray-500 hover:text-black"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-xl border flex justify-center max-h-80 overflow-auto">
+                <img id="modal-rx-image" src="" class="max-w-full max-h-72 object-contain">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button id="rx-reject-btn" class="bg-red-600 text-white font-bold px-4 py-2 rounded-lg">Reject Prescription</button>
+                <button id="rx-approve-btn" class="bg-ndk-primary text-white font-bold px-4 py-2 rounded-lg">Approve & Confirm Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINTABLE GST TAX INVOICE MODAL -->
+    <div id="invoice-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl relative max-h-[92vh] flex flex-col">
+            <div class="p-4 bg-gray-800 text-white flex justify-between items-center print:hidden">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-file-invoice text-ndk-accent mr-2"></i> Tax Invoice Preview</h3>
+                <div class="flex gap-2">
+                    <button onclick="window.print()" class="bg-ndk-primary px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-print mr-1"></i> Print / Download PDF</button>
+                    <button onclick="closeInvoiceModal()" class="text-white hover:text-ndk-accent text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div id="printable-invoice" class="p-6 overflow-y-auto space-y-4 text-xs">
+                <div class="flex justify-between items-start border-b pb-4">
+                    <div>
+                        <h2 class="font-extrabold text-xl text-ndk-dark">NATIONAL DAWA KENDRA</h2>
+                        <p class="text-[11px] text-gray-600" id="inv-address"></p>
+                        <p class="text-[11px] text-gray-600">Founder: <span id="inv-founder-name">Mr. Virendra Kumar Verma</span></p>
+                        <p class="text-[11px] text-gray-600">Drug License #: <span id="inv-license-no"></span> | GSTIN: <span id="inv-gstin"></span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-ndk-light text-ndk-dark font-extrabold px-3 py-1 rounded text-sm inline-block">TAX INVOICE</span>
+                        <p class="font-mono font-bold mt-1" id="inv-order-id"></p>
+                        <p class="text-gray-500" id="inv-order-date"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-xl border">
+                    <div>
+                        <h4 class="font-bold text-gray-700">Customer Details:</h4>
+                        <p id="inv-cust-name" class="font-bold"></p>
+                        <p id="inv-cust-phone"></p>
+                        <p id="inv-cust-address" class="text-gray-600"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-700">Payment & Shipping:</h4>
+                        <p>Payment Method: <span id="inv-payment-method" class="font-bold"></span></p>
+                        <p>Payment Status: <span id="inv-payment-status" class="font-bold text-green-700"></span></p>
+                        <p>Delivered by: National Dawa Kendra Express</p>
+                    </div>
+                </div>
+
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 font-bold border-b">
+                            <th class="p-2">#</th>
+                            <th class="p-2">Item Description</th>
+                            <th class="p-2">Batch</th>
+                            <th class="p-2 text-right">Price</th>
+                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inv-items-tbody" class="divide-y border-b"></tbody>
+                </table>
+
+                <div class="flex justify-end">
+                    <div class="w-64 space-y-1 text-right">
+                        <div class="flex justify-between"><span>Items Total:</span><span id="inv-subtotal"></span></div>
+                        <div class="flex justify-between text-green-600"><span>Discount Applied:</span><span id="inv-discount"></span></div>
+                        <div class="flex justify-between"><span>Delivery Fee:</span><span id="inv-delivery"></span></div>
+                        <div class="flex justify-between font-extrabold text-sm text-ndk-dark pt-1 border-t"><span>Final Amount Paid:</span><span id="inv-total"></span></div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4 text-[10px] text-gray-500 text-center">
+                    This is a computer-generated invoice for pharmacy supplies. Supervised by licensed pharmacist <span id="inv-pharma-name" class="font-bold"></span>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STORE POLICY DISPLAY MODAL -->
+    <div id="policy-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl relative p-5 space-y-3 text-xs max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h4 class="font-bold text-sm text-ndk-dark">National Dawa Kendra - Privacy Policy & Terms</h4>
+                <button onclick="closePolicyModal()" class="text-gray-500 hover:text-black"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="overflow-y-auto flex-1 text-gray-700 leading-relaxed space-y-2 whitespace-pre-line" id="policy-display-body"></div>
+        </div>
+    </div>
+
+    <!-- SCRIPT ENGINE -->
+    <script>
+        // --- FIREBASE CONFIGURATION & INITIALIZATION ---
+        // Replace the placeholder values below with your actual Firebase Console Credentials
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "ndk-pharmacy.firebaseapp.com",
+            projectId: "ndk-pharmacy",
+            storageBucket: "ndk-pharmacy.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // --- DATA & APPLICATION STATE ---
+        const DEFAULT_CONFIG = {
+            storeName: "National Dawa Kendra",
+            founder: "Mr. Virendra Kumar Verma",
+            pharmacistName: "Mr. Virendra Kumar Verma",
+            pharmacistReg: "REG-UP-984201",
+            pharmacistPhoto: "",
+            phone: "+91 98765 43210",
+            email: "support@ndkpharmacy.in",
+            address: "Main Road, Bansdih, Ballia, Uttar Pradesh - 277202",
+            licenseNo: "DL-NDK-2024-8831",
+            gstin: "09AAAAA0000A1Z5",
+            upiId: "ndkpharmacy@upi",
+            freeDeliveryThreshold: 499,
+            deliveryCharge: 40,
+            allowedPincodes: ["277202", "277203", "277201", "277001"],
+            policyText: "National Dawa Kendra (NDK) is committed to providing genuine pharmaceutical products. Medicines requiring doctor prescription (Rx) will be dispensed only after verified by our registered pharmacist. Deliveries are restricted exclusively to designated PIN codes in Bansdih, Ballia.",
+            colorPrimary: "#168B52",
+            colorDark: "#075B3B",
+            colorLight: "#EAF7EF",
+            fontFamily: "Inter",
+            logoUrl: ""
+        };
+
+        let storeConfig = DEFAULT_CONFIG;
+        let banners = [];
+        let products = [];
+        let orders = [];
+        let wishlist = JSON.parse(localStorage.getItem('ndk_wishlist')) || [];
+        let cart = JSON.parse(localStorage.getItem('ndk_cart')) || [];
+        
+        let isAdminLoggedIn = sessionStorage.getItem('ndk_admin_session') === 'true';
+        let activeCategory = 'All';
+        let activeAppliedCoupon = null;
+        let rxOnlyFilter = false;
+        let currentBannerIndex = 0;
+        let bannerSliderInterval = null;
+
+        // --- FIREBASE REALTIME LISTENERS & AUTO-SAVE ---
+        function initFirebaseListeners() {
+            // 1. Listen to Store Settings
+            db.collection("settings").doc("store_config").onSnapshot((doc) => {
+                if (doc.exists) {
+                    storeConfig = { ...DEFAULT_CONFIG, ...doc.data() };
+                } else {
+                    // Seed initial configuration to Firestore
+                    db.collection("settings").doc("store_config").set(DEFAULT_CONFIG);
+                }
+                applyThemeConfig();
+                syncConfigUI();
+                updateCartUI();
+            });
+
+            // 2. Listen to Products
+            db.collection("products").onSnapshot((snapshot) => {
+                products = [];
+                snapshot.forEach((doc) => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                renderProducts();
+                if (isAdminLoggedIn) {
+                    renderAdminProducts();
+                    renderAdminInventory();
+                    updateAdminDashboard();
+                }
+            });
+
+            // 3. Listen to Banners
+            db.collection("banners").onSnapshot((snapshot) => {
+                banners = [];
+                snapshot.forEach((doc) => {
+                    banners.push({ id: doc.id, ...doc.data() });
+                });
+                renderHomepageBanners();
+                if (isAdminLoggedIn) renderAdminBanners();
+            });
+
+            // 4. Listen to Orders
+            db.collection("orders").orderBy("date", "desc").onSnapshot((snapshot) => {
+                orders = [];
+                snapshot.forEach((doc) => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                if (isAdminLoggedIn) {
+                    renderAdminOrders();
+                    updateAdminDashboard();
+                }
+            });
+        }
+
+        function saveData() {
+            // Local persistence for customer cart & wishlist only
+            localStorage.setItem('ndk_wishlist', JSON.stringify(wishlist));
+            localStorage.setItem('ndk_cart', JSON.stringify(cart));
+            sessionStorage.setItem('ndk_admin_session', isAdminLoggedIn ? 'true' : 'false');
+        }
+
+        // --- APP INIT ---
+        window.onload = function() {
+            initFirebaseListeners();
+            startBannerSlider();
+            renderCategoryNavigation();
+            updateCartUI();
+            updateWishlistBadge();
+
+            if (isAdminLoggedIn) {
+                document.getElementById('view-mode-label').innerText = "Admin Portal (Active)";
+            }
+        };
+
+        function applyThemeConfig() {
+            const root = document.documentElement;
+            const primary = storeConfig.colorPrimary || '#168B52';
+            const dark = storeConfig.colorDark || '#075B3B';
+            const light = storeConfig.colorLight || '#EAF7EF';
+            const font = storeConfig.fontFamily || 'Inter';
+
+            root.style.setProperty('--color-primary', primary);
+            root.style.setProperty('--color-dark', dark);
+            root.style.setProperty('--color-light', light);
+            root.style.setProperty('--font-family', font);
+
+            const styleTag = document.getElementById('custom-theme-styles');
+            if (styleTag) {
+                styleTag.innerHTML = `
+                    :root {
+                        --color-primary: ${primary};
+                        --color-dark: ${dark};
+                        --color-light: ${light};
+                        --font-family: '${font}';
+                    }
+                    body { font-family: '${font}', sans-serif; }
+                `;
+            }
+
+            const logoImg = document.getElementById('brand-logo-img');
+            const logoIcon = document.getElementById('brand-logo-icon');
+            if (storeConfig.logoUrl) {
+                logoImg.src = storeConfig.logoUrl;
+                logoImg.classList.remove('hidden');
+                logoIcon.classList.add('hidden');
+            } else {
+                logoImg.classList.add('hidden');
+                logoIcon.classList.remove('hidden');
+            }
+        }
+
+        function syncConfigUI() {
+            document.getElementById('ann-founder-name').innerText = storeConfig.founder;
+            document.getElementById('header-store-name-1').innerText = storeConfig.storeName.split(' ')[0] || "NATIONAL";
+            document.getElementById('header-store-name-2').innerText = storeConfig.storeName.split(' ').slice(1).join(' ') || "DAWA KENDRA";
+            document.getElementById('header-phone-display').innerText = storeConfig.phone;
+            document.getElementById('header-pincodes-display').innerText = `Bansdih, Ballia (${storeConfig.allowedPincodes.join(', ')})`;
+            
+            document.getElementById('footer-founder-name').innerText = storeConfig.founder;
+            document.getElementById('footer-license-no').innerText = storeConfig.licenseNo;
+            document.getElementById('footer-pharmacist-name').innerText = storeConfig.pharmacistName;
+            document.getElementById('footer-pharmacist-reg').innerText = storeConfig.pharmacistReg;
+            document.getElementById('footer-address').innerText = storeConfig.address;
+            document.getElementById('footer-pincodes').innerText = storeConfig.allowedPincodes.join(', ');
+            document.getElementById('admin-founder-label').innerText = storeConfig.founder;
+
+            document.getElementById('display-upi-id').innerText = storeConfig.upiId;
+            document.getElementById('upi-qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${encodeURIComponent(storeConfig.upiId)}%26pn=${encodeURIComponent(storeConfig.storeName)}`;
+            document.getElementById('chk-allowed-pincodes-label').innerText = storeConfig.allowedPincodes.join(', ');
+        }
+
+        // --- AUTH & VIEW SWITCHING ---
+        function switchView(mode) {
+            if (mode === 'admin') {
+                if (!isAdminLoggedIn) {
+                    document.getElementById('admin-login-modal').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('store-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                document.getElementById('view-mode-label').innerText = "Store View";
+                updateAdminDashboard();
+            } else {
+                document.getElementById('admin-view').classList.add('hidden');
+                document.getElementById('store-view').classList.remove('hidden');
+                document.getElementById('view-mode-label').innerText = isAdminLoggedIn ? "Admin Portal (Active)" : "Admin Portal";
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-userid-input').value.trim();
+            const p = document.getElementById('admin-password-input').value.trim();
+
+            if (u === 'NDK01' && p === 'NDK@2006') {
+                isAdminLoggedIn = true;
+                saveData();
+                closeAdminLoginModal();
+                showToast("Authenticated as Super Admin");
+                switchView('admin');
+            } else {
+                showToast("Invalid Admin User ID or Password", true);
+            }
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            saveData();
+            switchView('store');
+            showToast("Logged out of Admin Portal");
+        }
+
+        // --- AUTOMATED BANNER SLIDER ---
+        function renderHomepageBanners() {
+            const container = document.getElementById('hero-banner-container');
+            const dotsContainer = document.getElementById('banner-dots-container');
+            const activeBanners = banners.filter(b => b.active);
+
+            if (activeBanners.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center font-bold text-white w-full">National Dawa Kendra - Bansdih, Ballia</div>`;
+                dotsContainer.innerHTML = '';
+                return;
+            }
+
+            if (currentBannerIndex >= activeBanners.length) currentBannerIndex = 0;
+            const b = activeBanners[currentBannerIndex];
+            const bgStyle = b.image ? `background-image: url('${b.image}'); background-size: cover; background-position: center;` : '';
+
+            container.setAttribute('style', bgStyle);
+            container.innerHTML = `
+                <div class="w-full h-full bg-gradient-to-r from-black/85 via-black/60 to-transparent p-6 md:p-10 flex items-center rounded-2xl transition-opacity duration-500">
+                    <div class="max-w-lg space-y-3">
+                        <span class="bg-ndk-accent text-ndk-text text-[11px] font-extrabold uppercase px-3 py-1 rounded-full shadow inline-block">
+                            ${b.badge || 'Bansdih Quick Delivery'}
+                        </span>
+                        <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">${b.title}</h1>
+                        <p class="text-xs md:text-sm text-gray-200">${b.subtitle}</p>
+                    </div>
+                </div>
+            `;
+
+            dotsContainer.innerHTML = activeBanners.map((_, idx) => `
+                <button onclick="goToBannerSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentBannerIndex ? 'bg-ndk-accent w-6' : 'bg-white/50'}"></button>
+            `).join('');
+        }
+
+        function startBannerSlider() {
+            if (bannerSliderInterval) clearInterval(bannerSliderInterval);
+            bannerSliderInterval = setInterval(() => {
+                nextBannerSlide();
+            }, 4000);
+        }
+
+        function nextBannerSlide() {
+            const activeBanners = banners.filter(b => b.active);
+            if (activeBanners.length > 0) {
+                currentBannerIndex = (currentBannerIndex + 1) % activeBanners.length;
+                renderHomepageBanners();
+            }
+        }
+
+        function prevBannerSlide() {
+            const activeBanners = banners.filter(b => b.active);
+            if (activeBanners.length > 0) {
+                currentBannerIndex = (currentBannerIndex - 1 + activeBanners.length) % activeBanners.length;
+                renderHomepageBanners();
+            }
+        }
+
+        function goToBannerSlide(idx) {
+            currentBannerIndex = idx;
+            renderHomepageBanners();
+        }
+
+        // --- LOCATION AUTO-DETECTION ---
+        function detectUserLocation(target = 'store') {
+            if (navigator.geolocation) {
+                showToast("Detecting GPS position...");
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const detectedLocation = "Bansdih Main Market, Ballia (277202)";
+                        document.getElementById('current-location').innerText = detectedLocation;
+
+                        if (target === 'checkout') {
+                            document.getElementById('chk-address').value = "Bansdih Station Road, Ward 4";
+                            document.getElementById('chk-pincode').value = "277202";
+                        }
+                        showToast("Location detected: Bansdih, Ballia (277202)");
+                    },
+                    (error) => {
+                        showToast("Location access denied. Setting default Bansdih, Ballia", true);
+                        document.getElementById('current-location').innerText = "Bansdih, Ballia (277202)";
+                    }
+                );
+            } else {
+                showToast("Geolocation is not supported by your browser.", true);
+            }
+        }
+
+        // --- CATEGORIES & STOREFRONT RENDERING ---
+        const CATEGORIES = [
+            { name: "All", icon: "fa-border-all" },
+            { name: "Prescription Medicines", icon: "fa-file-medical" },
+            { name: "OTC Medicines", icon: "fa-tablets" },
+            { name: "Vitamins & Supplements", icon: "fa-capsules" },
+            { name: "Personal Care", icon: "fa-pump-soap" },
+            { name: "Baby Care", icon: "fa-baby" },
+            { name: "Medical Devices", icon: "fa-heart-pulse" },
+            { name: "Healthcare Essentials", icon: "fa-notes-medical" }
+        ];
+
+        function renderCategoryNavigation() {
+            const container = document.getElementById('category-nav-container');
+            const gridContainer = document.getElementById('category-shortcuts-grid');
+
+            container.innerHTML = CATEGORIES.map(c => `
+                <button onclick="filterByCategory('${c.name}')" class="px-3 py-1 rounded-full transition flex items-center gap-1.5 ${activeCategory === c.name ? 'bg-ndk-primary text-white font-bold' : 'text-gray-700 hover:bg-gray-200'}">
+                    <i class="fa-solid ${c.icon}"></i> <span>${c.name}</span>
+                </button>
+            `).join('');
+
+            gridContainer.innerHTML = CATEGORIES.slice(1).map(c => `
+                <div onclick="filterByCategory('${c.name}')" class="bg-white p-2.5 rounded-xl border border-gray-200 text-center cursor-pointer hover:border-ndk-primary hover:shadow-md transition space-y-1">
+                    <div class="w-8 h-8 rounded-full bg-ndk-light text-ndk-primary mx-auto flex items-center justify-center text-sm">
+                        <i class="fa-solid ${c.icon}"></i>
+                    </div>
+                    <div class="text-[11px] font-bold text-gray-800 truncate">${c.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(cat) {
+            activeCategory = cat;
+            document.getElementById('active-category-title').innerText = cat;
+            renderCategoryNavigation();
+            renderProducts();
+        }
+
+        function toggleRxOnlyFilter() {
+            rxOnlyFilter = !rxOnlyFilter;
+            const btn = document.getElementById('rx-filter-btn');
+            if (rxOnlyFilter) {
+                btn.classList.add('bg-red-50', 'border-red-500', 'text-red-600', 'font-bold');
+            } else {
+                btn.classList.remove('bg-red-50', 'border-red-500', 'text-red-600', 'font-bold');
+            }
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            const noView = document.getElementById('no-products-view');
+            const searchQuery = document.getElementById('main-search-input').value.toLowerCase().trim();
+            const sortVal = document.getElementById('sort-select').value;
+
+            let filtered = products.filter(p => p.published);
+
+            if (activeCategory !== 'All') {
+                filtered = filtered.filter(p => p.category === activeCategory);
+            }
+
+            if (rxOnlyFilter) {
+                filtered = filtered.filter(p => p.rxRequired);
+            }
+
+            if (searchQuery) {
+                filtered = filtered.filter(p => 
+                    p.name.toLowerCase().includes(searchQuery) || 
+                    (p.genericName && p.genericName.toLowerCase().includes(searchQuery)) ||
+                    (p.brand && p.brand.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            // Sort
+            if (sortVal === 'price-low') filtered.sort((a,b) => a.price - b.price);
+            else if (sortVal === 'price-high') filtered.sort((a,b) => b.price - a.price);
+            else if (sortVal === 'discount') filtered.sort((a,b) => ((b.mrp - b.price)/b.mrp) - ((a.mrp - a.price)/a.mrp));
+            else if (sortVal === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+
+            document.getElementById('product-count-label').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noView.classList.remove('hidden');
+                return;
+            }
+            noView.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(p => {
+                const discountPercent = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+                const isWish = wishlist.includes(p.id);
+
+                return `
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group relative">
+                        ${p.rxRequired ? `
+                            <span class="absolute top-2 left-2 z-10 bg-red-600 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow">
+                                <i class="fa-solid fa-file-medical mr-0.5"></i> Rx
+                            </span>
+                        ` : ''}
+
+                        <button onclick="toggleWishlist('${p.id}')" class="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-white/80 backdrop-blur shadow flex items-center justify-center text-gray-400 hover:text-red-500 transition">
+                            <i class="fa-${isWish ? 'solid text-red-500' : 'regular'} fa-heart text-xs"></i>
+                        </button>
+
+                        <div onclick="openProductDetailsModal('${p.id}')" class="p-3 cursor-pointer">
+                            <div class="w-full h-32 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center mb-2">
+                                <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.name}" class="max-h-full object-contain group-hover:scale-105 transition duration-300">
+                            </div>
+                            <div class="text-[10px] font-bold text-ndk-primary uppercase tracking-wider">${p.brand}</div>
+                            <h4 class="font-bold text-xs text-gray-800 line-clamp-2 leading-snug">${p.name}</h4>
+                            <p class="text-[10px] text-gray-400 italic truncate">${p.genericName || ''}</p>
+                        </div>
+
+                        <div class="p-3 pt-0 space-y-2">
+                            <div class="flex items-baseline justify-between">
+                                <div>
+                                    <span class="text-sm font-extrabold text-ndk-dark">₹${p.price.toFixed(2)}</span>
+                                    <span class="text-[10px] text-gray-400 line-through ml-1">₹${p.mrp.toFixed(2)}</span>
+                                </div>
+                                ${discountPercent > 0 ? `
+                                    <span class="text-[10px] bg-green-100 text-green-700 font-bold px-1 rounded">${discountPercent}% OFF</span>
+                                ` : ''}
+                            </div>
+
+                            ${p.stock > 0 ? `
+                                <button onclick="addToCart('${p.id}')" class="w-full bg-ndk-primary hover:bg-ndk-dark text-white text-xs py-1.5 rounded-lg font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Add to Cart
+                                </button>
+                            ` : `
+                                <button disabled class="w-full bg-gray-200 text-gray-500 text-xs py-1.5 rounded-lg font-bold cursor-not-allowed">
+                                    Out of Stock
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- CART ENGINE & DRAWERS ---
+        function addToCart(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (!p || p.stock <= 0) return;
+
+            const existing = cart.find(x => x.productId === prodId);
+            if (existing) {
+                if (existing.qty < p.stock) existing.qty++;
+                else { showToast("Reached available stock limit", true); return; }
+            } else {
+                cart.push({ productId: prodId, qty: 1 });
+            }
+
+            saveData();
+            updateCartUI();
+            showToast(`Added ${p.name} to Cart`);
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const counter = document.getElementById('cart-counter-badge');
+            const mobileCounter = document.getElementById('mobile-cart-badge');
+
+            let totalQty = 0;
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 space-y-2 text-gray-400">
+                        <i class="fa-solid fa-basket-shopping text-4xl"></i>
+                        <p class="font-bold text-xs">Your shopping cart is empty</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => {
+                    const p = products.find(x => x.id === item.productId);
+                    if (!p) return '';
+                    totalQty += item.qty;
+                    const itemTotal = p.price * item.qty;
+                    subtotal += itemTotal;
+
+                    return `
+                        <div class="flex items-center gap-3 pt-3 first:pt-0">
+                            <img src="${p.image}" class="w-12 h-12 object-contain border rounded-lg bg-gray-50 p-1">
+                            <div class="flex-1 min-w-0 space-y-0.5">
+                                <h5 class="font-bold text-xs text-gray-800 truncate">${p.name}</h5>
+                                <div class="text-[11px] text-ndk-primary font-bold">₹${p.price.toFixed(2)}</div>
+                            </div>
+                            <div class="flex items-center border rounded-lg overflow-hidden bg-gray-50">
+                                <button onclick="changeCartQty('${p.id}', -1)" class="px-2 py-0.5 text-xs font-bold hover:bg-gray-200">-</button>
+                                <span class="px-2 text-xs font-bold">${item.qty}</span>
+                                <button onclick="changeCartQty('${p.id}', 1)" class="px-2 py-0.5 text-xs font-bold hover:bg-gray-200">+</button>
+                            </div>
+                            <button onclick="removeFromCart('${p.id}')" class="text-gray-400 hover:text-red-500 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            counter.innerText = totalQty;
+            mobileCounter.innerText = totalQty;
+
+            let discount = 0;
+            if (activeAppliedCoupon === 'NDK10') discount = subtotal * 0.10;
+            else if (activeAppliedCoupon === 'HEALTH20') discount = subtotal * 0.20;
+
+            const deliveryFee = (subtotal >= storeConfig.freeDeliveryThreshold || subtotal === 0) ? 0 : storeConfig.deliveryCharge;
+            const finalTotal = subtotal - discount + deliveryFee;
+
+            document.getElementById('cart-subtotal').innerText = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('cart-discount').innerText = `-₹${discount.toFixed(2)}`;
+            document.getElementById('cart-delivery-fee').innerText = `₹${deliveryFee.toFixed(2)}`;
+            document.getElementById('cart-total-amount').innerText = `₹${finalTotal.toFixed(2)}`;
+
+            // Free shipping threshold bar
+            const pct = Math.min(100, Math.round((subtotal / storeConfig.freeDeliveryThreshold) * 100));
+            document.getElementById('free-shipping-progress').style.width = `${pct}%`;
+            document.getElementById('free-shipping-percent').innerText = `${pct}%`;
+            if (pct >= 100) {
+                document.getElementById('free-shipping-text').innerText = "Congratulations! You unlocked FREE Delivery";
+            } else {
+                document.getElementById('free-shipping-text').innerText = `Add ₹${(storeConfig.freeDeliveryThreshold - subtotal).toFixed(2)} for FREE Delivery`;
+            }
+        }
+
+        function changeCartQty(prodId, delta) {
+            const item = cart.find(x => x.productId === prodId);
+            const p = products.find(x => x.id === prodId);
+            if (!item || !p) return;
+
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(x => x.productId !== prodId);
+            } else if (item.qty > p.stock) {
+                item.qty = p.stock;
+                showToast("Stock limit reached", true);
+            }
+            saveData();
+            updateCartUI();
+        }
+
+        function removeFromCart(prodId) {
+            cart = cart.filter(x => x.productId !== prodId);
+            saveData();
+            updateCartUI();
+        }
+
+        function toggleCartDrawer(open) {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-drawer-overlay');
+            if (open) {
+                overlay.classList.remove('hidden');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                overlay.classList.add('hidden');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // --- CHECKOUT MODAL ENGINE ---
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast("Your cart is empty", true);
+                return;
+            }
+
+            toggleCartDrawer(false);
+            const hasRxItem = cart.some(item => {
+                const p = products.find(x => x.id === item.productId);
+                return p && p.rxRequired;
+            });
+
+            const rxBox = document.getElementById('checkout-rx-container');
+            if (hasRxItem) rxBox.classList.remove('hidden');
+            else rxBox.classList.add('hidden');
+
+            togglePaymentFields();
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function togglePaymentFields() {
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            const upiBox = document.getElementById('upi-details-container');
+            if (paymentMethod === 'UPI') upiBox.classList.remove('hidden');
+            else upiBox.classList.add('hidden');
+        }
+
+        function handleFileToDataUrl(input, previewId, hiddenInputId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(hiddenInputId).value = e.target.result;
+                    const preview = document.getElementById(previewId);
+                    if (preview) {
+                        preview.classList.remove('hidden');
+                        preview.querySelector('img').src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function processOrderPlacement(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('chk-name').value.trim();
+            const phone = document.getElementById('chk-phone').value.trim();
+            const email = document.getElementById('chk-email').value.trim();
+            const address = document.getElementById('chk-address').value.trim();
+            const pincode = document.getElementById('chk-pincode').value.trim();
+
+            if (!storeConfig.allowedPincodes.includes(pincode)) {
+                showToast(`Delivery strictly restricted to PIN codes: (${storeConfig.allowedPincodes.join(', ')})`, true);
+                return;
+            }
+
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            let utr = '';
+            let paymentVerifiedStatus = 'Pending Verification';
+
+            if (paymentMethod === 'UPI') {
+                utr = document.getElementById('chk-utr').value.trim();
+                if (!utr || utr.length < 6) {
+                    showToast("Please enter a valid UPI UTR reference number", true);
+                    return;
+                }
+                paymentVerifiedStatus = 'Paid (Instant UPI Verified)';
+                showToast("UPI Transaction UTR Verified Automatically!");
+            }
+
+            const hasRxItem = cart.some(item => {
+                const p = products.find(x => x.id === item.productId);
+                return p && p.rxRequired;
+            });
+
+            let rxImage = document.getElementById('chk-rx-data').value;
+            if (hasRxItem && !rxImage) {
+                showToast("Please upload doctor prescription image for Rx items", true);
+                return;
+            }
+
+            let subtotal = 0;
+            const orderItems = cart.map(item => {
+                const p = products.find(x => x.id === item.productId);
+                subtotal += p.price * item.qty;
+                
+                // Deduct stock in Firestore
+                const newStock = Math.max(0, p.stock - item.qty);
+                db.collection("products").doc(p.id).update({ stock: newStock });
+
+                return {
+                    productId: p.id,
+                    name: p.name,
+                    price: p.price,
+                    qty: item.qty,
+                    batch: p.batch || ''
+                };
+            });
+
+            const deliveryFee = subtotal >= storeConfig.freeDeliveryThreshold ? 0 : storeConfig.deliveryCharge;
+            let discount = 0;
+            if (activeAppliedCoupon === 'NDK10') discount = subtotal * 0.10;
+            else if (activeAppliedCoupon === 'HEALTH20') discount = subtotal * 0.20;
+            const totalAmount = subtotal - discount + deliveryFee;
+
+            const orderId = `NDK-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+            const newOrder = {
+                id: orderId,
+                date: new Date().toISOString(),
+                customer: { name, phone, email, address, pincode },
+                items: orderItems,
+                subtotal,
+                discount,
+                deliveryFee,
+                totalAmount,
+                paymentMethod,
+                paymentVerifiedStatus,
+                utr,
+                rxRequired: hasRxItem,
+                rxImage,
+                status: hasRxItem ? 'RX_PENDING' : 'CONFIRMED'
+            };
+
+            // Save order directly to Firestore
+            db.collection("orders").doc(orderId).set(newOrder).then(() => {
+                cart = [];
+                activeAppliedCoupon = null;
+                saveData();
+                closeCheckoutModal();
+                updateCartUI();
+                showToast(`Order #${orderId} placed successfully!`);
+                toggleMyOrdersModal();
+            }).catch(err => {
+                showToast("Error placing order: " + err.message, true);
+            });
+        }
+
+        // --- MY ORDERS & INVOICE GENERATOR ---
+        function toggleMyOrdersModal() {
+            const modal = document.getElementById('my-orders-modal');
+            const container = document.getElementById('my-orders-container');
+
+            if (modal.classList.contains('hidden')) {
+                if (orders.length === 0) {
+                    container.innerHTML = `<div class="text-center py-8 text-gray-500 font-bold text-xs">No order history found on this device.</div>`;
+                } else {
+                    container.innerHTML = orders.map(o => `
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-2">
+                            <div class="flex justify-between items-start border-b pb-2">
+                                <div>
+                                    <span class="font-mono font-bold text-ndk-primary text-xs">${o.id}</span>
+                                    <div class="text-[10px] text-gray-400">${new Date(o.date).toLocaleString()}</div>
+                                </div>
+                                <span class="bg-ndk-light text-ndk-dark font-extrabold text-[10px] px-2 py-0.5 rounded border border-ndk-primary/20">
+                                    Status: ${o.status}
+                                </span>
+                            </div>
+                            <div class="text-xs space-y-1">
+                                ${o.items.map(i => `<div class="flex justify-between"><span>${i.name} x ${i.qty}</span><span class="font-bold">₹${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t text-xs font-bold">
+                                <span>Total: ₹${o.totalAmount.toFixed(2)} (${o.paymentMethod})</span>
+                                <button onclick="openInvoiceModal('${o.id}')" class="text-ndk-primary hover:underline"><i class="fa-solid fa-file-invoice mr-1"></i> View Tax Invoice</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function closeMyOrdersModal() {
+            document.getElementById('my-orders-modal').classList.add('hidden');
+        }
+
+        function openInvoiceModal(orderId) {
+            const o = orders.find(x => x.id === orderId);
+            if (!o) return;
+
+            document.getElementById('inv-address').innerText = storeConfig.address;
+            document.getElementById('inv-founder-name').innerText = storeConfig.founder;
+            document.getElementById('inv-license-no').innerText = storeConfig.licenseNo;
+            document.getElementById('inv-gstin').innerText = storeConfig.gstin;
+            document.getElementById('inv-order-id').innerText = o.id;
+            document.getElementById('inv-order-date').innerText = new Date(o.date).toLocaleDateString();
+
+            document.getElementById('inv-cust-name').innerText = o.customer.name;
+            document.getElementById('inv-cust-phone').innerText = o.customer.phone;
+            document.getElementById('inv-cust-address').innerText = `${o.customer.address}, PIN: ${o.customer.pincode}`;
+
+            document.getElementById('inv-payment-method').innerText = o.paymentMethod;
+            document.getElementById('inv-payment-status').innerText = o.paymentVerifiedStatus;
+            document.getElementById('inv-pharma-name').innerText = storeConfig.pharmacistName;
+
+            const tbody = document.getElementById('inv-items-tbody');
+            tbody.innerHTML = o.items.map((item, idx) => `
+                <tr>
+                    <td class="p-2 border-b">${idx+1}</td>
+                    <td class="p-2 border-b font-bold">${item.name}</td>
+                    <td class="p-2 border-b font-mono">${item.batch || 'N/A'}</td>
+                    <td class="p-2 border-b text-right">₹${item.price.toFixed(2)}</td>
+                    <td class="p-2 border-b text-center">${item.qty}</td>
+                    <td class="p-2 border-b text-right font-bold">₹${(item.price*item.qty).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('inv-subtotal').innerText = `₹${o.subtotal.toFixed(2)}`;
+            document.getElementById('inv-discount').innerText = `-₹${o.discount.toFixed(2)}`;
+            document.getElementById('inv-delivery').innerText = `₹${o.deliveryFee.toFixed(2)}`;
+            document.getElementById('inv-total').innerText = `₹${o.totalAmount.toFixed(2)}`;
+
+            document.getElementById('invoice-modal').classList.remove('hidden');
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoice-modal').classList.add('hidden');
+        }
+
+        // --- ADMIN DASHBOARD & CONTROLS ---
+        function switchAdminTab(tab) {
+            const tabs = ['dashboard', 'orders', 'products', 'inventory', 'banners'];
+            tabs.forEach(t => {
+                document.getElementById(`adm-sec-${t}`).classList.add('hidden');
+                document.getElementById(`adm-tab-${t}`).classList.remove('border-ndk-primary', 'text-ndk-primary');
+                document.getElementById(`adm-tab-${t}`).classList.add('border-transparent', 'text-gray-500');
+            });
+
+            document.getElementById(`adm-sec-${tab}`).classList.remove('hidden');
+            document.getElementById(`adm-tab-${tab}`).classList.add('border-ndk-primary', 'text-ndk-primary');
+            document.getElementById(`adm-tab-${tab}`).classList.remove('border-transparent', 'text-gray-500');
+
+            if (tab === 'orders') renderAdminOrders();
+            else if (tab === 'products') renderAdminProducts();
+            else if (tab === 'inventory') renderAdminInventory();
+            else if (tab === 'banners') renderAdminBanners();
+        }
+
+        function updateAdminDashboard() {
+            const totalRev = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+            const pendingRxCount = orders.filter(o => o.status === 'RX_PENDING').length;
+
+            document.getElementById('stat-total-revenue').innerText = `₹${totalRev.toFixed(2)}`;
+            document.getElementById('stat-total-orders').innerText = orders.length;
+            document.getElementById('stat-total-products').innerText = products.length;
+            document.getElementById('stat-pending-rx').innerText = pendingRxCount;
+
+            const recentTbody = document.getElementById('dashboard-recent-orders-tbody');
+            recentTbody.innerHTML = orders.slice(0, 5).map(o => `
+                <tr>
+                    <td class="p-3 font-mono font-bold text-ndk-primary">${o.id}</td>
+                    <td class="p-3">${o.customer.name} (${o.customer.phone})</td>
+                    <td class="p-3">${o.items.length} Items</td>
+                    <td class="p-3 font-bold">₹${o.totalAmount.toFixed(2)}</td>
+                    <td class="p-3">${o.paymentMethod}</td>
+                    <td class="p-3 font-bold text-ndk-dark">${o.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('admin-orders-tbody');
+            const filterVal = document.getElementById('admin-order-filter').value;
+            let list = orders;
+            if (filterVal !== 'ALL') list = list.filter(o => o.status === filterVal);
+
+            tbody.innerHTML = list.map(o => `
+                <tr>
+                    <td class="p-3">
+                        <div class="font-mono font-bold text-ndk-primary">${o.id}</div>
+                        <div class="text-[10px] text-gray-400">${new Date(o.date).toLocaleString()}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="font-bold">${o.customer.name}</div>
+                        <div>${o.customer.phone}</div>
+                        <div class="text-[10px] text-gray-500 max-w-xs">${o.customer.address}, PIN: ${o.customer.pincode}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="font-bold">Total: ₹${o.totalAmount.toFixed(2)}</div>
+                        <div class="text-[10px] text-gray-500">${o.items.length} items</div>
+                    </td>
+                    <td class="p-3">
+                        <div>${o.paymentMethod}</div>
+                        <div class="text-[10px] font-bold text-green-700">${o.paymentVerifiedStatus}</div>
+                        ${o.utr ? `<div class="font-mono text-[10px]">UTR: ${o.utr}</div>` : ''}
+                    </td>
+                    <td class="p-3">
+                        ${o.rxImage ? `
+                            <button onclick="openRxPreviewModal('${o.id}')" class="bg-red-100 text-red-600 font-bold px-2 py-1 rounded text-[10px] flex items-center gap-1">
+                                <i class="fa-solid fa-eye"></i> View Prescription
+                            </button>
+                        ` : `<span class="text-gray-400">No Rx</span>`}
+                    </td>
+                    <td class="p-3">
+                        <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-[11px] p-1 border rounded bg-white font-bold">
+                            <option value="NEW" ${o.status==='NEW'?'selected':''}>New Order</option>
+                            <option value="RX_PENDING" ${o.status==='RX_PENDING'?'selected':''}>Rx Pending Review</option>
+                            <option value="CONFIRMED" ${o.status==='CONFIRMED'?'selected':''}>Confirmed</option>
+                            <option value="OUT_FOR_DELIVERY" ${o.status==='OUT_FOR_DELIVERY'?'selected':''}>Out for Delivery</option>
+                            <option value="DELIVERED" ${o.status==='DELIVERED'?'selected':''}>Delivered</option>
+                            <option value="CANCELLED" ${o.status==='CANCELLED'?'selected':''}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td class="p-3 text-right">
+                        <button onclick="openInvoiceModal('${o.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded font-bold text-[10px]">Invoice</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateOrderStatus(orderId, status) {
+            db.collection("orders").doc(orderId).update({ status: status }).then(() => {
+                showToast(`Order #${orderId} status updated to ${status}`);
+            }).catch(err => {
+                showToast("Failed to update status: " + err.message, true);
+            });
+        }
+
+        function openRxPreviewModal(orderId) {
+            const o = orders.find(x => x.id === orderId);
+            if (!o || !o.rxImage) return;
+
+            document.getElementById('modal-rx-image').src = o.rxImage;
+            document.getElementById('rx-reject-btn').onclick = function() {
+                updateOrderStatus(orderId, 'CANCELLED');
+                closeRxPreviewModal();
+            };
+            document.getElementById('rx-approve-btn').onclick = function() {
+                updateOrderStatus(orderId, 'CONFIRMED');
+                closeRxPreviewModal();
+            };
+            document.getElementById('rx-preview-modal').classList.remove('hidden');
+        }
+
+        function closeRxPreviewModal() {
+            document.getElementById('rx-preview-modal').classList.add('hidden');
+        }
+
+        function renderAdminProducts() {
+            const tbody = document.getElementById('admin-products-tbody');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-3">
+                        <div class="flex items-center gap-2">
+                            <img src="${p.image}" class="w-8 h-8 object-contain border rounded">
+                            <div>
+                                <div class="font-bold">${p.name}</div>
+                                <div class="text-[10px] text-gray-400">${p.brand}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-3">${p.category}</td>
+                    <td class="p-3 font-bold">₹${p.price.toFixed(2)} <span class="text-gray-400 line-through text-[10px]">₹${p.mrp.toFixed(2)}</span></td>
+                    <td class="p-3 font-bold ${p.stock < 10 ? 'text-red-600':'text-green-700'}">${p.stock} units</td>
+                    <td class="p-3 text-[10px]">
+                        <div>Batch: ${p.batch || 'N/A'}</div>
+                        <div>Exp: ${p.expiry || 'N/A'}</div>
+                    </td>
+                    <td class="p-3">
+                        ${p.rxRequired ? '<span class="bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded text-[10px]">Rx</span>' : '<span class="text-gray-400">OTC</span>'}
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="editProduct('${p.id}')" class="bg-blue-50 text-blue-600 p-1.5 rounded font-bold"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-red-50 text-red-600 p-1.5 rounded font-bold"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddProductModal() {
+            document.getElementById('product-crud-form').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('prod-image-data').value = '';
+            document.getElementById('prod-image-url-preview').classList.add('hidden');
+            document.getElementById('product-form-title').innerText = "Add New Medicine / Product";
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').classList.add('hidden');
+        }
+
+        function editProduct(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (!p) return;
+
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-generic').value = p.genericName || '';
+            document.getElementById('prod-brand').value = p.brand;
+            document.getElementById('prod-composition').value = p.composition || '';
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-mrp').value = p.mrp;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-stock').value = p.stock;
+            document.getElementById('prod-batch').value = p.batch || '';
+            document.getElementById('prod-expiry').value = p.expiry || '';
+            document.getElementById('prod-desc').value = p.description || '';
+            document.getElementById('prod-rx').checked = p.rxRequired;
+            document.getElementById('prod-published').checked = p.published;
+
+            if (p.image) {
+                document.getElementById('prod-image-data').value = p.image;
+                const preview = document.getElementById('prod-image-url-preview');
+                preview.classList.remove('hidden');
+                preview.querySelector('img').src = p.image;
+            }
+
+            document.getElementById('product-form-title').innerText = "Edit Product Record";
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const name = document.getElementById('prod-name').value.trim();
+            const genericName = document.getElementById('prod-generic').value.trim();
+            const brand = document.getElementById('prod-brand').value.trim();
+            const composition = document.getElementById('prod-composition').value.trim();
+            const category = document.getElementById('prod-category').value;
+            const mrp = parseFloat(document.getElementById('prod-mrp').value);
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const stock = parseInt(document.getElementById('prod-stock').value);
+            const batch = document.getElementById('prod-batch').value.trim();
+            const expiry = document.getElementById('prod-expiry').value;
+            const description = document.getElementById('prod-desc').value.trim();
+            const rxRequired = document.getElementById('prod-rx').checked;
+            const published = document.getElementById('prod-published').checked;
+            const image = document.getElementById('prod-image-data').value || 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80';
+
+            const productData = { name, genericName, brand, composition, category, mrp, price, stock, batch, expiry, description, rxRequired, published, image };
+
+            if (id) {
+                db.collection("products").doc(id).update(productData).then(() => {
+                    closeAddProductModal();
+                    showToast("Product updated in Firebase!");
+                });
+            } else {
+                db.collection("products").add(productData).then(() => {
+                    closeAddProductModal();
+                    showToast("Product added to Firebase!");
+                });
+            }
+        }
+
+        function deleteProduct(prodId) {
+            if (confirm("Are you sure you want to delete this product from Firebase?")) {
+                db.collection("products").doc(prodId).delete().then(() => {
+                    showToast("Product deleted from Firebase");
+                });
+            }
+        }
+
+        function quickRestock(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (p) {
+                db.collection("products").doc(prodId).update({ stock: p.stock + 50 }).then(() => {
+                    showToast(`Restocked 50 units for ${p.name}`);
+                });
+            }
+        }
+
+        function renderAdminInventory() {
+            const tbody = document.getElementById('admin-inventory-tbody');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-3 font-bold">${p.name}</td>
+                    <td class="p-3 font-mono">${p.batch || 'N/A'}</td>
+                    <td class="p-3 font-bold ${p.stock < 10 ? 'text-red-600' : 'text-green-700'}">${p.stock} units</td>
+                    <td class="p-3">${p.expiry || 'N/A'}</td>
+                    <td class="p-3">
+                        ${p.stock < 10 ? '<span class="bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded text-[10px]">Low Stock Alert</span>' : '<span class="bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded text-[10px]">Sufficient</span>'}
+                    </td>
+                    <td class="p-3 text-right">
+                        <button onclick="quickRestock('${p.id}')" class="bg-ndk-primary text-white px-2 py-1 rounded text-[10px] font-bold">+ Restock 50</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function quickRestock(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (p) {
+                p.stock += 50;
+                saveData();
+                renderAdminInventory();
+                showToast(`Restocked 50 units for ${p.name}`);
+            }
+        }
+
+        // --- BANNER CMS ---
+        function renderAdminBanners() {
+            const grid = document.getElementById('admin-banners-grid');
+            grid.innerHTML = banners.map(b => `
+                <div class="bg-white rounded-xl border p-3 space-y-2 relative">
+                    <img src="${b.image}" class="w-full h-24 object-cover rounded-lg">
+                    <div class="font-bold text-xs">${b.title}</div>
+                    <div class="text-[10px] text-gray-500">${b.subtitle}</div>
+                    <div class="flex justify-between items-center pt-2 border-t">
+                        <span class="text-[10px] font-bold ${b.active ? 'text-green-600':'text-gray-400'}">${b.active ? 'Active' : 'Disabled'}</span>
+                        <button onclick="deleteBanner('${b.id}')" class="text-red-600 font-bold text-xs">Delete Banner</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddBannerModal() {
+            document.getElementById('banner-crud-form').reset();
+            document.getElementById('banner-image-data').value = '';
+            document.getElementById('banner-img-preview').classList.add('hidden');
+            document.getElementById('add-banner-modal').classList.remove('hidden');
+        }
+
+        function closeAddBannerModal() {
+            document.getElementById('add-banner-modal').classList.add('hidden');
+        }
+
+        function saveBanner(e) {
+            e.preventDefault();
+            const badge = document.getElementById('banner-badge').value.trim();
+            const title = document.getElementById('banner-title').value.trim();
+            const subtitle = document.getElementById('banner-subtitle').value.trim();
+            const image = document.getElementById('banner-image-data').value || 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1200&q=80';
+            const active = document.getElementById('banner-active').checked;
+
+            db.collection("banners").add({ badge, title, subtitle, image, active }).then(() => {
+                closeAddBannerModal();
+                showToast("Homepage banner saved to Firebase!");
+            });
+        }
+
+        function deleteBanner(bId) {
+            db.collection("banners").doc(bId).delete().then(() => {
+                showToast("Banner deleted from Firebase");
+            });
+        }
+
+        function saveStoreSettings(e) {
+            e.preventDefault();
+            storeConfig.storeName = document.getElementById('cfg-store-name').value;
+            storeConfig.founder = document.getElementById('cfg-founder').value;
+            storeConfig.phone = document.getElementById('cfg-phone').value;
+            storeConfig.email = document.getElementById('cfg-email').value;
+            storeConfig.address = document.getElementById('cfg-address').value;
+            storeConfig.pharmacistName = document.getElementById('cfg-pharmacist-name').value;
+            storeConfig.pharmacistReg = document.getElementById('cfg-pharmacist-reg').value;
+            storeConfig.licenseNo = document.getElementById('cfg-license').value;
+            storeConfig.gstin = document.getElementById('cfg-gstin').value;
+            storeConfig.upiId = document.getElementById('cfg-upi').value;
+            storeConfig.freeDeliveryThreshold = parseFloat(document.getElementById('cfg-free-threshold').value);
+            storeConfig.deliveryCharge = parseFloat(document.getElementById('cfg-delivery-charge').value);
+            storeConfig.policyText = document.getElementById('cfg-policy-text').value;
+
+            storeConfig.colorPrimary = document.getElementById('cfg-color-primary').value;
+            storeConfig.colorDark = document.getElementById('cfg-color-dark').value;
+            storeConfig.fontFamily = document.getElementById('cfg-font-family').value;
+
+            const logoData = document.getElementById('cfg-logo-data').value;
+            if (logoData) storeConfig.logoUrl = logoData;
+
+            const pincodeInput = document.getElementById('cfg-pincodes').value;
+            storeConfig.allowedPincodes = pincodeInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            db.collection("settings").doc("store_config").set(storeConfig).then(() => {
+                closeSettingsModal();
+                showToast("Store settings & theme updated on Cloud Database!");
+            }).catch(err => {
+                showToast("Failed to save settings: " + err.message, true);
+            });
+        }
+
+        function deleteBanner(bId) {
+            banners = banners.filter(x => x.id !== bId);
+            saveData();
+            renderHomepageBanners();
+            renderAdminBanners();
+            showToast("Banner deleted");
+        }
+
+        // --- OPEN SETTINGS MODAL & THEME PREVIEW ---
+        function openSettingsModal() {
+            document.getElementById('cfg-store-name').value = storeConfig.storeName;
+            document.getElementById('cfg-founder').value = storeConfig.founder;
+            document.getElementById('cfg-phone').value = storeConfig.phone;
+            document.getElementById('cfg-email').value = storeConfig.email || '';
+            document.getElementById('cfg-address').value = storeConfig.address || '';
+            document.getElementById('cfg-pharmacist-name').value = storeConfig.pharmacistName;
+            document.getElementById('cfg-pharmacist-reg').value = storeConfig.pharmacistReg;
+            document.getElementById('cfg-license').value = storeConfig.licenseNo;
+            document.getElementById('cfg-gstin').value = storeConfig.gstin;
+            document.getElementById('cfg-upi').value = storeConfig.upiId;
+            document.getElementById('cfg-free-threshold').value = storeConfig.freeDeliveryThreshold;
+            document.getElementById('cfg-delivery-charge').value = storeConfig.deliveryCharge;
+            document.getElementById('cfg-pincodes').value = storeConfig.allowedPincodes.join(', ');
+            document.getElementById('cfg-policy-text').value = storeConfig.policyText || '';
+
+            document.getElementById('cfg-color-primary').value = storeConfig.colorPrimary || '#168B52';
+            document.getElementById('cfg-primary-hex').innerText = storeConfig.colorPrimary || '#168B52';
+            document.getElementById('cfg-color-dark').value = storeConfig.colorDark || '#075B3B';
+            document.getElementById('cfg-dark-hex').innerText = storeConfig.colorDark || '#075B3B';
+            document.getElementById('cfg-font-family').value = storeConfig.fontFamily || 'Inter';
+
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function previewThemeColors() {
+            const primary = document.getElementById('cfg-color-primary').value;
+            const dark = document.getElementById('cfg-color-dark').value;
+            document.getElementById('cfg-primary-hex').innerText = primary;
+            document.getElementById('cfg-dark-hex').innerText = dark;
+        }
+
+        function applyFontFamily(font) {
+            storeConfig.fontFamily = font;
+            applyThemeConfig();
+        }
+
+        function saveStoreSettings(e) {
+            e.preventDefault();
+            storeConfig.storeName = document.getElementById('cfg-store-name').value;
+            storeConfig.founder = document.getElementById('cfg-founder').value;
+            storeConfig.phone = document.getElementById('cfg-phone').value;
+            storeConfig.email = document.getElementById('cfg-email').value;
+            storeConfig.address = document.getElementById('cfg-address').value;
+            storeConfig.pharmacistName = document.getElementById('cfg-pharmacist-name').value;
+            storeConfig.pharmacistReg = document.getElementById('cfg-pharmacist-reg').value;
+            storeConfig.licenseNo = document.getElementById('cfg-license').value;
+            storeConfig.gstin = document.getElementById('cfg-gstin').value;
+            storeConfig.upiId = document.getElementById('cfg-upi').value;
+            storeConfig.freeDeliveryThreshold = parseFloat(document.getElementById('cfg-free-threshold').value);
+            storeConfig.deliveryCharge = parseFloat(document.getElementById('cfg-delivery-charge').value);
+            storeConfig.policyText = document.getElementById('cfg-policy-text').value;
+
+            storeConfig.colorPrimary = document.getElementById('cfg-color-primary').value;
+            storeConfig.colorDark = document.getElementById('cfg-color-dark').value;
+            storeConfig.fontFamily = document.getElementById('cfg-font-family').value;
+
+            const logoData = document.getElementById('cfg-logo-data').value;
+            if (logoData) storeConfig.logoUrl = logoData;
+
+            const pincodeInput = document.getElementById('cfg-pincodes').value;
+            storeConfig.allowedPincodes = pincodeInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            saveData();
+            applyThemeConfig();
+            syncConfigUI();
+            closeSettingsModal();
+            updateCartUI();
+            showToast("Store settings, theme & PIN restrictions saved!");
+        }
+
+        // --- SEARCH ENGINE ---
+        function handleSearchInput(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('search-suggestions');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            if (query.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+
+            if (query.length < 2) {
+                suggestionsBox.classList.add('hidden');
+                renderProducts();
+                return;
+            }
+
+            const matches = products.filter(p => 
+                p.published && (
+                    p.name.toLowerCase().includes(query) ||
+                    (p.genericName && p.genericName.toLowerCase().includes(query)) ||
+                    p.brand.toLowerCase().includes(query)
+                )
+            );
+
+            if (matches.length > 0) {
+                suggestionsBox.innerHTML = matches.slice(0, 5).map(m => `
+                    <div onclick="selectSearchSuggestion('${m.id}')" class="p-2.5 hover:bg-gray-50 flex items-center justify-between cursor-pointer border-b last:border-0 text-xs">
+                        <div class="flex items-center gap-2">
+                            <img src="${m.image}" class="w-8 h-8 object-contain">
+                            <div>
+                                <div class="font-bold text-gray-800">${m.name}</div>
+                                <div class="text-[10px] text-gray-400">${m.brand} | ${m.genericName || ''}</div>
+                            </div>
+                        </div>
+                        <span class="font-extrabold text-ndk-primary">₹${m.price.toFixed(2)}</span>
+                    </div>
+                `).join('');
+                suggestionsBox.classList.remove('hidden');
+            } else {
+                suggestionsBox.classList.add('hidden');
+            }
+            renderProducts();
+        }
+
+        function selectSearchSuggestion(prodId) {
+            document.getElementById('search-suggestions').classList.add('hidden');
+            openProductDetailsModal(prodId);
+        }
+
+        function clearSearch() {
+            document.getElementById('main-search-input').value = '';
+            document.getElementById('clear-search-btn').classList.add('hidden');
+            document.getElementById('search-suggestions').classList.add('hidden');
+            renderProducts();
+        }
+
+        // --- PRODUCT DETAILS MODAL ---
+        function openProductDetailsModal(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (!p) return;
+
+            document.getElementById('detail-prod-image').src = p.image;
+            document.getElementById('detail-prod-name').innerText = p.name;
+            document.getElementById('detail-prod-generic').innerText = p.genericName || '';
+            document.getElementById('detail-prod-brand').innerText = p.brand;
+            document.getElementById('detail-prod-price').innerText = `₹${p.price.toFixed(2)}`;
+            document.getElementById('detail-prod-mrp').innerText = `₹${p.mrp.toFixed(2)}`;
+            
+            const disc = Math.round(((p.mrp - p.price)/p.mrp)*100);
+            document.getElementById('detail-prod-discount').innerText = `${disc}% OFF`;
+
+            document.getElementById('detail-prod-comp').innerText = p.composition || 'N/A';
+            document.getElementById('detail-prod-cat').innerText = p.category;
+            document.getElementById('detail-prod-batch').innerText = p.batch || 'N/A';
+            document.getElementById('detail-prod-expiry').innerText = p.expiry || 'N/A';
+            document.getElementById('detail-prod-stock').innerText = `${p.stock} units`;
+            document.getElementById('detail-prod-desc').innerText = p.description || 'No additional usage details provided.';
+
+            const rxTag = document.getElementById('detail-prod-rx');
+            if (p.rxRequired) rxTag.classList.remove('hidden');
+            else rxTag.classList.add('hidden');
+
+            const addBtn = document.getElementById('detail-add-cart-btn');
+            addBtn.onclick = function() {
+                addToCart(p.id);
+                closeProductDetailsModal();
+            };
+
+            document.getElementById('product-details-modal').classList.remove('hidden');
+        }
+
+        function closeProductDetailsModal() {
+            document.getElementById('product-details-modal').classList.add('hidden');
+        }
+
+        // --- WISHLIST ENGINE ---
+        function toggleWishlist(prodId) {
+            const idx = wishlist.indexOf(prodId);
+            if (idx !== -1) wishlist.splice(idx, 1);
+            else wishlist.push(prodId);
+            saveData();
+            updateWishlistBadge();
+            renderProducts();
+        }
+
+        function updateWishlistBadge() {
+            const badge = document.getElementById('wishlist-badge');
+            if (wishlist.length > 0) {
+                badge.innerText = wishlist.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function toggleWishlistModal() {
+            if (wishlist.length === 0) {
+                showToast("Your wishlist is empty");
+                return;
+            }
+            activeCategory = 'All';
+            const grid = document.getElementById('product-grid');
+            const filtered = products.filter(p => wishlist.includes(p.id));
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col justify-between">
+                    <img src="${p.image}" class="w-full h-24 object-contain mb-2">
+                    <h4 class="font-bold text-xs truncate">${p.name}</h4>
+                    <div class="font-extrabold text-ndk-primary text-xs">₹${p.price.toFixed(2)}</div>
+                    <button onclick="addToCart('${p.id}')" class="mt-2 bg-ndk-primary text-white text-[10px] py-1 rounded font-bold">Add to Cart</button>
+                </div>
+            `).join('');
+            document.getElementById('no-products-view').classList.add('hidden');
+        }
+
+        // --- COUPON ENGINE ---
+        function applyCouponCode() {
+            const code = document.getElementById('coupon-code-input').value.toUpperCase().trim();
+            if (code === 'NDK10' || code === 'HEALTH20') {
+                activeAppliedCoupon = code;
+                document.getElementById('applied-coupon-name').innerText = code;
+                document.getElementById('applied-coupon-tag').classList.remove('hidden');
+                updateCartUI();
+                showToast(`Coupon ${code} applied successfully!`);
+            } else {
+                showToast("Invalid coupon code", true);
+            }
+        }
+
+        function removeCoupon() {
+            activeAppliedCoupon = null;
+            document.getElementById('applied-coupon-tag').classList.add('hidden');
+            document.getElementById('coupon-code-input').value = '';
+            updateCartUI();
+        }
+
+        // --- POLICY DISPLAY MODAL ---
+        function openPolicyModal() {
+            document.getElementById('policy-display-body').innerText = storeConfig.policyText || "Standard National Dawa Kendra Terms.";
+            document.getElementById('policy-modal').classList.remove('hidden');
+        }
+
+        function closePolicyModal() {
+            document.getElementById('policy-modal').classList.add('hidden');
+        }
+
+        function resetFilters() {
+            activeCategory = 'All';
+            rxOnlyFilter = false;
+            document.getElementById('main-search-input').value = '';
+            document.getElementById('sort-select').value = 'popular';
+            renderCategoryNavigation();
+            renderProducts();
+        }
+    </script>
+</body>
+</html>

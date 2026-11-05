@@ -16,7 +16,27 @@ export async function GET({ url, locals }: RequestEvent) {
 		return errorResponse('UNAUTHORIZED', 'Unauthorized', 401);
 	}
 
-	const customerId = url.searchParams.get('customerId');
+	const customerId = url.searchParams.get('customerId') || undefined;
+	const status = url.searchParams.get('status') || undefined;
+	const search = url.searchParams.get('search') || url.searchParams.get('q') || undefined;
+	const pageParam = url.searchParams.get('page');
+	const limitParam = url.searchParams.get('limit');
+	const storeId = locals.user.storeId || undefined;
+
+	if (pageParam !== null || limitParam !== null) {
+		const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+		const limit = Math.max(1, Math.min(100, parseInt(limitParam || '50', 10) || 50));
+		const result = await salesService.getPaginatedSales({
+			page,
+			limit,
+			customerId,
+			status,
+			search,
+			storeId
+		});
+		return jsonResponse(result);
+	}
+
 	if (customerId) {
 		const sales = await salesService.getSalesByCustomer(customerId);
 		return json(sales);
@@ -114,6 +134,7 @@ export async function POST(event: RequestEvent) {
 		interState: body.interState === true,
 		items,
 		amountPaidAtSaleRupees: paid,
+		paymentMethod: typeof body.paymentMethod === 'string' ? body.paymentMethod : undefined,
 		notes: typeof body.notes === 'string' ? body.notes : undefined
 	};
 
