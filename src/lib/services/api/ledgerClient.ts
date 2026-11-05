@@ -1,9 +1,10 @@
 import type { LedgerEntry } from '$lib/types/index.js';
 import { unwrap } from './unwrap.js';
+import { apiFetch } from './httpClient.js';
 
 export const ledgerService = {
 	async getLedgerEntries(): Promise<LedgerEntry[]> {
-		const res = await fetch('/api/ledger');
+		const res = await apiFetch('/api/ledger');
 		if (!res.ok) throw new Error('Failed to fetch ledger entries');
 		return unwrap(res);
 	},
@@ -13,23 +14,23 @@ export const ledgerService = {
 		partyType?: 'customer' | 'supplier'
 	): Promise<LedgerEntry[]> {
 		if (partyType === 'supplier') {
-			const res = await fetch(`/api/suppliers/${partyId}/ledger`);
+			const res = await apiFetch(`/api/suppliers/${partyId}/ledger`);
 			if (res.ok) return unwrap(res);
 		} else if (partyType === 'customer') {
-			const res = await fetch(`/api/customers/${partyId}/ledger`);
+			const res = await apiFetch(`/api/customers/${partyId}/ledger`);
 			if (res.ok) return unwrap(res);
 		}
 
 		// Try customer endpoint
-		let res = await fetch(`/api/customers/${partyId}/ledger`);
+		let res = await apiFetch(`/api/customers/${partyId}/ledger`);
 		if (res.ok) return unwrap(res);
 
 		// Try supplier endpoint
-		res = await fetch(`/api/suppliers/${partyId}/ledger`);
+		res = await apiFetch(`/api/suppliers/${partyId}/ledger`);
 		if (res.ok) return unwrap(res);
 
 		// Fallback to reports/ledger endpoint
-		const reportRes = await fetch(
+		const reportRes = await apiFetch(
 			`/api/reports/ledger?type=${partyType === 'supplier' ? 'payable' : 'receivable'}&partyId=${partyId}`
 		);
 		if (reportRes.ok) {

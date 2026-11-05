@@ -1,20 +1,21 @@
 import type { Customer, CreateCustomerInput } from '$lib/types/index.js';
 import { unwrap } from './unwrap.js';
+import { apiFetch } from './httpClient.js';
 
 export const customerService = {
 	async getCustomers(): Promise<Customer[]> {
-		const res = await fetch('/api/customers');
+		const res = await apiFetch('/api/customers');
 		if (!res.ok) throw new Error('Failed to fetch customers');
 		return unwrap<Customer[]>(res);
 	},
 	async getCustomer(id: string): Promise<Customer | null> {
-		const res = await fetch(`/api/customers/${id}`);
+		const res = await apiFetch(`/api/customers/${id}`);
 		if (res.status === 404) return null;
 		if (!res.ok) throw new Error('Failed to fetch customer');
 		return unwrap<Customer>(res);
 	},
 	async createCustomer(input: CreateCustomerInput): Promise<Customer> {
-		const res = await fetch('/api/customers', {
+		const res = await apiFetch('/api/customers', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(input)
@@ -22,7 +23,7 @@ export const customerService = {
 		return unwrap<Customer>(res);
 	},
 	async updateCustomer(id: string, input: Partial<CreateCustomerInput>): Promise<Customer> {
-		const res = await fetch(`/api/customers/${id}`, {
+		const res = await apiFetch(`/api/customers/${id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(input)
@@ -33,11 +34,11 @@ export const customerService = {
 		throw new Error('Not supposed to be called from client directly');
 	},
 	async deleteCustomer(id: string): Promise<void> {
-		const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+		const res = await apiFetch(`/api/customers/${id}`, { method: 'DELETE' });
 		if (!res.ok) throw new Error('Failed to delete customer');
 	},
 	async searchCustomers(query: string): Promise<Customer[]> {
-		const res = await fetch(`/api/customers?search=${encodeURIComponent(query)}`);
+		const res = await apiFetch(`/api/customers?search=${encodeURIComponent(query)}`);
 		if (!res.ok) throw new Error('Failed to search customers');
 		return unwrap<Customer[]>(res);
 	}

@@ -82,9 +82,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 		response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 	}
 
+	// Static asset caching for fonts, icons, immutable chunks
+	if (event.url.pathname.startsWith('/_app/immutable/')) {
+		response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+	} else if (event.url.pathname.match(/\.(woff2?|ttf|otf|eot|webp|avif|png|jpg|jpeg|svg|ico)$/)) {
+		response.headers.set('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+	}
+
 	const acceptsHtml = event.request.headers.get('accept')?.includes('text/html') ?? false;
 	if (event.locals.user && acceptsHtml) {
-		response.headers.set('cache-control', 'no-store');
+		response.headers.set('Cache-Control', 'no-store');
 	}
 
 	return response;

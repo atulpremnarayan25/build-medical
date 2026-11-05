@@ -123,14 +123,15 @@ export class DbPurchaseRepository implements PurchaseRepository {
 	}> {
 		const todayStart = new Date();
 		todayStart.setHours(0, 0, 0, 0);
+		const todayStartIso = todayStart.toISOString();
 
 		const conditions = [ne(purchasesTable.status, "cancelled")];
 		if (storeId) conditions.push(eq(purchasesTable.storeId, storeId));
 
 		const [row] = await this._db
 			.select({
-				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${purchasesTable.createdAt} >= ${todayStart} THEN 1 END), 0)::int`,
-				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${purchasesTable.createdAt} >= ${todayStart} THEN CAST(${purchasesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
+				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${purchasesTable.createdAt} >= ${todayStartIso}::timestamptz THEN 1 END), 0)::int`,
+				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${purchasesTable.createdAt} >= ${todayStartIso}::timestamptz THEN CAST(${purchasesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
 				totalPayables: sql<string>`COALESCE(SUM(CAST(${purchasesTable.dueAmount} AS NUMERIC)), 0)`
 			})
 			.from(purchasesTable)

@@ -43,6 +43,8 @@
 	let selectedBatchIndex = $state(0);
 
 	let timeout: ReturnType<typeof setTimeout> | undefined;
+	const searchCache = new Map<string, Product[]>();
+	let abortCtrl: AbortController | null = null;
 
 	function isExpired(expiryDate: string): boolean {
 		try {
@@ -106,23 +108,43 @@
 			return;
 		}
 
+		// Instant retrieval if cached in-memory
+		if (searchCache.has(query)) {
+			results = searchCache.get(query)!;
+			selectedIndex = 0;
+			isLoading = false;
+			return;
+		}
+
 		isLoading = true;
 		clearTimeout(timeout);
+		abortCtrl?.abort();
+		abortCtrl = new AbortController();
+		const currentSignal = abortCtrl.signal;
+
 		timeout = setTimeout(async () => {
 			try {
 				const all = await productService.searchProducts(query);
-				results = all.slice(0, 12);
+				if (currentSignal.aborted) return;
+				const sliced = all.slice(0, 12);
+				searchCache.set(query, sliced);
+				results = sliced;
 				selectedIndex = 0;
-			} catch (e) {
-				console.error(e);
-				results = [];
+			} catch (e: any) {
+				if (e.name !== 'AbortError') {
+					console.error(e);
+					results = [];
+				}
 			} finally {
-				isLoading = false;
+				if (!currentSignal.aborted) {
+					isLoading = false;
+				}
 			}
 		}, 120);
 
 		return () => {
 			clearTimeout(timeout);
+			abortCtrl?.abort();
 		};
 	});
 

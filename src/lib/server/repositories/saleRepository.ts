@@ -87,14 +87,15 @@ export class DbSaleRepository implements SaleRepository {
 	}> {
 		const todayStart = new Date();
 		todayStart.setHours(0, 0, 0, 0);
+		const todayStartIso = todayStart.toISOString();
 
 		const salesConditions = [ne(salesTable.status, "cancelled")];
 		if (storeId) salesConditions.push(eq(salesTable.storeId, storeId));
 
 		const [summaryRow] = await this._db
 			.select({
-				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${salesTable.createdAt} >= ${todayStart} THEN 1 END), 0)::int`,
-				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${salesTable.createdAt} >= ${todayStart} THEN CAST(${salesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
+				todayCount: sql<number>`COALESCE(COUNT(CASE WHEN ${salesTable.createdAt} >= ${todayStartIso}::timestamptz THEN 1 END), 0)::int`,
+				todayTotal: sql<string>`COALESCE(SUM(CASE WHEN ${salesTable.createdAt} >= ${todayStartIso}::timestamptz THEN CAST(${salesTable.totalAmount} AS NUMERIC) ELSE 0 END), 0)`,
 				totalReceivables: sql<string>`COALESCE(SUM(CAST(${salesTable.totalAmount} AS NUMERIC) - CAST(${salesTable.amountPaidAtSale} AS NUMERIC)), 0)`
 			})
 			.from(salesTable)

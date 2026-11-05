@@ -1,9 +1,10 @@
 import type { Purchase, CreatePurchaseInput, PaginatedResponse } from '$lib/types/index.js';
 import { unwrap } from './unwrap.js';
+import { apiFetch } from './httpClient.js';
 
 export const purchaseService = {
 	async getPurchases(): Promise<Purchase[]> {
-		const res = await fetch('/api/purchases');
+		const res = await apiFetch('/api/purchases');
 		if (!res.ok) throw new Error('Failed to fetch purchases');
 		return unwrap(res);
 	},
@@ -21,23 +22,23 @@ export const purchaseService = {
 		if (opts?.status) params.set('status', opts.status);
 		if (opts?.supplierId) params.set('supplierId', opts.supplierId);
 		const url = `/api/purchases${params.toString() ? '?' + params.toString() : ''}`;
-		const res = await fetch(url);
+		const res = await apiFetch(url);
 		if (!res.ok) throw new Error('Failed to fetch paginated purchases');
 		return unwrap<PaginatedResponse<Purchase>>(res);
 	},
 	async getPurchase(id: string): Promise<Purchase | null> {
-		const res = await fetch(`/api/purchases/${id}`);
+		const res = await apiFetch(`/api/purchases/${id}`);
 		if (res.status === 404) return null;
 		if (!res.ok) throw new Error('Failed to fetch purchase');
 		return unwrap(res);
 	},
 	async getPurchasesBySupplier(supplierId: string): Promise<Purchase[]> {
-		const res = await fetch(`/api/purchases?supplierId=${supplierId}`);
+		const res = await apiFetch(`/api/purchases?supplierId=${supplierId}`);
 		if (!res.ok) throw new Error('Failed to fetch purchases');
 		return unwrap(res);
 	},
 	async createPurchase(input: CreatePurchaseInput): Promise<Purchase> {
-		const res = await fetch('/api/purchases', {
+		const res = await apiFetch('/api/purchases', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(input)
@@ -46,12 +47,12 @@ export const purchaseService = {
 		return unwrap(res);
 	},
 	async cancelPurchase(id: string): Promise<Purchase> {
-		const res = await fetch(`/api/purchases/${id}/cancel`, { method: 'POST' });
+		const res = await apiFetch(`/api/purchases/${id}/cancel`, { method: 'POST' });
 		if (!res.ok) throw new Error('Failed to cancel purchase');
 		return unwrap(res);
 	},
 	async getDashboardSummary(): Promise<any> {
-		const res = await fetch(`/api/purchases/summary`);
+		const res = await apiFetch(`/api/purchases/summary`);
 		return unwrap(res);
 	}
 };

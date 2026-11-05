@@ -1,5 +1,6 @@
 import type { Sale, SaleQuote, QuoteEngineLine, CreateSaleApiInput, PaginatedResponse } from '$lib/types/index.js';
 import { unwrap } from './unwrap.js';
+import { apiFetch } from './httpClient.js';
 
 export interface QuoteSaleInput {
 	saleType: 'retail' | 'wholesale';
@@ -10,7 +11,7 @@ export interface QuoteSaleInput {
 
 export const saleService = {
 	async getSales(): Promise<Sale[]> {
-		const res = await fetch('/api/sales');
+		const res = await apiFetch('/api/sales');
 		if (!res.ok) throw new Error('Failed to fetch sales');
 		return unwrap<Sale[]>(res);
 	},
@@ -28,18 +29,18 @@ export const saleService = {
 		if (opts?.status) params.set('status', opts.status);
 		if (opts?.customerId) params.set('customerId', opts.customerId);
 		const url = `/api/sales${params.toString() ? '?' + params.toString() : ''}`;
-		const res = await fetch(url);
+		const res = await apiFetch(url);
 		if (!res.ok) throw new Error('Failed to fetch paginated sales');
 		return unwrap<PaginatedResponse<Sale>>(res);
 	},
 	async getSale(id: string): Promise<Sale | null> {
-		const res = await fetch(`/api/sales/${id}`);
+		const res = await apiFetch(`/api/sales/${id}`);
 		if (res.status === 404) return null;
 		if (!res.ok) throw new Error('Failed to fetch sale');
 		return unwrap<Sale>(res);
 	},
 	async getSalesByCustomer(customerId: string): Promise<Sale[]> {
-		const res = await fetch(`/api/sales?customerId=${customerId}`);
+		const res = await apiFetch(`/api/sales?customerId=${customerId}`);
 		if (!res.ok) throw new Error('Failed to fetch sales');
 		return unwrap<Sale[]>(res);
 	},
@@ -48,7 +49,7 @@ export const saleService = {
 	 * for batch allocation, pricing, GST and totals (AGENTS.md boundary).
 	 */
 	async quoteSale(input: QuoteSaleInput): Promise<SaleQuote> {
-		const res = await fetch('/api/sales/quote', {
+		const res = await apiFetch('/api/sales/quote', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(input)
@@ -56,7 +57,7 @@ export const saleService = {
 		return unwrap<SaleQuote>(res);
 	},
 	async createSale(input: CreateSaleApiInput): Promise<Sale> {
-		const res = await fetch('/api/sales', {
+		const res = await apiFetch('/api/sales', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(input)
@@ -64,12 +65,12 @@ export const saleService = {
 		return unwrap<Sale>(res);
 	},
 	async cancelSale(id: string): Promise<Sale> {
-		const res = await fetch(`/api/sales/${id}/cancel`, { method: 'POST' });
+		const res = await apiFetch(`/api/sales/${id}/cancel`, { method: 'POST' });
 		if (!res.ok) throw new Error('Failed to cancel sale');
 		return unwrap<Sale>(res);
 	},
 	async getDashboardSummary(): Promise<any> {
-		const res = await fetch(`/api/sales/summary`);
+		const res = await apiFetch(`/api/sales/summary`);
 		return unwrap<any>(res);
 	}
 };

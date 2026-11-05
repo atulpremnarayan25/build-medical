@@ -1,6 +1,8 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import { onMount } from 'svelte';
+	import { rum } from '$lib/utils/rum.js';
 
 	import { Sidebar, Topbar, BottomNav } from '$lib/components/layout';
 	import { ToastContainer } from '$lib/components/common';
@@ -15,6 +17,14 @@
 	let isMarketing = $derived(
 		currentPath === '/' || currentPath.startsWith('/login') || currentPath.startsWith('/register')
 	);
+
+	onMount(() => {
+		rum.init((metrics) => {
+			if (import.meta.env.DEV) {
+				console.debug('[RUM Web Vitals]', metrics);
+			}
+		});
+	});
 </script>
 
 <svelte:head>

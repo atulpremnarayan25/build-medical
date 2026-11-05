@@ -9,6 +9,7 @@
 	} from '$lib/services';
 	import type { Sale, Purchase } from '$lib/types';
 	import { LoadingState, EmptyState, Badge, Button } from '$lib/components/common';
+	import DashboardSkeleton from './DashboardSkeleton.svelte';
 	import {
 		TrendingUp,
 		ShoppingCart,
@@ -108,7 +109,7 @@
 </script>
 
 {#if loading}
-	<LoadingState message="Loading dashboard intelligence..." />
+	<DashboardSkeleton />
 {:else if error}
 	<EmptyState title="Error Loading Dashboard" message={error} />
 {:else}

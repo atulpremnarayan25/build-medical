@@ -32,6 +32,8 @@
 	let creditInputRef = $state<HTMLInputElement | null>(null);
 
 	let timeout: ReturnType<typeof setTimeout> | undefined;
+	const searchCache = new Map<string, Customer[]>();
+	let abortCtrl: AbortController | null = null;
 
 	const isTenDigitPhone = $derived(/^\d{10}$/.test(searchQuery.trim()));
 
@@ -68,12 +70,26 @@
 			return;
 		}
 
+		if (searchCache.has(query)) {
+			results = searchCache.get(query)!;
+			selectedIndex = 0;
+			isSearching = false;
+			return;
+		}
+
 		isSearching = true;
 		clearTimeout(timeout);
+		abortCtrl?.abort();
+		abortCtrl = new AbortController();
+		const currentSignal = abortCtrl.signal;
+
 		timeout = setTimeout(async () => {
 			try {
 				const all = await customerService.searchCustomers(query);
-				results = all.slice(0, 10);
+				if (currentSignal.aborted) return;
+				const sliced = all.slice(0, 10);
+				searchCache.set(query, sliced);
+				results = sliced;
 				selectedIndex = 0;
 
 				// Check if 10-digit mobile number not found in DB
@@ -88,20 +104,25 @@
 				} else {
 					isQuickCreateMode = false;
 				}
-			} catch (e) {
-				console.error(e);
-				results = [];
-				if (isTenDigitPhone) {
-					isQuickCreateMode = true;
-					setTimeout(() => nameInputRef?.focus(), 50);
+			} catch (e: any) {
+				if (e.name !== 'AbortError') {
+					console.error(e);
+					results = [];
+					if (isTenDigitPhone) {
+						isQuickCreateMode = true;
+						setTimeout(() => nameInputRef?.focus(), 50);
+					}
 				}
 			} finally {
-				isSearching = false;
+				if (!currentSignal.aborted) {
+					isSearching = false;
+				}
 			}
 		}, 140);
 
 		return () => {
 			clearTimeout(timeout);
+			abortCtrl?.abort();
 		};
 	});
 
