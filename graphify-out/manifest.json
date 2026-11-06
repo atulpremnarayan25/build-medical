@@ -72,9 +72,9 @@
     "semantic_hash": "1a4f53a33285b3951d0bbcb8f7ad89ce"
   },
   "package.json": {
-    "mtime": 1793561326.7972362,
-    "seen": 1793785938.03714,
-    "ast_hash": "50b6cdb67873570e69250b10010c8001",
+    "mtime": 1793970083.784873,
+    "seen": 1793970279.6020532,
+    "ast_hash": "3ea621f7bf75ec9c38d7a2696d852e5e",
     "semantic_hash": ""
   },
   "prettier.config.js": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": "c610e6d5aeb2c3bcf0b9f1b90599250e"
   },
   "vite.config.ts": {
-    "mtime": 1793561326.8179007,
-    "seen": 1793785938.04179,
-    "ast_hash": "9970d27b0a00dbaeae7f392669b53589",
+    "mtime": 1793970118.3524015,
+    "seen": 1793970279.6055932,
+    "ast_hash": "2f34ce004eb9ba7d1ad956d23caa43c7",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -1851,6 +1851,36 @@
     "mtime": 1793901008.5336936,
     "seen": 1793901217.4516969,
     "ast_hash": "1744fde63b98e52e2d436271581cd1c4",
+    "semantic_hash": ""
+  },
+  "DEPLOYMENT-OCI.md": {
+    "mtime": 1793970225.7612891,
+    "seen": 1793970279.6056142,
+    "ast_hash": "d87b962151d0d8013e090b27bd15dfa8",
+    "semantic_hash": ""
+  },
+  "docker-compose.prod.yml": {
+    "mtime": 1793970204.0229404,
+    "seen": 1793970279.6057558,
+    "ast_hash": "cf1dbf4a89bb3155622569fa7f69bf62",
+    "semantic_hash": ""
+  },
+  "setupOracleFreeTier.txt": {
+    "mtime": 1793968824.3467586,
+    "seen": 1793970279.605849,
+    "ast_hash": "36dd40dac45e0e0339517162fd5632dd",
+    "semantic_hash": ""
+  },
+  "tasks/plan.md": {
+    "mtime": 1793969302.5968266,
+    "seen": 1793970279.6058712,
+    "ast_hash": "59b4c6f3f7898435b01508c7be93eb6e",
+    "semantic_hash": ""
+  },
+  "tasks/todo.md": {
+    "mtime": 1793970270.3479586,
+    "seen": 1793970279.6058722,
+    "ast_hash": "559446d7641f6b20088fba46777e9b5c",
     "semantic_hash": ""
   }
 }

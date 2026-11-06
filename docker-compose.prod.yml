@@ -1,0 +1,71 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: medstock-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      ACME_EMAIL: ${ACME_EMAIL:-admin@example.com}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_started
+    networks:
+      - medstock-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: medstock-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      ORIGIN: ${ORIGIN:-https://localhost}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-mederp_prod}:${POSTGRES_PASSWORD:-mederp_secure_password}@postgres:5432/${POSTGRES_DB:-mederp_prod}
+      DB_POOL_MAX: ${DB_POOL_MAX:-20}
+      DB_IDLE_TIMEOUT: ${DB_IDLE_TIMEOUT:-20}
+      DB_CONNECT_TIMEOUT: ${DB_CONNECT_TIMEOUT:-10}
+    volumes:
+      - ./backups:/app/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - medstock-net
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: medstock-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mederp_prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mederp_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-mederp_prod}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mederp_prod} -d ${POSTGRES_DB:-mederp_prod}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - medstock-net
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  medstock-net:
+    driver: bridge
